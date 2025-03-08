@@ -1,0 +1,32 @@
+image: 'maven:3.9.6-eclipse-temurin-21-alpine'
+
+cache:
+  paths:
+    - .m2/repository
+
+variables:
+    MAVEN_CLI_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+stages:
+  - build
+  - tests
+
+build:
+  stage: build
+  tags:
+    - ihm-runner
+  script:
+    - mvn clean install $MAVEN_CLI_OPTS -DskipTests
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+      when: always
+
+tests:
+  stage: tests
+  tags:
+    - ihm-runner
+  script:
+    - mvn test $MAVEN_CLI_OPTS
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+      when: always
