@@ -1,0 +1,42 @@
+@startuml
+
+entity Match {
+    * guid : uuid <<generated>>
+    * competition_uid : uuid <<FK>>
+    * location : text
+    * start_at : datetime
+    * end_at : datetime
+    * home_team : uuid
+    * away_team: uuid
+    * match_type : text
+}
+
+
+entity Result {
+    * match_uid : uuid <<FK>>
+    * winner_team : uuid <<FK>>
+    * score_home_team : number
+    * score_away_team : number
+}
+
+entity CompetitionHasTeams {
+    * team_uid : uuid <<FK>>
+    * competition_uid : uuid <<FK>>
+}
+
+entity Competition {
+    * guid : uuid <<generated>>
+    * name : text
+    * start_at : date
+    * ends_at : date
+}
+
+CompetitionHasTeams }|--|| Competition
+Match ||--o| Result
+Competition ||--o{ Match
+
+note left of CompetitionHasTeams : team_uid is reference \nto the team in TeamService
+note left of Match : Depends on the players characteristics\nNeeds to be cached or retrieved from TeamService
+note left of Result : Weak entity
+
+@enduml
