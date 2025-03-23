@@ -1,0 +1,49 @@
+@startuml
+
+entity User {
+    * guid : uuid <<generated>>
+    * team_id : uuid <<FK>>
+    * username : text
+    * mail : text
+    * password_hash : text
+    * is_active : boolean
+    * deleted_at : timestamp
+}
+
+entity UserHasRole {
+    * user_id : uuid <<FK>>
+    * role_id : uuid <<FK>>
+}
+
+entity Role {
+    * guid : uuid <<generated>>
+    * name : text
+    * code : text
+    * description : text
+}
+
+entity Payment {
+    * guid : uuid <<generated>>
+    * user_id : uuid <<FK>>
+    * budget_offer_package_id : uuid <<FK>>
+    * created_at : timestamp
+    * paid : boolean
+}
+
+entity BudgetOfferPackage {
+    * guid :: uuid <<generated>>
+    * price_dollars : number
+    * budget_increase : number
+    * description : text
+    * is_available : boolean
+}
+
+UserHasRole }o--|| Role
+UserHasRole }o--|| User
+
+Payment }o--|| User
+Payment }o--|| BudgetOfferPackage
+
+note top of User : team_id is reference \nto the team in team service
+
+@enduml
