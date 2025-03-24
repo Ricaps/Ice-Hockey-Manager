@@ -1,0 +1,81 @@
+@startuml
+
+enum RegionType {
+  International   - International competitions between multiple countries
+  Continental     - Continental competitions like the Champions League
+  National        - National championships within a single country
+  Regional        - Regional competitions within a specific area
+  Global          - A competition involving teams from all over the world
+  Intercontinental - Competitions between teams from different continents
+  Local           - Local competitions, like city or district level
+  SpecialEvent    - Invitational tournaments
+}
+
+entity ChampionshipRegion {
+  * guid : uuid <<generated>>
+  * regionName : text
+  * regionType : RegionType
+}
+
+entity Championship {
+  * guid : uuid <<generated>>
+  * name : text
+  * championshipRegionID : uuid FK
+}
+
+entity Team {
+  * guid : uuid <<generated>>
+  * name : text
+  * championshipID : uuid FK
+}
+
+entity Player {
+  * guid : uuid <<generated>>
+  * firstName : text
+  * lastName : text
+  * overallRating : INT
+  * teamID : uuid FK
+}
+
+entity PlayerCharacteristic {
+  * guid : uuid <<generated>>
+  * playerID : uuid FK
+  * characteristicType : PlayerCharacteristicType
+  * value : INT
+}
+
+enum PlayerCharacteristicType {
+    // General Attributes
+    SPEED,
+    STAMINA,
+    STRENGTH,
+
+    // Offensive Attributes
+    SHOOTING,
+    PASSING,
+    PUCK_CONTROL,
+
+    // Defensive Attributes
+    DEFENSE,
+    CHECKING,
+
+    // Goalie Attributes
+    GOALIE_SKILL,
+
+    // Mental & Team Play
+    AGGRESSION
+}
+
+RegionType ||--o{ ChampionshipRegion : " Is"
+
+ChampionshipRegion ||--o{ Championship : " Is"
+
+Championship ||--|{ Team : " has"
+
+Team ||--|{ Player : " has"
+
+Player ||--o{ PlayerCharacteristic : " Has "
+
+PlayerCharacteristicType ||--o{ PlayerCharacteristic : " Is"
+
+@enduml
