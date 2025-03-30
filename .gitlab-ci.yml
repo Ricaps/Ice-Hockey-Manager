@@ -21,6 +21,13 @@ build:
     - if: '$CI_COMMIT_BRANCH'
       when: always
 
+format:
+  stage: tests
+  tags:
+    - ihm-runner
+  script:
+    - mvn spring-javaformat:validate $MAVEN_CLI_OPTS
+
 tests:
   stage: tests
   tags:

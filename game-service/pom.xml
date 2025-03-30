@@ -46,7 +46,18 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <configuration>
+                    <apiDocsUrl>http://localhost:8082/v3/api-docs.yaml</apiDocsUrl>
+                </configuration>
             </plugin>
         </plugins>
     </build>
