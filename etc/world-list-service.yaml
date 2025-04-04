@@ -1,0 +1,48 @@
+# Servlet configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  error:
+    include-stacktrace: never
+spring:
+  application:
+    name: world-list-service
+
+  # JPA and Hibernate configuration
+  datasource:
+    url: jdbc:h2:mem:worldlist;
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+    hibernate:
+      ddl-auto: create-drop
+
+  #Controllers config
+  mvc:
+    contentnegotiation:
+      favor-parameter: false
+      media-types:
+        json: application/json
+
+  #Jackson config
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      INDENT_OUTPUT: true
+
+# Logging
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+      max-file-size: 20MB
+  file:
+    name: "logs/world-list-service.log"
+  level.cz.fi.muni.pa165: DEBUG

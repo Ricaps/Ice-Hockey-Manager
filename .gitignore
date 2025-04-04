@@ -36,3 +36,5 @@ logs/*
 # H2 default data directory
 data/*
 */data/*
+openapi/*
+openapi/world-list-service.yaml

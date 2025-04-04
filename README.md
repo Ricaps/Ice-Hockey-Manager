@@ -8,6 +8,17 @@ Admin can put new hockey players in the main list of free agents and change thei
 other human players. If you want, you can implement a budget system for each team, so that players can be bought and
 sold based on the financial availability of teams.
 
+## How to run
+
+Since the services have **externalized** configuration, you must include the path to the configuration in run command.
+
+1. Run `mvn clean install` in the root directory.
+2. Then for each service, go to its sub-folder (e.g. `cd game-service`) and run:
+   1. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/world-list-service.yaml"`
+   2. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/team-service.yaml"`
+   3. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/game-service.yaml"`
+   4. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/user-service.yaml"`
+
 ## Microservices
 
 ### 1. Word List Service
@@ -43,8 +54,22 @@ roles (Player, Admin, etc...). The service will also serve as authentication ser
 
 ## Use case diagram
 
-![use-case-diagram.png](docs/images/use-case.png)
+![use-case-diagram.png](docs/diagrams/use-case/use-case.png)
 
 ## Class diagram for the DTOs
 
-TODO - will be added before the submission
+### World List Service
+
+![world-list-service-dtos.png](docs/diagrams/class/world-list-service-dtos.png)
+
+### Team Service
+
+![team-service-dtos.png](docs/diagrams/class/team-service-dtos.png)
+
+### Game Service
+
+![game-service-dtos.png](docs/diagrams/class/game-service-dtos.png)
+
+### User Service
+
+![user-service-dtos.png](docs/diagrams/class/user-service-dtos.png)
