@@ -5,6 +5,9 @@ entity User {
     * team_id : uuid <<FK>>
     * username : text
     * mail : text
+    * name : text
+    * surname : text
+    * birth_date : datetime
     * password_hash : text
     * is_active : boolean
     * deleted_at : timestamp

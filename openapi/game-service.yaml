@@ -1,0 +1,375 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8082/api
+  description: Generated server url
+tags:
+- name: Competition API
+  description: Operations related to competitions and assigning teams
+- name: Matches API
+  description: Operations related to matches
+paths:
+  /v1/competition/{uuid}:
+    get:
+      tags:
+      - Competition API
+      description: Returns desired competition by defined UUID
+      operationId: getCompetition
+      parameters:
+      - name: uuid
+        in: path
+        description: UUID of the desired Competition model
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "400":
+          description: Path parameter doesn't have form of UUID
+          content: {}
+        "200":
+          description: Competition View with desired competition details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompetitionViewDto"
+        "404":
+          description: Desired competition doesn't exist
+    put:
+      tags:
+      - Competition API
+      description: Updates whole competition of specified UUID
+      operationId: updateCompetition
+      parameters:
+      - name: uuid
+        in: path
+        description: UUID of the Competition you want to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: New value of the updated competition
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitionCreateDto"
+        required: true
+      responses:
+        "400":
+          description: Request body doesn't meet validation requirements
+          content: {}
+        "200":
+          description: "Competition model was successfully updated, returning updated\
+            \ model"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompetitionViewDto"
+        "404":
+          description: Desired competition doesn't exist
+  /v1/matches/competition/{competitionUUID}:
+    get:
+      tags:
+      - Matches API
+      description: Returns all matches for the given competition with results.
+      operationId: getMatchesForCompetition
+      parameters:
+      - name: competitionUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: results
+        in: query
+        description: Decides if response contains also result of the match.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "400":
+          description: Competition UUID is not valid UUID
+          content:
+            application/json: {}
+        "200":
+          description: Array of matches with result.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchViewDto"
+        "404":
+          description: Desired competition doesn't exist
+    post:
+      tags:
+      - Matches API
+      description: Generates matches for the given competition. Competition must have
+        assigned team members and matches cannot be already generated
+      operationId: generateMatches
+      parameters:
+      - name: competitionUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "400":
+          description: The request body is not valid
+          content:
+            application/json: {}
+        "201":
+          description: Matches were successfully generated. Generated competitions
+            are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchViewDto"
+  /v1/matches/:
+    post:
+      tags:
+      - Matches API
+      description: Creates new match. Only friendly matches can be created. The match
+        cannot be part of any competition. Matches for competitions are generated.
+      operationId: createMatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MatchCreateDto"
+        required: true
+      responses:
+        "400":
+          description: The request body is not valid.
+          content:
+            application/json: {}
+        "201":
+          description: Match was successfully created. New match is returned in the
+            response body.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchViewDto"
+        "404":
+          description: Provided dependent resource probably doesn't exist.
+  /v1/competition/{competitionUUID}/teams:
+    post:
+      tags:
+      - Competition API
+      description: Assigns team to the given competition. Team cannot be assigned
+        to the ongoing competition.
+      operationId: assignTeam
+      parameters:
+      - name: competitionUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignTeamDto"
+        required: true
+      responses:
+        "400":
+          description: The request body is not valid
+          content:
+            application/json: {}
+        "201":
+          description: Team was successfully assigned to the given competition.
+          content:
+            application/json: {}
+        "404":
+          description: You are not allowed to perform this action.
+          content:
+            application/json: {}
+        "409":
+          description: Team was already assigned to the given competition
+          content:
+            application/json: {}
+  /v1/competition/:
+    post:
+      tags:
+      - Competition API
+      description: Creates a new competition with given properties
+      operationId: addCompetition
+      requestBody:
+        description: Data for competition creation
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitionCreateDto"
+        required: true
+      responses:
+        "400":
+          description: Validation of input data failed
+          content: {}
+        "201":
+          description: Competition View with newly created competition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompetitionViewDto"
+  /v1/matches/{matchUUID}:
+    get:
+      tags:
+      - Matches API
+      description: Returns desired match defined by it's UUID
+      operationId: getSingleMatch
+      parameters:
+      - name: matchUUID
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: results
+        in: query
+        description: Decides if response contains also result of the match.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        "400":
+          description: Match UUID is not valid UUID
+          content:
+            application/json: {}
+        "200":
+          description: Match view with or without results.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchViewDto"
+        "404":
+          description: Desired match doesn't exist
+components:
+  schemas:
+    CompetitionCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          minLength: 1
+        startAt:
+          type: string
+          format: date
+        endAt:
+          type: string
+          format: date
+      required:
+      - endAt
+      - startAt
+    CompetitionTeamDto:
+      type: object
+      properties:
+        teamUid:
+          type: string
+          format: uuid
+    CompetitionViewDto:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        startAt:
+          type: string
+          format: date
+        endAt:
+          type: string
+          format: date
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/CompetitionTeamDto"
+          uniqueItems: true
+    ArenaViewDto:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+        countryCode:
+          type: string
+        cityName:
+          type: string
+        arenaName:
+          type: string
+    MatchViewDto:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+        arena:
+          $ref: "#/components/schemas/ArenaViewDto"
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        homeTeamUid:
+          type: string
+          format: uuid
+        awayTeamUid:
+          type: string
+          format: uuid
+        matchType:
+          type: string
+        result:
+          $ref: "#/components/schemas/ResultViewDto"
+    ResultViewDto:
+      type: object
+      properties:
+        winnerTeam:
+          type: string
+          format: uuid
+        scoreHomeTeam:
+          type: integer
+          format: int32
+        scoreAwayTeam:
+          type: integer
+          format: int32
+    MatchCreateDto:
+      type: object
+      properties:
+        arenaUid:
+          type: string
+          format: uuid
+        startAt:
+          type: string
+          format: date-time
+        homeTeamUid:
+          type: string
+          format: uuid
+        awayTeamUid:
+          type: string
+          format: uuid
+      required:
+      - arenaUid
+      - awayTeamUid
+      - homeTeamUid
+      - startAt
+    AssignTeamDto:
+      type: object
+      properties:
+        assignTeam:
+          type: string
+          format: uuid
+      required:
+      - assignTeam
