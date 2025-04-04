@@ -30,6 +30,13 @@ build/
 
 ### VS Code ###
 .vscode/
+data/team-service.mv.db
+data/team-service.trace.db
+game-service/data/game-service.mv.db
+game-service/data/game-service.trace.db
+logs/world-list-service.log
+team-service/data/team-service.mv.db
+team-service/data/team-service.trace.db
 
 logs/*
 

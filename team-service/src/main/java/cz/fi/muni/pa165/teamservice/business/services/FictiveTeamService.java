@@ -1,0 +1,59 @@
+package cz.fi.muni.pa165.teamservice.business.services;
+
+import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
+import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
+import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * @author Jan Martinek
+ */
+@Service
+@Transactional
+public class FictiveTeamService {
+
+	private final FictiveTeamRepository teamRepository;
+
+	@Autowired
+	public FictiveTeamService(FictiveTeamRepository teamRepository) {
+		this.teamRepository = teamRepository;
+	}
+
+	public FictiveTeam createTeam(FictiveTeam team) throws ResourceAlreadyExistsException {
+		if (team.getGuid() != null && teamRepository.existsById(team.getGuid())) {
+			throw new ResourceAlreadyExistsException("Team already exists");
+		}
+		return teamRepository.save(team);
+	}
+
+	public FictiveTeam updateTeam(FictiveTeam team) throws ResourceNotFoundException {
+		if (!teamRepository.existsById(team.getGuid())) {
+			throw new ResourceNotFoundException("Team not found");
+		}
+		return teamRepository.save(team);
+	}
+
+	public void deleteTeam(UUID teamId) throws ResourceNotFoundException {
+		if (!teamRepository.existsById(teamId)) {
+			throw new ResourceNotFoundException("Team not found");
+		}
+		teamRepository.deleteById(teamId);
+	}
+
+	@Transactional(readOnly = true)
+	public FictiveTeam findById(UUID teamId) throws ResourceNotFoundException {
+		return teamRepository.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+	}
+
+	@Transactional(readOnly = true)
+	public List<FictiveTeam> findAll() {
+		return teamRepository.findAll();
+	}
+
+}
