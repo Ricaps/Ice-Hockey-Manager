@@ -16,7 +16,7 @@
         <module>user-service</module>
         <module>world-list-service</module>
     </modules>
-    
+
     <groupId>cz.fi.muni.pa165</groupId>
     <artifactId>ice-hockey-manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -99,6 +99,11 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <configuration>
+                                <jvmArguments>-Dspring.profiles.active=test
+                                    -Dspring.config.location=optional:${project.basedir}/src/test/resources/application-test.yaml
+                                </jvmArguments>
+                            </configuration>
                             <id>pre-integration-test</id>
                             <goals>
                                 <goal>start</goal>
@@ -120,6 +125,7 @@
                         <argLine>
                             -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
                             -Xshare:off
+                            -Dspring.profiles.active=test
                         </argLine>
                     </configuration>
                 </plugin>
@@ -140,6 +146,11 @@
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
                                 <version>${org.projectlombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>0.2.0</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>

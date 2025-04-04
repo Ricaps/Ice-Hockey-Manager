@@ -1,0 +1,35 @@
+package cz.fi.muni.pa165.dto.gameService;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MatchViewDto {
+
+	private UUID guid;
+
+	private ArenaViewDto arena;
+
+	private ZonedDateTime startAt;
+
+	private ZonedDateTime endAt;
+
+	private UUID homeTeamUid;
+
+	private UUID awayTeamUid;
+
+	private String matchType;
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private ResultViewDto result;
+
+}

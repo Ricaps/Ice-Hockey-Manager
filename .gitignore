@@ -30,3 +30,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+logs/*
+
+# H2 default data directory
+data/*
+*/data/*

@@ -1,9 +1,9 @@
-@startuml
+    @startuml
 
 entity Match {
     * guid : uuid <<generated>>
     * competition_uid : uuid <<FK>>
-    * location : text
+    * arena_uid : uuid <<FK>>
     * start_at : datetime
     * end_at : datetime
     * home_team : uuid
@@ -11,6 +11,12 @@ entity Match {
     * match_type : text
 }
 
+entity Arena {
+    * guid : uuid <<generated>>
+    * country_code : text
+    * city_name :  text
+    * area_name : text
+}
 
 entity Result {
     * match_uid : uuid <<FK>>
@@ -28,12 +34,13 @@ entity Competition {
     * guid : uuid <<generated>>
     * name : text
     * start_at : date
-    * ends_at : date
+    * end_at : date
 }
 
 CompetitionHasTeams }|--|| Competition
 Match ||--o| Result
 Competition ||--o{ Match
+Match }o--right|| Arena
 
 note left of CompetitionHasTeams : team_uid is reference \nto the team in TeamService
 note left of Match : Depends on the players characteristics\nNeeds to be cached or retrieved from TeamService
