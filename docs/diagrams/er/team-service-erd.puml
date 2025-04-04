@@ -1,0 +1,55 @@
+@startuml
+
+entity FictiveTeam {
+    * guid : uuid <<generated>>
+    * name : text
+    * playerIDs : uuid FK
+    * characteristicType : TeamCharacteristicType
+    * budgetSystem : uuid FK
+
+}
+entity BudgetSystem {
+    * guid : uuid <<generated>>
+    * amount : number
+}
+
+entity TeamCharacteristic {
+  * guid : uuid <<generated>>
+  * teamID : uuid FK
+  * characteristicType : teamCharacteristicType
+  * value : INT
+}
+
+enum TeamCharacteristicType {
+    // General Attributes
+    COLLABORATION,
+    SPEED,
+    STAMINA,
+    STRENGTH,
+
+    // Offensive Attributes
+    SHOOTING,
+    PASSING,
+    PUCK_CONTROL,
+
+    // Defensive Attributes
+    DEFENSE,
+    CHECKING,
+
+    // Goalie Attributes
+    GOALIE_SKILL,
+
+    // Mental & Team Play
+    AGGRESSION
+}
+
+
+FictiveTeam ||--|| BudgetSystem
+
+FictiveTeam ||--o{ TeamCharacteristic : " Has "
+
+TeamCharacteristicType ||--o{ TeamCharacteristic : " Is"
+
+note top of FictiveTeam : playerIDs is reference \nto the player in world list service
+
+@enduml
