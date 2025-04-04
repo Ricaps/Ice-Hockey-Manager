@@ -43,7 +43,7 @@ roles (Player, Admin, etc...). The service will also serve as authentication ser
 
 ## Use case diagram
 
-TODO - will be added before the submission
+![use-case-diagram.png](docs/images/use-case.png)
 
 ## Class diagram for the DTOs
 
