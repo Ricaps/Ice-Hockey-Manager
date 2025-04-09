@@ -23,6 +23,8 @@ Since the services have **externalized** configuration, you must include the pat
 
 ### 1. Word List Service
 
+> Responsible person: Matej Keznikl
+
 World List service takes care about the list of the real ice hockey teams. Use can see player characteristics,
 information about championship where the player and its team belongs. There are multiple types of the
 championships (International, Continental, National, ...). Users can choose players listed in this service into his
@@ -30,12 +32,16 @@ team.
 
 ### 2. Team Service
 
+> Responsible person: Jan Martinek
+
 Team Service cares about the managing user's fictive teams. It means, when the user chooses (buys) player from the
 world list, then the player becomes managed by the Team service. It cares about grouping players into the teams, which
 can then register and participate in the competitions. The service also takes care about the budget of the team,
 so then users can buy or sell the players. Teams earn money from the won competitions.
 
 ### 3. Game Service
+
+> Responsible person: Martin Procházka
 
 Game Service takes care about the competitions and matches. Admin can create competitions, where the team can
 participate.
@@ -47,6 +53,8 @@ informed
 about the finished match and the result. User can also create friendly match between two teams.
 
 ### 4. User service
+
+> Responsible person: Jakub Dvořák
 
 User Service takes care about users (players). User can create and manage his account. He can also buy Budget offer
 packages, which gives user extended initial budget for buying players and composing his teams. User can have assigned
