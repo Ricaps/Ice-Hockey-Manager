@@ -2,16 +2,18 @@
 server:
   port: 8080
   servlet:
-    context-path: /api/v1
+    context-path: /api
   error:
     include-stacktrace: never
+  database:
+    seed: true
 spring:
   application:
     name: world-list-service
 
   # JPA and Hibernate configuration
   datasource:
-    url: jdbc:h2:mem:worldlist;
+    url: jdbc:h2:file:./data/worldlist-list-service
     driver-class-name: org.h2.Driver
     hikari:
       maximum-pool-size: 10
@@ -22,7 +24,10 @@ spring:
       hibernate:
         format_sql: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
+
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
 
   #Controllers config
   mvc:
@@ -36,3 +41,13 @@ spring:
     default-property-inclusion: non_null
     serialization:
       INDENT_OUTPUT: true
+
+# Logging
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+      max-file-size: 20MB
+  file:
+    name: "logs/world-list-service.log"
+  level.cz.fi.muni.pa165: DEBUG

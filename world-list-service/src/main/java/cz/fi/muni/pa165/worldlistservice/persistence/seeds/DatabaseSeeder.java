@@ -8,6 +8,7 @@ import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 	private final Faker faker = new Faker();
 
+	@Value("${server.database.seed:false}")
+	private boolean shouldSeed;
+
 	@Autowired
 	public DatabaseSeeder(ChampionshipRegionRepository championshipRegionRepository,
 			ChampionshipRepository championshipRepository, TeamRepository teamRepository,
@@ -41,11 +45,20 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
+		if (!shouldSeed) {
+			logger.info("Database seeding is disabled. Skipping seeding...");
+			return;
+		}
+
+		logger.info("Database seeding started");
+
 		seedChampionshipRegions();
 		seedChampionships();
 		seedTeams();
 		seedPlayers();
 		seedPlayerCharacteristics();
+
+		logger.info("Database seeding ended");
 	}
 
 	private void seedChampionshipRegions() {
@@ -55,7 +68,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		logger.info("Seeding championship regions");
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 25; i++) {
 			ChampionshipRegionEntity region = new ChampionshipRegionEntity();
 			region.setName(faker.address().city());
 			region.setType(faker.options().option(ChampionshipRegionType.class));
@@ -75,7 +88,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		var hockeyChampionshipNames = new String[] { "NHL", "Stanley Cup", "World Hockey Championship",
 				"IIHF World Championship", "European Hockey League", "KHL", "Junior Hockey World Cup", "Spengler Cup" };
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 25; i++) {
 			ChampionshipEntity championship = new ChampionshipEntity();
 			championship.setName(hockeyChampionshipNames[i % hockeyChampionshipNames.length]);
 			championship.setChampionshipRegion(faker.options()
@@ -94,7 +107,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		logger.info("Seeding teams");
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 50; i++) {
 			TeamEntity team = new TeamEntity();
 			team.setName(faker.team().name());
 			team.setChampionship(faker.options()
@@ -113,7 +126,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		logger.info("Seeding players");
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 100; i++) {
 			PlayerEntity player = new PlayerEntity();
 			player.setFirstName(faker.name().firstName());
 			player.setLastName(faker.name().lastName());
@@ -133,7 +146,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		logger.info("Seeding player characteristics");
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 100; i++) {
 			PlayerCharacteristicEntity characteristic = new PlayerCharacteristicEntity();
 			characteristic.setPlayer(faker.options()
 				.option(playerRepository.findAll()

@@ -5,13 +5,15 @@ server:
     context-path: /api
   error:
     include-stacktrace: never
+  database:
+    seed: true
 spring:
   application:
     name: world-list-service
 
   # JPA and Hibernate configuration
   datasource:
-    url: jdbc:h2:mem:worldlist;
+    url: jdbc:h2:file:./data/worldlist-list-service
     driver-class-name: org.h2.Driver
     hikari:
       maximum-pool-size: 10
@@ -22,7 +24,10 @@ spring:
       hibernate:
         format_sql: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
+
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
 
   #Controllers config
   mvc:
