@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,6 @@ public class TeamCreateDto {
 	@NotNull(message = "Team has to be in championship")
 	UUID championshipId;
 
-	Set<UUID> teamPlayersIds;
+	Set<UUID> teamPlayersIds = new HashSet<>();
 
 }

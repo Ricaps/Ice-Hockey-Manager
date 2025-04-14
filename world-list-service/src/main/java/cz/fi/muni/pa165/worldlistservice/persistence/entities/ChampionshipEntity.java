@@ -4,6 +4,7 @@ import cz.fi.muni.pa165.dto.worldlistservice.interfaces.Identifiable;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,6 @@ public class ChampionshipEntity extends BaseEntity implements Identifiable {
 	ChampionshipRegionEntity championshipRegion;
 
 	@OneToMany(mappedBy = "championship", fetch = FetchType.LAZY)
-	Set<TeamEntity> championshipTeams;
+	Set<TeamEntity> championshipTeams = new HashSet<>();
 
 }

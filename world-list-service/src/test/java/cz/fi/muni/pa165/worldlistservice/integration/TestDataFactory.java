@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.worldlistservice.persistence.seeds;
+package cz.fi.muni.pa165.worldlistservice.integration;
 
 import cz.fi.muni.pa165.enums.ChampionshipRegionType;
 import cz.fi.muni.pa165.enums.PlayerCharacteristicType;
@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DatabaseSeeder implements CommandLineRunner {
+import java.util.Random;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseSeeder.class);
+@Component
+class TestDataFactory implements CommandLineRunner {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestDataFactory.class);
 
 	private final ChampionshipRegionRepository championshipRegionRepository;
 
@@ -27,13 +29,13 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 	private final PlayerCharacteristicRepository playerCharacteristicRepository;
 
-	private final Faker faker = new Faker();
+	private final Faker faker = new Faker(new Random(12345L));
 
-	@Value("${server.database.seed:false}")
+	@Value("${server.database.seedTestData:true}")
 	private boolean shouldSeed;
 
 	@Autowired
-	public DatabaseSeeder(ChampionshipRegionRepository championshipRegionRepository,
+	public TestDataFactory(ChampionshipRegionRepository championshipRegionRepository,
 			ChampionshipRepository championshipRepository, TeamRepository teamRepository,
 			PlayerRepository playerRepository, PlayerCharacteristicRepository playerCharacteristicRepository) {
 		this.championshipRegionRepository = championshipRegionRepository;
@@ -46,10 +48,13 @@ public class DatabaseSeeder implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 		if (!shouldSeed) {
-			LOGGER.info("Database seeding is disabled. Skipping seeding...");
+			LOGGER.info("Seeding test data is turned off");
 			return;
 		}
+		seedTestData();
+	}
 
+	public void seedTestData() {
 		LOGGER.info("Database seeding started");
 
 		seedChampionshipRegions();
@@ -91,9 +96,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 		for (int i = 0; i < 25; i++) {
 			ChampionshipEntity championship = new ChampionshipEntity();
 			championship.setName(hockeyChampionshipNames[i % hockeyChampionshipNames.length]);
-			championship.setChampionshipRegion(faker.options()
-				.option(championshipRegionRepository.findAll()
-					.get((int) faker.number().numberBetween(0, championshipRegionRepository.count()))));
+			if (i != 0) {
+				championship.setChampionshipRegion(championshipRegionRepository.findAll().get(i));
+			}
 			championshipRepository.save(championship);
 		}
 
@@ -110,9 +115,14 @@ public class DatabaseSeeder implements CommandLineRunner {
 		for (int i = 0; i < 50; i++) {
 			TeamEntity team = new TeamEntity();
 			team.setName(faker.team().name());
-			team.setChampionship(faker.options()
-				.option(championshipRepository.findAll()
-					.get((int) faker.number().numberBetween(0, championshipRepository.count()))));
+			if (i == 1) {
+				team.setChampionship(championshipRepository.findAll().get(1));
+			}
+			else if (i != 0) {
+				team.setChampionship(faker.options()
+					.option(championshipRepository.findAll()
+						.get((int) faker.number().numberBetween(1, championshipRepository.count()))));
+			}
 			teamRepository.save(team);
 		}
 
@@ -130,8 +140,14 @@ public class DatabaseSeeder implements CommandLineRunner {
 			PlayerEntity player = new PlayerEntity();
 			player.setFirstName(faker.name().firstName());
 			player.setLastName(faker.name().lastName());
-			player.setTeam(faker.options()
-				.option(teamRepository.findAll().get((int) faker.number().numberBetween(0, teamRepository.count()))));
+			if (i == 1) {
+				player.setTeam(teamRepository.findAll().get(1));
+			}
+			if (i != 0) {
+				player.setTeam(faker.options()
+					.option(teamRepository.findAll()
+						.get((int) faker.number().numberBetween(1, teamRepository.count()))));
+			}
 			player.setOverallRating(faker.number().numberBetween(0, 100));
 			playerRepository.save(player);
 		}
@@ -148,9 +164,15 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		for (int i = 0; i < 100; i++) {
 			PlayerCharacteristicEntity characteristic = new PlayerCharacteristicEntity();
-			characteristic.setPlayer(faker.options()
-				.option(playerRepository.findAll()
-					.get((int) faker.number().numberBetween(0, playerRepository.count()))));
+
+			if (i == 1) {
+				characteristic.setPlayer(playerRepository.findAll().get(1));
+			}
+			else if (i != 0) {
+				characteristic.setPlayer(faker.options()
+					.option(playerRepository.findAll()
+						.get((int) faker.number().numberBetween(0, playerRepository.count()))));
+			}
 			characteristic.setType(faker.options().option(PlayerCharacteristicType.class));
 			characteristic.setValue(faker.number().numberBetween(0, 100));
 			playerCharacteristicRepository.save(characteristic);

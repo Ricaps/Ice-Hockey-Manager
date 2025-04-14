@@ -5,8 +5,6 @@ server:
     context-path: /api
   error:
     include-stacktrace: never
-  database:
-    seed: true
 spring:
   application:
     name: world-list-service

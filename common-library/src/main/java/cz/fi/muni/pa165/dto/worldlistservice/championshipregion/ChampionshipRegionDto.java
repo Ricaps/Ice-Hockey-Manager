@@ -1,13 +1,13 @@
-package cz.fi.muni.pa165.dto.worldlistservice.championship.detail;
+package cz.fi.muni.pa165.dto.worldlistservice.championshipregion;
 
 import cz.fi.muni.pa165.dto.worldlistservice.BaseDto;
-import cz.fi.muni.pa165.dto.worldlistservice.championshipregion.ChampionshipRegionDto;
 import cz.fi.muni.pa165.dto.worldlistservice.interfaces.Identifiable;
+import cz.fi.muni.pa165.enums.ChampionshipRegionType;
+import cz.fi.muni.pa165.enums.validators.ValidEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChampionshipDetailDto extends BaseDto implements Identifiable {
+public class ChampionshipRegionDto extends BaseDto implements Identifiable {
 
 	UUID id;
 
@@ -24,10 +24,8 @@ public class ChampionshipDetailDto extends BaseDto implements Identifiable {
 	@NotNull(message = "Name cannot be null")
 	String name;
 
-	@NotNull(message = "Championship region must be assigned")
-	ChampionshipRegionDto championshipRegion;
-
-	@NotNull(message = "Championship must have teams assigned")
-	Set<ChampionshipTeamDto> championshipTeams;
+	@ValidEnum(enumClass = ChampionshipRegionType.class, message = "Invalid region type")
+	@NotNull(message = "Region type must be defined")
+	ChampionshipRegionType type;
 
 }

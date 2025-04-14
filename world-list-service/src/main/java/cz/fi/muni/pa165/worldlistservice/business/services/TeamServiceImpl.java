@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-class TeamServiceImpl extends BaseService<TeamEntity> implements TeamService {
+public class TeamServiceImpl extends BaseService<TeamEntity> implements TeamService {
 
 	@Autowired
 	public TeamServiceImpl(TeamRepository repository) {

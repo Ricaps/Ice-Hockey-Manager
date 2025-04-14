@@ -25,7 +25,9 @@ public class PlayerCharacteristicServiceImpl extends BaseService<PlayerCharacter
 
 	@Override
 	public boolean isEntityUsed(UUID id) throws NotFoundException {
-		return false;
+		var entity = repository.findById(id).orElseThrow(() -> new NotFoundException(this.getEntityName(), id));
+
+		return entity.getPlayer() != null;
 	}
 
 }

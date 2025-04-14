@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.worldlistservice.api.controllers;
 
 import cz.fi.muni.pa165.dto.worldlistservice.championship.detail.ChampionshipDetailDto;
-import cz.fi.muni.pa165.dto.worldlistservice.championshippregion.ChampionshipRegionDto;
-import cz.fi.muni.pa165.dto.worldlistservice.championshippregion.create.ChampionshipRegionCreateDto;
+import cz.fi.muni.pa165.dto.worldlistservice.championshipregion.ChampionshipRegionDto;
+import cz.fi.muni.pa165.dto.worldlistservice.championshipregion.create.ChampionshipRegionCreateDto;
 import cz.fi.muni.pa165.service.wordlistService.api.ChampionshipRegionController;
 import cz.fi.muni.pa165.worldlistservice.business.facades.interfaces.ChampionshipRegionFacade;
 import io.swagger.v3.oas.annotations.Operation;

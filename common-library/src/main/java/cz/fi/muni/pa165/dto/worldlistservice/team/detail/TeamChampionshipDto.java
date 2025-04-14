@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.dto.worldlistservice.team.detail;
 
 import cz.fi.muni.pa165.dto.worldlistservice.BaseDto;
-import cz.fi.muni.pa165.dto.worldlistservice.championshippregion.ChampionshipRegionDto;
+import cz.fi.muni.pa165.dto.worldlistservice.championshipregion.ChampionshipRegionDto;
 import cz.fi.muni.pa165.dto.worldlistservice.interfaces.Identifiable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

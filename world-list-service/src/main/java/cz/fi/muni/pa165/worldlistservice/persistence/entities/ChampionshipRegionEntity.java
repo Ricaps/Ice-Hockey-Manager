@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,6 +29,6 @@ public class ChampionshipRegionEntity extends BaseEntity implements Identifiable
 	ChampionshipRegionType type;
 
 	@OneToMany(mappedBy = "championshipRegion", fetch = FetchType.LAZY)
-	Set<ChampionshipEntity> regionChampionships;
+	Set<ChampionshipEntity> regionChampionships = new HashSet<>();
 
 }
