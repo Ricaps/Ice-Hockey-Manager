@@ -39,6 +39,8 @@ public class PlayerDetailDto extends BaseDto implements Identifiable {
 	@NotNull(message = "Team cannot be null")
 	PlayerTeamDto team;
 
+	boolean used;
+
 	@NotNull(message = "Player characteristics cannot be null")
 	Set<PlayerCharacteristicDto> playerCharacteristics;
 

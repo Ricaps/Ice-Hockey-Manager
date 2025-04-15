@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -32,6 +33,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 	@Value("${server.database.seed:false}")
 	private boolean shouldSeed;
 
+	@Value("${server.database.clear:false}")
+	private boolean shouldClear;
+
 	@Autowired
 	public DatabaseSeeder(ChampionshipRegionRepository championshipRegionRepository,
 			ChampionshipRepository championshipRepository, TeamRepository teamRepository,
@@ -44,10 +48,15 @@ public class DatabaseSeeder implements CommandLineRunner {
 	}
 
 	@Override
+	@Transactional
 	public void run(String... args) {
 		if (!shouldSeed) {
 			LOGGER.info("Database seeding is disabled. Skipping seeding...");
 			return;
+		}
+
+		if (shouldClear) {
+			clearData();
 		}
 
 		LOGGER.info("Database seeding started");
@@ -59,6 +68,17 @@ public class DatabaseSeeder implements CommandLineRunner {
 		seedPlayerCharacteristics();
 
 		LOGGER.info("Database seeding ended");
+	}
+
+	@Transactional
+	public void clearData() {
+		LOGGER.info("Clearing database...");
+		playerCharacteristicRepository.deleteAll();
+		playerRepository.deleteAll();
+		teamRepository.deleteAll();
+		championshipRepository.deleteAll();
+		championshipRegionRepository.deleteAll();
+		LOGGER.info("Clearing database finished.");
 	}
 
 	private void seedChampionshipRegions() {

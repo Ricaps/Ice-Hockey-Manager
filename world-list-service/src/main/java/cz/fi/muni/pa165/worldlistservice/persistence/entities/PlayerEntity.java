@@ -30,6 +30,9 @@ public class PlayerEntity extends BaseEntity implements Identifiable {
 	@Column
 	long marketValue;
 
+	@Column(nullable = false)
+	boolean used;
+
 	@ManyToOne
 	@JoinColumn
 	TeamEntity team;

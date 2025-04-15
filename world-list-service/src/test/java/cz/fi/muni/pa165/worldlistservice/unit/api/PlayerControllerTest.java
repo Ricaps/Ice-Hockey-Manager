@@ -42,7 +42,6 @@ public class PlayerControllerTest {
 	private final PlayerCreateDto createModel = PlayerCreateDto.builder()
 		.firstName("Player First")
 		.lastName("Player Last")
-		.overallRating(85)
 		.teamId(UUID.randomUUID())
 		.playerCharacteristicsIds(Set.of(UUID.randomUUID()))
 		.build();
@@ -51,7 +50,6 @@ public class PlayerControllerTest {
 		.id(testPlayerId)
 		.firstName("Player First")
 		.lastName("Player Last")
-		.overallRating(85)
 		.teamId(UUID.randomUUID())
 		.playerCharacteristicsIds(Set.of(UUID.randomUUID()))
 		.build();

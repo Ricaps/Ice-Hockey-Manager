@@ -23,4 +23,6 @@ public class PlayerListDto extends BaseDto implements Identifiable {
 
 	long marketValue;
 
+	boolean used;
+
 }

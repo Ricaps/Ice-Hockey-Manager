@@ -55,9 +55,9 @@ public class PlayerMapperTest {
 
 		PlayerDetailDto.builder().firstName("John").lastName("Doe").overallRating(85).build();
 
-		playerUpdateDto = PlayerUpdateDto.builder().firstName("John").lastName("Doe").overallRating(85).build();
+		playerUpdateDto = PlayerUpdateDto.builder().firstName("John").lastName("Doe").build();
 
-		playerCreateDto = PlayerCreateDto.builder().firstName("John").lastName("Doe").overallRating(85).build();
+		playerCreateDto = PlayerCreateDto.builder().firstName("John").lastName("Doe").build();
 	}
 
 	@Test
@@ -93,7 +93,6 @@ public class PlayerMapperTest {
 		assertNotNull(result);
 		assertEquals(playerCreateDto.getFirstName(), result.getFirstName());
 		assertEquals(playerCreateDto.getLastName(), result.getLastName());
-		assertEquals(playerCreateDto.getOverallRating(), result.getOverallRating());
 	}
 
 	@Test
@@ -105,7 +104,6 @@ public class PlayerMapperTest {
 		assertNotNull(result);
 		assertEquals(playerUpdateDto.getFirstName(), result.getFirstName());
 		assertEquals(playerUpdateDto.getLastName(), result.getLastName());
-		assertEquals(playerUpdateDto.getOverallRating(), result.getOverallRating());
 	}
 
 	@Test

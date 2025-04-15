@@ -140,7 +140,7 @@ public class TeamFacadeTest {
 			.name("Test Team")
 			.championship(ChampionshipEntity.builder().id(testChampionshipId).build())
 			.teamPlayers(new HashSet<>(Collections.singletonList(
-					new PlayerEntity(testPlayerId, "Player First", "Player Last", 80, 1000, null, Set.of()))))
+					new PlayerEntity(testPlayerId, "Player First", "Player Last", 80, 1000, false, null, Set.of()))))
 			.build();
 
 		when(teamService.findById(testTeamId)).thenReturn(Optional.of(entity));

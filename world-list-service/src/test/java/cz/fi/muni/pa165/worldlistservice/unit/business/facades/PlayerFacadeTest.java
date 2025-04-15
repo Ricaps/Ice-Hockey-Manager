@@ -41,7 +41,6 @@ public class PlayerFacadeTest {
 	private final PlayerCreateDto createModel = PlayerCreateDto.builder()
 		.firstName("Player First")
 		.lastName("Player Last")
-		.overallRating(85)
 		.teamId(testTeamId)
 		.playerCharacteristicsIds(Set.of(testCharacteristicId))
 		.build();
@@ -50,7 +49,6 @@ public class PlayerFacadeTest {
 		.id(testPlayerId)
 		.firstName("Player First")
 		.lastName("Player Last")
-		.overallRating(85)
 		.teamId(testTeamId)
 		.playerCharacteristicsIds(Set.of(testCharacteristicId))
 		.build();
@@ -97,6 +95,7 @@ public class PlayerFacadeTest {
 		when(teamService.findById(testTeamId)).thenReturn(Optional.of(teamEntity));
 		when(playerCharacteristicService.findById(testCharacteristicId)).thenReturn(Optional.of(characteristicEntity));
 		when(mapper.toEntityFromCreateModel(createModel)).thenReturn(new PlayerEntity());
+		when(playerService.updateRating(any(PlayerEntity.class))).thenReturn(new PlayerEntity());
 		when(playerService.create(any(PlayerEntity.class))).thenReturn(new PlayerEntity());
 		when(mapper.toDetailModel(any(PlayerEntity.class))).thenReturn(detailModel);
 
@@ -189,6 +188,7 @@ public class PlayerFacadeTest {
 		when(teamService.findById(testTeamId)).thenReturn(Optional.of(teamEntity));
 		when(playerCharacteristicService.findById(testCharacteristicId)).thenReturn(Optional.of(characteristicEntity));
 		when(mapper.toEntityFromUpdateModel(updateModel)).thenReturn(new PlayerEntity());
+		when(playerService.updateRating(any(PlayerEntity.class))).thenReturn(new PlayerEntity());
 		when(playerService.update(any(PlayerEntity.class))).thenReturn(new PlayerEntity());
 		when(mapper.toDetailModel(any(PlayerEntity.class))).thenReturn(detailModel);
 
@@ -263,7 +263,7 @@ public class PlayerFacadeTest {
 		// Arrange
 		Pageable pageable = mock(Pageable.class);
 		Page<PlayerEntity> entityPage = new PageImpl<>(List
-			.of(new PlayerEntity(testPlayerId, "Player First", "Player Last", 85, 1000, null, new HashSet<>())));
+			.of(new PlayerEntity(testPlayerId, "Player First", "Player Last", 85, 1000, false, null, new HashSet<>())));
 		Page<PlayerListDto> modelPage = new PageImpl<>(List.of(listModel));
 
 		when(playerService.findAll(pageable)).thenReturn(entityPage);

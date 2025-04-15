@@ -104,7 +104,7 @@ class PlayerControllerIT {
 	void createPlayer_validData_shouldCreatePlayer() throws Exception {
 		var playerTeam = teamRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FName", "LName", 10, 10, playerTeam.getId(),
+		var createDto = new PlayerCreateDto("FName", "LName", 10, playerTeam.getId(), false,
 				Set.of(playerCharacteristic.getId()));
 
 		mockMvc
@@ -113,7 +113,6 @@ class PlayerControllerIT {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.firstName").value(createDto.getFirstName()))
 			.andExpect(jsonPath("$.lastName").value(createDto.getLastName()))
-			.andExpect(jsonPath("$.overallRating").value(createDto.getOverallRating()))
 			.andExpect(jsonPath("$.marketValue").value(createDto.getMarketValue()))
 			.andExpect(jsonPath("$.team.id").value(createDto.getTeamId().toString()))
 			.andExpect(jsonPath("$.playerCharacteristics").isArray())
@@ -127,7 +126,7 @@ class PlayerControllerIT {
 	@Test
 	void createPlayer_nonExistentTeam_shouldReturnNotFound() throws Exception {
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("Test", "Team", 10, 10, UUID.randomUUID(),
+		var createDto = new PlayerCreateDto("Test", "Team", 10, UUID.randomUUID(), false,
 				Set.of(playerCharacteristic.getId()));
 
 		mockMvc
@@ -141,7 +140,7 @@ class PlayerControllerIT {
 	@Test
 	void createPlayer_nonExistentPlayerCharacteristic_shouldReturnNotFound() throws Exception {
 		var team = teamRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("Test", "Team", 10, 10, team.getId(), Set.of(UUID.randomUUID()));
+		var createDto = new PlayerCreateDto("Test", "Team", 10, team.getId(), false, Set.of(UUID.randomUUID()));
 
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +154,7 @@ class PlayerControllerIT {
 	void createPlayer_firstNameTooShort_shouldReturnBadRequest() throws Exception {
 		var playerTeam = teamRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FN", "LName", 10, 10, playerTeam.getId(),
+		var createDto = new PlayerCreateDto("FN", "LName", 10, playerTeam.getId(), false,
 				Set.of(playerCharacteristic.getId()));
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +167,7 @@ class PlayerControllerIT {
 	void createPlayer_lastNameTooShort_shouldReturnBadRequest() throws Exception {
 		var playerTeam = teamRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FName", "LN", 10, 10, playerTeam.getId(),
+		var createDto = new PlayerCreateDto("FName", "LN", 10, playerTeam.getId(), false,
 				Set.of(playerCharacteristic.getId()));
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +180,7 @@ class PlayerControllerIT {
 	void createPlayer_firstNameTooLong_shouldReturnBadRequest() throws Exception {
 		var playerTeam = teamRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FN".repeat(200), "LName", 10, 10, playerTeam.getId(),
+		var createDto = new PlayerCreateDto("FN".repeat(200), "LName", 10, playerTeam.getId(), false,
 				Set.of(playerCharacteristic.getId()));
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -194,7 +193,7 @@ class PlayerControllerIT {
 	void createPlayer_lastNameTooLong_shouldReturnBadRequest() throws Exception {
 		var playerTeam = teamRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FName", "LN".repeat(200), 10, 10, playerTeam.getId(),
+		var createDto = new PlayerCreateDto("FName", "LN".repeat(200), 10, playerTeam.getId(), false,
 				Set.of(playerCharacteristic.getId()));
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -206,7 +205,7 @@ class PlayerControllerIT {
 	@Test
 	void createPlayer_teamNull_shouldCreatePlayer() throws Exception {
 		var playerCharacteristic = playerCharacteristicRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("FName", "LName", 10, 10, null, Set.of(playerCharacteristic.getId()));
+		var createDto = new PlayerCreateDto("FName", "LName", 10, null, false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -214,7 +213,6 @@ class PlayerControllerIT {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.firstName").value(createDto.getFirstName()))
 			.andExpect(jsonPath("$.lastName").value(createDto.getLastName()))
-			.andExpect(jsonPath("$.overallRating").value(createDto.getOverallRating()))
 			.andExpect(jsonPath("$.marketValue").value(createDto.getMarketValue()))
 			.andExpect(jsonPath("$.playerCharacteristics").isArray())
 			.andExpect(
@@ -227,7 +225,7 @@ class PlayerControllerIT {
 	@Test
 	void createPlayer_playerCharacteristicsNull_shouldReturnBadRequest() throws Exception {
 		var team = teamRepository.findAll().getFirst();
-		var createDto = new PlayerCreateDto("Test", "Team", 10, 10, team.getId(), null);
+		var createDto = new PlayerCreateDto("Test", "Team", 10, team.getId(), false, null);
 
 		mockMvc
 			.perform(post("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -250,8 +248,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10,
+				existingPlayer.getTeam().getId(), false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -260,7 +258,6 @@ class PlayerControllerIT {
 			.andExpect(jsonPath("$.id").value(existingPlayer.getId().toString()))
 			.andExpect(jsonPath("$.firstName").value(updateDto.getFirstName()))
 			.andExpect(jsonPath("$.lastName").value(updateDto.getLastName()))
-			.andExpect(jsonPath("$.overallRating").value(updateDto.getOverallRating()))
 			.andExpect(jsonPath("$.marketValue").value(updateDto.getMarketValue()))
 			.andExpect(jsonPath("$.team.id").value(updateDto.getTeamId().toString()))
 			.andExpect(jsonPath("$.playerCharacteristics").isArray())
@@ -276,8 +273,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(UUID.randomUUID(), "Test", "Player", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(UUID.randomUUID(), "Test", "Player", 10, existingPlayer.getTeam().getId(),
+				false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -292,7 +289,7 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, 10, UUID.randomUUID(),
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, UUID.randomUUID(), false,
 				Set.of(playerCharacteristic.getId()));
 
 		mockMvc
@@ -307,8 +304,8 @@ class PlayerControllerIT {
 	void updatePlayer_nonExistentPlayerCharacteristic_shouldReturnNotFound() throws Exception {
 		var existingPlayer = playerRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(UUID.randomUUID()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10,
+				existingPlayer.getTeam().getId(), false, Set.of(UUID.randomUUID()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -323,8 +320,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Te", "Player", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Te", "Player", 10,
+				existingPlayer.getTeam().getId(), false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -339,8 +336,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Pl", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Pl", 10, existingPlayer.getTeam().getId(),
+				false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -355,8 +352,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test".repeat(200), "Player", 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test".repeat(200), "Player", 10,
+				existingPlayer.getTeam().getId(), false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -370,8 +367,8 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player".repeat(200), 10, 10,
-				existingPlayer.getTeam().getId(), Set.of(playerCharacteristic.getId()));
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player".repeat(200), 10,
+				existingPlayer.getTeam().getId(), false, Set.of(playerCharacteristic.getId()));
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)
@@ -385,7 +382,7 @@ class PlayerControllerIT {
 		var existingPlayer = playerRepository.findAll().get(1);
 		var playerCharacteristic = playerCharacteristicRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, 10, null,
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, null, false,
 				Set.of(playerCharacteristic.getId()));
 
 		mockMvc
@@ -395,7 +392,6 @@ class PlayerControllerIT {
 			.andExpect(jsonPath("$.id").value(existingPlayer.getId().toString()))
 			.andExpect(jsonPath("$.firstName").value(updateDto.getFirstName()))
 			.andExpect(jsonPath("$.lastName").value(updateDto.getLastName()))
-			.andExpect(jsonPath("$.overallRating").value(updateDto.getOverallRating()))
 			.andExpect(jsonPath("$.marketValue").value(updateDto.getMarketValue()))
 			.andExpect(jsonPath("$.playerCharacteristics").isArray())
 			.andExpect(
@@ -409,8 +405,8 @@ class PlayerControllerIT {
 	void updatePlayer_playerCharacteristicsNull_shouldReturnBadRequest() throws Exception {
 		var existingPlayer = playerRepository.findAll().get(1);
 
-		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10, 10,
-				existingPlayer.getTeam().getId(), null);
+		var updateDto = new PlayerUpdateDto(existingPlayer.getId(), "Test", "Player", 10,
+				existingPlayer.getTeam().getId(), false, null);
 
 		mockMvc
 			.perform(put("/v1/players/").contentType(MediaType.APPLICATION_JSON)

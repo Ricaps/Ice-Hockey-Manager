@@ -106,16 +106,12 @@ public class PlayerCharacteristicFacadeTest {
 
 	@Test
 	public void create_nullModel_throwsValueIsMissingException() {
-		// Arrange
-		when(mapper.toEntityFromCreateModel(null)).thenReturn(null);
-		when(service.create(null)).thenThrow(new ValueIsMissingException(""));
-
 		// Act & Assert
 		assertThrows(ValueIsMissingException.class, () -> facade.create(null));
 
 		// Verify
-		verify(mapper).toEntityFromCreateModel(null);
-		verify(service).create(null);
+		verify(mapper, never()).toEntityFromCreateModel(null);
+		verify(service, never()).create(null);
 		verify(mapper, never()).toDetailModel(any());
 	}
 
@@ -139,16 +135,12 @@ public class PlayerCharacteristicFacadeTest {
 
 	@Test
 	public void update_nullModel_throwsValueIsMissingException() {
-		// Arrange
-		when(mapper.toEntityFromUpdateModel(null)).thenReturn(null);
-		when(service.update(null)).thenThrow(new ValueIsMissingException(""));
-
 		// Act & Assert
 		assertThrows(ValueIsMissingException.class, () -> facade.update(null));
 
 		// Verify
-		verify(mapper).toEntityFromUpdateModel(null);
-		verify(service).update(null);
+		verify(mapper, never()).toEntityFromUpdateModel(null);
+		verify(service, never()).update(null);
 		verify(mapper, never()).toDetailModel(any());
 	}
 

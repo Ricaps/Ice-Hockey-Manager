@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1744291711796-1" author="matej">
+    <changeSet id="1744561498318-1" author="matej">
         <createTable tableName="championship_entity">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_championshipentity"/>
@@ -14,7 +14,7 @@
             <column name="championship_region_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1744291711796-2" author="matej">
+    <changeSet id="1744561498318-2" author="matej">
         <createTable tableName="championship_region_entity">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_championshipregionentity"/>
@@ -23,7 +23,7 @@
             <column name="type" type="SMALLINT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1744291711796-3" author="matej">
+    <changeSet id="1744561498318-3" author="matej">
         <createTable tableName="player_characteristic_entity">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_playercharacteristicentity"/>
@@ -33,7 +33,7 @@
             <column name="player_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1744291711796-4" author="matej">
+    <changeSet id="1744561498318-4" author="matej">
         <createTable tableName="player_entity">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_playerentity"/>
@@ -42,10 +42,13 @@
             <column name="last_name" type="VARCHAR(255)"/>
             <column name="overall_rating" type="INT"/>
             <column name="market_value" type="BIGINT"/>
+            <column name="used" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="team_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1744291711796-5" author="matej">
+    <changeSet id="1744561498318-5" author="matej">
         <createTable tableName="team_entity">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_teamentity"/>
@@ -54,22 +57,22 @@
             <column name="championship_id" type="UUID"/>
         </createTable>
     </changeSet>
-    <changeSet id="1744291711796-6" author="matej">
+    <changeSet id="1744561498318-6" author="matej">
         <addForeignKeyConstraint baseColumnNames="championship_region_id" baseTableName="championship_entity"
                                  constraintName="FK_CHAMPIONSHIPENTITY_ON_CHAMPIONSHIPREGION" referencedColumnNames="id"
                                  referencedTableName="championship_region_entity"/>
     </changeSet>
-    <changeSet id="1744291711796-7" author="matej">
+    <changeSet id="1744561498318-7" author="matej">
         <addForeignKeyConstraint baseColumnNames="player_id" baseTableName="player_characteristic_entity"
                                  constraintName="FK_PLAYERCHARACTERISTICENTITY_ON_PLAYER" referencedColumnNames="id"
                                  referencedTableName="player_entity"/>
     </changeSet>
-    <changeSet id="1744291711796-8" author="matej">
+    <changeSet id="1744561498318-8" author="matej">
         <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="player_entity"
                                  constraintName="FK_PLAYERENTITY_ON_TEAM" referencedColumnNames="id"
                                  referencedTableName="team_entity"/>
     </changeSet>
-    <changeSet id="1744291711796-9" author="matej">
+    <changeSet id="1744561498318-9" author="matej">
         <addForeignKeyConstraint baseColumnNames="championship_id" baseTableName="team_entity"
                                  constraintName="FK_TEAMENTITY_ON_CHAMPIONSHIP" referencedColumnNames="id"
                                  referencedTableName="championship_entity"/>

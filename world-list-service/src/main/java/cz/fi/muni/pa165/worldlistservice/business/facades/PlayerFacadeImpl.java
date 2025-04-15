@@ -57,6 +57,8 @@ public class PlayerFacadeImpl
 		playerEntity.setPlayerCharacteristics(playerCharacteristics);
 		playerEntity.setTeam(playerTeam);
 
+		playerEntity = ((PlayerService) service).updateRating(playerEntity);
+
 		var createdEntity = service.create(playerEntity);
 
 		logger.info("Created Player with name {} {}", model.getFirstName(), model.getLastName());
@@ -77,6 +79,8 @@ public class PlayerFacadeImpl
 		var playerEntity = mapper.toEntityFromUpdateModel(model);
 		playerEntity.setTeam(playerTeam);
 		playerEntity.setPlayerCharacteristics(playerCharacteristics);
+
+		playerEntity = ((PlayerService) service).updateRating(playerEntity);
 
 		var updatedEntity = service.update(playerEntity);
 

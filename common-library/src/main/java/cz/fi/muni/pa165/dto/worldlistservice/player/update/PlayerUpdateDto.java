@@ -30,13 +30,12 @@ public class PlayerUpdateDto extends BaseDto implements Identifiable {
 	@NotNull(message = "Last name cannot be null")
 	String lastName;
 
-	@Min(value = 1, message = "Overall rating has to be greater than 0")
-	int overallRating;
-
 	@Min(value = 0, message = "Market value cannot be negative")
 	long marketValue;
 
 	UUID teamId;
+
+	boolean used;
 
 	@NotEmpty(message = "Player characteristics cannot be empty")
 	@NotNull(message = "Player characteristics cannot be null")
