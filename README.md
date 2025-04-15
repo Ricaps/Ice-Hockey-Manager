@@ -10,14 +10,20 @@ sold based on the financial availability of teams.
 
 ## How to run
 
-Since the services have **externalized** configuration, you must include the path to the configuration in run command.
+### Locally
+
+How to run each service separately:
 
 1. Run `mvn clean install` in the root directory.
-2. Then for each service, go to its sub-folder (e.g. `cd game-service`) and run:
-   1. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/world-list-service.yaml"`
-   2. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/team-service.yaml"`
-   3. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/game-service.yaml"`
-   4. `mvn spring-boot:run -Dspring-boot.run.arguments="--spring.config.location=file:../etc/user-service.yaml"`
+2. Then for each service, go to its sub-folder (e.g. `cd game-service`) and use `mvn spring-boot:run`.
+
+### In docker
+
+Run following command in the terminal:
+
+```bash
+docker compose up -d
+```
 
 ## Microservices
 

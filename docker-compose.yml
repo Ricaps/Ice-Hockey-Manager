@@ -1,0 +1,49 @@
+services:
+  world-list-service:
+    build:
+      args:
+        - SERVICE_NAME=world-list-service
+    ports:
+      - "8080:8080"
+    volumes:
+      - configs:/app/etc
+  team-service:
+    build:
+      args:
+        - SERVICE_NAME=team-service
+    ports:
+      - "8081:8081"
+    volumes:
+      - configs:/app/etc
+  game-service:
+    build:
+      args:
+        - SERVICE_NAME=game-service
+    ports:
+      - "8082:8082"
+    volumes:
+      - configs:/app/etc
+  user-service:
+    build:
+      args:
+        - SERVICE_NAME=user-service
+    ports:
+      - "8083:8083"
+    volumes:
+      - configs:/app/etc
+  artemis:
+    image: apache/activemq-artemis:latest-alpine
+    environment:
+      - ARTEMIS_USER=artemis
+      - ARTEMIS_PASSWORD=artemis
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+
+volumes:
+  configs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./etc

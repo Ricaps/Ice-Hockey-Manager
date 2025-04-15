@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jms.core.JmsTemplate;
 
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -34,6 +35,9 @@ class GameServiceTest {
 
 	@Mock
 	SchedulingConfiguration schedulingConfiguration;
+
+	@Mock
+	JmsTemplate ignoredJmsTemplate;
 
 	@InjectMocks
 	GameService gameService;

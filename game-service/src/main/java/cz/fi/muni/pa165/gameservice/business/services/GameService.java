@@ -8,6 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +31,16 @@ public class GameService {
 
 	private final SchedulingConfiguration schedulingConfiguration;
 
+	private final JmsTemplate jmsTemplate;
+
 	@Autowired
 	public GameService(MatchService matchService, TaskSchedulerService taskSchedulerService, Random random,
-			SchedulingConfiguration schedulingConfiguration) {
+			SchedulingConfiguration schedulingConfiguration, @Qualifier("topicJmsTemplate") JmsTemplate jmsTemplate) {
 		this.matchService = matchService;
 		this.taskSchedulerService = taskSchedulerService;
 		this.random = random;
 		this.schedulingConfiguration = schedulingConfiguration;
+		this.jmsTemplate = jmsTemplate;
 	}
 
 	@Scheduled(fixedRateString = "${tasks.schedule.fetch-interval}", timeUnit = TimeUnit.SECONDS)
@@ -78,6 +84,8 @@ public class GameService {
 				.winnerTeam(winnerTeam)
 				.build();
 			matchService.publishResult(result, match);
+			jmsTemplate.convertAndSend("test-queue", result); // TODO: just placeholder,
+																// will be removed
 			LOGGER.debug("Ended match {}", match.getGuid());
 		};
 	}
@@ -89,6 +97,15 @@ public class GameService {
 	 */
 	private int getRandomScore() {
 		return random.nextInt(0, 5);
+	}
+
+	/**
+	 * TODO: Just placeholder, will be removed
+	 * @param result
+	 */
+	@JmsListener(destination = "test-queue", containerFactory = "topicListenerFactory")
+	public void receiveMessage(Result result) {
+		System.out.println("Received: " + result);
 	}
 
 }

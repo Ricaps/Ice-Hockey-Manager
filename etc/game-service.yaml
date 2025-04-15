@@ -1,41 +1,5 @@
-# Servlet configuration
-spring:
-  application:
-    name: game-service
-  threads:
-    virtual:
-      enabled: true
-server:
-  servlet:
-    context-path: /api
-  port: 8082
-  error:
-    include-stacktrace: never
-# JPA and Hibernate configuration
-spring.datasource:
-  url: jdbc:h2:file:./data/game-service
-spring.jpa:
-  hibernate:
-    ddl-auto: create-drop
-  show-sql: false
-  properties:
-    hibernate:
-      format_sql: false
-# Seed configuration
-seed:
-  enabled: true
-  included: cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed
-# Logging
+# Externalized configuration prepared for the docker
+spring.artemis:
+  broker-url: tcp://artemis:61616
 logging:
-  logback:
-    rollingpolicy:
-      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
-      max-file-size: 20MB
-  file:
-    name: "logs/game-service.log"
-  level.cz.fi.muni.pa165: DEBUG
-tasks:
-  schedule:
-    offset:
-      match-schedule-offset: 1
-    fetch-interval: 60
+  level.cz.fi.muni.pa165: INFO
