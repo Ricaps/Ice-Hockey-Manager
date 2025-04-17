@@ -7,7 +7,7 @@ public interface Seed<T> {
 	/**
 	 * Saves the seeded data into the database
 	 */
-	void runSeed();
+	void runSeed(boolean logData);
 
 	/**
 	 * Returns seeded data. Returned values are values that were persisted in the database

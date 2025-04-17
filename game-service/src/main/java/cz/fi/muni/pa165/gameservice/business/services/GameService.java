@@ -1,22 +1,27 @@
 package cz.fi.muni.pa165.gameservice.business.services;
 
+import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
+import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
+import cz.fi.muni.pa165.gameservice.business.messages.MatchMessageResolver;
 import cz.fi.muni.pa165.gameservice.config.SchedulingConfiguration;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Match;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Result;
+import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class GameService {
@@ -31,16 +36,20 @@ public class GameService {
 
 	private final SchedulingConfiguration schedulingConfiguration;
 
-	private final JmsTemplate jmsTemplate;
+	private final MatchMessageResolver matchMessageResolver;
+
+	private final TeamCharacteristicController teamCharacteristicController;
 
 	@Autowired
 	public GameService(MatchService matchService, TaskSchedulerService taskSchedulerService, Random random,
-			SchedulingConfiguration schedulingConfiguration, @Qualifier("topicJmsTemplate") JmsTemplate jmsTemplate) {
+			SchedulingConfiguration schedulingConfiguration, MatchMessageResolver matchMessageResolver,
+			TeamCharacteristicController teamCharacteristicController) {
 		this.matchService = matchService;
 		this.taskSchedulerService = taskSchedulerService;
 		this.random = random;
 		this.schedulingConfiguration = schedulingConfiguration;
-		this.jmsTemplate = jmsTemplate;
+		this.matchMessageResolver = matchMessageResolver;
+		this.teamCharacteristicController = teamCharacteristicController;
 	}
 
 	@Scheduled(fixedRateString = "${tasks.schedule.fetch-interval}", timeUnit = TimeUnit.SECONDS)
@@ -71,8 +80,8 @@ public class GameService {
 				LOGGER.error("Running match {} failed", match.getGuid(), e);
 			}
 
-			var scoreHomeTeam = getRandomScore();
-			var scoreAwayTeam = getRandomScore();
+			var scoreHomeTeam = getRandomScore(match.getHomeTeamUid());
+			var scoreAwayTeam = getRandomScore(match.getAwayTeamUid());
 			UUID winnerTeam = null;
 			if (scoreHomeTeam != scoreAwayTeam) {
 				winnerTeam = scoreHomeTeam < scoreAwayTeam ? match.getAwayTeamUid() : match.getHomeTeamUid();
@@ -83,29 +92,54 @@ public class GameService {
 				.scoreAwayTeam(scoreAwayTeam)
 				.winnerTeam(winnerTeam)
 				.build();
-			matchService.publishResult(result, match);
-			jmsTemplate.convertAndSend("test-queue", result); // TODO: just placeholder,
-																// will be removed
+			var savedMatch = matchService.publishResult(result, match);
+
+			matchMessageResolver.sendMatchEndedTopic(savedMatch);
 			LOGGER.debug("Ended match {}", match.getGuid());
 		};
 	}
 
 	/**
-	 * TODO: Will be replaced with randomization based on team characteristics when the
-	 * services are connected
+	 * Gets teams characteristics from TeamService and computes goals using simple
+	 * randomization
 	 * @return random score
 	 */
-	private int getRandomScore() {
-		return random.nextInt(0, 5);
+	private int getRandomScore(UUID homeTeam) {
+		var teamChars = teamCharacteristicController.findByTeamId(homeTeam);
+
+		if (teamChars == null || teamChars.isEmpty()) {
+			LOGGER.error("Failed to fetch teams characteristics. Falling back to the simple randomization...");
+			return random.nextInt(0, 5);
+		}
+
+		LOGGER.debug("Received team characteristics {}", teamChars);
+		var characteristics = convertCharacteristicsToMap(teamChars);
+		var performance = getTeamAverage(characteristics) + getRandomNoise();
+		performance = Math.max(0, performance);
+
+		return (int) Math.round(performance * 0.1);
+	}
+
+	private double getRandomNoise() {
+		return random.nextGaussian() * 10;
+	}
+
+	private Map<TeamCharacteristicType, Integer> convertCharacteristicsToMap(
+			List<TeamCharacteristicDTO> characteristicDTOList) {
+		return characteristicDTOList.stream()
+			.collect(Collectors.toMap(TeamCharacteristicDTO::getCharacteristicType,
+					TeamCharacteristicDTO::getCharacteristicValue));
 	}
 
 	/**
-	 * TODO: Just placeholder, will be removed
-	 * @param result
+	 * Uses team characteristics to compute average
+	 * @return double representing team characteristics
 	 */
-	@JmsListener(destination = "test-queue", containerFactory = "topicListenerFactory")
-	public void receiveMessage(Result result) {
-		System.out.println("Received: " + result);
+	private double getTeamAverage(Map<TeamCharacteristicType, Integer> characteristicMap) {
+		return Stream.of(TeamCharacteristicType.values())
+			.mapToInt(value -> characteristicMap.getOrDefault(value, 0))
+			.average()
+			.orElse(0);
 	}
 
 }

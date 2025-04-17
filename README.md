@@ -87,3 +87,9 @@ roles (Player, Admin, etc...). The service will also serve as authentication ser
 ### User Service
 
 ![user-service-dtos.png](docs/diagrams/class/user-service-dtos.png)
+
+# GenAI usage
+
+## Game service
+
+- Gen AI was used for generating random data for database seeders.

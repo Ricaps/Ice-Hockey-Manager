@@ -5,6 +5,7 @@ import cz.fi.muni.pa165.gameservice.persistence.repositories.ArenaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@Order(1)
 public class ArenaSeed implements Seed<Arena> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ArenaSeed.class);
@@ -26,14 +28,21 @@ public class ArenaSeed implements Seed<Arena> {
 	}
 
 	@Override
-	public void runSeed() {
+	public void runSeed(boolean logData) {
+		if (arenaRepository.count() != 0) {
+			LOGGER.info("Arena entities are already seeded. Skipping...");
+			return;
+		}
+
 		List<Arena> arenas = new ArrayList<>(getTemplateData());
 		for (var arena : arenas) {
 			arena.setGuid(null);
 		}
 
 		data = arenaRepository.saveAll(arenas);
-		LOGGER.debug("Seeded data: {}", data);
+		if (logData) {
+			LOGGER.debug("Seeded data: {}", data);
+		}
 	}
 
 	public static List<Arena> getTemplateData() {

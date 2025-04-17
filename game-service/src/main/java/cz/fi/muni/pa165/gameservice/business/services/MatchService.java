@@ -102,7 +102,7 @@ public class MatchService {
 	}
 
 	@Transactional
-	public void publishResult(@NotNull Result result, @NotNull Match match) {
+	public Match publishResult(@NotNull Result result, @NotNull Match match) {
 		ValidationHelper.requireNonNull(result, "Please provide result for publishing");
 		ValidationHelper.requireNonNull(match, "Please provide match");
 
@@ -111,7 +111,7 @@ public class MatchService {
 		match.setResult(returnedResult);
 		var zonedID = match.getStartAt().getZone();
 		match.setEndAt(ZonedDateTime.now(zonedID));
-		matchRepository.save(match);
+		return matchRepository.save(match);
 	}
 
 }

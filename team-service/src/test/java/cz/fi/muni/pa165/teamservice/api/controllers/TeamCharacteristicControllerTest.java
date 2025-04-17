@@ -41,7 +41,7 @@ public class TeamCharacteristicControllerTest {
 	private TeamCharacteristicFacade teamCharacteristicFacade;
 
 	@InjectMocks
-	private TeamCharacteristicController teamCharacteristicController;
+	private TeamCharacteristicControllerImpl teamCharacteristicController;
 
 	private TeamCharacteristicDTO characteristicDTO;
 

@@ -1,9 +1,11 @@
 package cz.fi.muni.pa165.gameservice.business.services;
 
 import cz.fi.muni.pa165.gameservice.api.exception.ValueIsMissingException;
+import cz.fi.muni.pa165.gameservice.business.messages.MatchMessageResolver;
 import cz.fi.muni.pa165.gameservice.config.SchedulingConfiguration;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Result;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
+import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +41,12 @@ class GameServiceTest {
 	@Mock
 	JmsTemplate ignoredJmsTemplate;
 
+	@Mock
+	TeamCharacteristicController teamCharacteristicController;
+
+	@Mock
+	MatchMessageResolver matchMessageResolver;
+
 	@InjectMocks
 	GameService gameService;
 
@@ -63,12 +71,6 @@ class GameServiceTest {
 	@Test
 	void runMatch_sameScore_noWinner() {
 		var match = MatchTestData.getRandomMatches().stream().toList().getFirst();
-
-		Mockito.when(random.nextInt(Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
-		Mockito.when(schedulingConfiguration.getMatchSleepPlaceholder()).thenReturn(100);
-
-		gameService.runMatch(match).run();
-
 		var expectedResult = Result.builder()
 			.matchGuid(match.getGuid())
 			.scoreAwayTeam(1)
@@ -76,7 +78,14 @@ class GameServiceTest {
 			.winnerTeam(null)
 			.build();
 
+		Mockito.when(random.nextInt(Mockito.anyInt(), Mockito.anyInt())).thenReturn(1);
+		Mockito.when(schedulingConfiguration.getMatchSleepPlaceholder()).thenReturn(100);
+		Mockito.when(matchService.publishResult(expectedResult, match)).thenReturn(match);
+
+		gameService.runMatch(match).run();
+
 		Mockito.verify(matchService, Mockito.times(1)).publishResult(expectedResult, match);
+		Mockito.verify(matchMessageResolver, Mockito.times(1)).sendMatchEndedTopic(match);
 	}
 
 	@Test

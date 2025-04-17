@@ -1,6 +1,9 @@
 package cz.fi.muni.pa165.gameservice.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.jms.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +24,8 @@ public class JmsConfig {
 
 	@Bean
 	@Primary
-	public JmsTemplate queueJmsTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+	public JmsTemplate queueJmsTemplate(@Qualifier("jmsConnectionFactory") ConnectionFactory connectionFactory,
+			MessageConverter messageConverter) {
 		JmsTemplate template = new JmsTemplate(connectionFactory);
 		template.setPubSubDomain(false);
 		template.setMessageConverter(messageConverter);
@@ -29,7 +33,8 @@ public class JmsConfig {
 	}
 
 	@Bean
-	public JmsTemplate topicJmsTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+	public JmsTemplate topicJmsTemplate(@Qualifier("jmsConnectionFactory") ConnectionFactory connectionFactory,
+			MessageConverter messageConverter) {
 		JmsTemplate template = new JmsTemplate(connectionFactory);
 		template.setPubSubDomain(true);
 		template.setMessageConverter(messageConverter);
@@ -38,8 +43,8 @@ public class JmsConfig {
 
 	@Bean
 	@Primary
-	public DefaultJmsListenerContainerFactory queueListenerFactory(ConnectionFactory connectionFactory,
-			MessageConverter messageConverter) {
+	public DefaultJmsListenerContainerFactory queueListenerFactory(
+			@Qualifier("jmsConnectionFactory") ConnectionFactory connectionFactory, MessageConverter messageConverter) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(false);
@@ -50,8 +55,8 @@ public class JmsConfig {
 	}
 
 	@Bean
-	public DefaultJmsListenerContainerFactory topicListenerFactory(ConnectionFactory connectionFactory,
-			MessageConverter messageConverter) {
+	public DefaultJmsListenerContainerFactory topicListenerFactory(
+			@Qualifier("jmsConnectionFactory") ConnectionFactory connectionFactory, MessageConverter messageConverter) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(true);
@@ -62,7 +67,9 @@ public class JmsConfig {
 
 	@Bean
 	public MessageConverter jacksonJmsMessageConverter() {
-		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(objectMapper);
 		converter.setTargetType(MessageType.TEXT);
 		converter.setTypeIdPropertyName("_json");
 

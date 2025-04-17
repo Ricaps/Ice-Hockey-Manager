@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "competition")
 public class Match {
 
 	@Id

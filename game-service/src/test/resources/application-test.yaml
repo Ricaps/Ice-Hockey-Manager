@@ -5,6 +5,8 @@ spring:
   threads:
     virtual:
       enabled: true
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
 server:
   servlet:
     context-path: /api
@@ -13,10 +15,11 @@ server:
     include-stacktrace: never
 # JPA and Hibernate configuration
 spring.datasource:
-  url: jdbc:h2:file:./data/game-service
+  # Use in memory database for tests so they don't interfere with production database
+  url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
 spring.jpa:
   hibernate:
-    ddl-auto: create-drop
+    ddl-auto: none
   show-sql: false
   properties:
     hibernate:
@@ -24,7 +27,7 @@ spring.jpa:
 # Seed configuration
 seed:
   enabled: true
-  included: cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed
+  log-data: true
 # Logging
 logging:
   level.cz.fi.muni.pa165: DEBUG
@@ -33,3 +36,5 @@ tasks:
     offset:
       match-schedule-offset: 1
     fetch-interval: 60
+services.baseUrl:
+  team-service: http://localhost:8081/api

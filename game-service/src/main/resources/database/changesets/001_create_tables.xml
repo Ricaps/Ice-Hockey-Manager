@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <property name="zonedDateTime.type" value="datetimeoffset" dbms="mssql"/>
+    <property name="zonedDateTime.type" value="timestamp" dbms="h2"/>
+    <changeSet id="1744635623516-1" author="martin">
+        <createTable tableName="arena">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_arena"/>
+            </column>
+            <column name="country_code" type="VARCHAR(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arena_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744635623516-2" author="martin">
+        <createTable tableName="competition">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_competition"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_at" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_at" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744635623516-3" author="martin">
+        <createTable tableName="competition_has_teams">
+            <column name="team_uid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_competition_has_teams"/>
+            </column>
+            <column name="competition_uid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744635623516-4" author="martin">
+        <createTable tableName="match">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_match"/>
+            </column>
+            <column name="competition_uid" type="UUID"/>
+            <column name="arena_uid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_at" type="${zonedDateTime.type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_at" type="${zonedDateTime.type}"/>
+            <column name="home_team_uid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="away_team_uid" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="match_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="result_uid" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744635623516-5" author="martin">
+        <createTable tableName="result">
+            <column name="match_uid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_result"/>
+            </column>
+            <column name="winner_team" type="UUID"/>
+            <column name="score_home_team" type="INT"/>
+            <column name="score_away_team" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744635623516-6" author="martin">
+        <addUniqueConstraint columnNames="result_uid" constraintName="uc_match_result_uid" tableName="match"/>
+    </changeSet>
+    <changeSet id="1744635623516-7" author="martin">
+        <addForeignKeyConstraint baseColumnNames="competition_uid" baseTableName="competition_has_teams"
+                                 constraintName="COMPETITION_TEAMS_FK" referencedColumnNames="guid"
+                                 referencedTableName="competition"/>
+    </changeSet>
+    <changeSet id="1744635623516-8" author="martin">
+        <addForeignKeyConstraint baseColumnNames="arena_uid" baseTableName="match" constraintName="MATCH_ARENA_FK"
+                                 referencedColumnNames="guid" referencedTableName="arena"/>
+    </changeSet>
+    <changeSet id="1744635623516-9" author="martin">
+        <addForeignKeyConstraint baseColumnNames="competition_uid" baseTableName="match"
+                                 constraintName="MATCH_COMPETITION_FK" referencedColumnNames="guid"
+                                 referencedTableName="competition"/>
+    </changeSet>
+    <changeSet id="1744635623516-10" author="martin">
+        <addForeignKeyConstraint baseColumnNames="result_uid" baseTableName="match" constraintName="MATCH_RESULT_FK"
+                                 referencedColumnNames="match_uid" referencedTableName="result"/>
+    </changeSet>
+    <changeSet id="1744635623516-11" author="martin">
+        <addForeignKeyConstraint baseColumnNames="match_uid" baseTableName="result" constraintName="RESULT_MATCH_FK"
+                                 referencedColumnNames="guid" referencedTableName="match"/>
+    </changeSet>
+
+</databaseChangeLog>

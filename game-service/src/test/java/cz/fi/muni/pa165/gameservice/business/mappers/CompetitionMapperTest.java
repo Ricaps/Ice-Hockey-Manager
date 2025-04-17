@@ -47,7 +47,7 @@ class CompetitionMapperTest {
 		assertThat(entity.getName()).isEqualTo(createDto.getName());
 		assertThat(entity.getStartAt()).isEqualTo(createDto.getStartAt());
 		assertThat(entity.getEndAt()).isEqualTo(createDto.getEndAt());
-		assertThat(entity.getTeams()).isNull();
+		assertThat(entity.getTeams()).isEmpty();
 		assertThat(entity.getGuid()).isNull();
 	}
 
@@ -61,7 +61,7 @@ class CompetitionMapperTest {
 		assertThat(entity.getStartAt()).isEqualTo(createDto.getStartAt());
 		assertThat(entity.getEndAt()).isEqualTo(createDto.getEndAt());
 		assertThat(entity.getGuid()).isEqualTo(guid);
-		assertThat(entity.getTeams()).isNull();
+		assertThat(entity.getTeams()).isEmpty();
 	}
 
 	@Test

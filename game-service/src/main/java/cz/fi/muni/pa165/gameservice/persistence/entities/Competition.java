@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,9 +15,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
+@EqualsAndHashCode(exclude = { "teams", "matches" })
 public class Competition {
 
 	@Id
@@ -38,9 +38,11 @@ public class Competition {
 	private LocalDate endAt;
 
 	@OneToMany(mappedBy = "competition")
-	private Set<CompetitionHasTeam> teams;
+	@Builder.Default
+	private Set<CompetitionHasTeam> teams = new HashSet<>();
 
 	@OneToMany(mappedBy = "competition")
-	private Set<Match> matches;
+	@Builder.Default
+	private Set<Match> matches = new HashSet<>();
 
 }

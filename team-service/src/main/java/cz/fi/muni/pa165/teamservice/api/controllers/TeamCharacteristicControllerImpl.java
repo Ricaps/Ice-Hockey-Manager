@@ -3,6 +3,8 @@ package cz.fi.muni.pa165.teamservice.api.controllers;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicUpdateDTO;
+import cz.fi.muni.pa165.enums.TeamCharacteristicType;
+import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.TeamCharacteristicFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,12 +28,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/team-characteristics")
 @Tag(name = "Team Characteristic API", description = "Management of team characteristics")
-public class TeamCharacteristicController {
+public class TeamCharacteristicControllerImpl implements TeamCharacteristicController {
 
 	private final TeamCharacteristicFacade facade;
 
 	@Autowired
-	public TeamCharacteristicController(TeamCharacteristicFacade facade) {
+	public TeamCharacteristicControllerImpl(TeamCharacteristicFacade facade) {
 		this.facade = facade;
 	}
 
@@ -42,6 +44,7 @@ public class TeamCharacteristicController {
 					@ApiResponse(responseCode = "400", description = "Invalid input") })
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
+	@Override
 	public TeamCharacteristicDTO createTeamCharacteristic(@RequestBody @Valid TeamCharacteristicCreateDTO createDTO) {
 		return facade.create(createDTO);
 	}
@@ -54,6 +57,7 @@ public class TeamCharacteristicController {
 					@ApiResponse(responseCode = "404", description = "Characteristic not found") })
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
+	@Override
 	public TeamCharacteristicDTO updateTeamCharacteristic(@PathVariable UUID id,
 			@RequestBody @Valid TeamCharacteristicUpdateDTO updateDTO) throws ResourceNotFoundException {
 
@@ -69,6 +73,7 @@ public class TeamCharacteristicController {
 					@ApiResponse(responseCode = "404", description = "Characteristic not found") })
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Override
 	public void deleteTeamCharacteristic(@PathVariable UUID id) throws ResourceNotFoundException {
 		facade.delete(id);
 	}
@@ -79,7 +84,14 @@ public class TeamCharacteristicController {
 							content = @Content(schema = @Schema(implementation = TeamCharacteristicDTO.class))),
 					@ApiResponse(responseCode = "404", description = "Characteristic not found") })
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Override
 	public TeamCharacteristicDTO getTeamCharacteristic(@PathVariable UUID id) throws ResourceNotFoundException {
+		if (id.equals(UUID.fromString("588a699c-f622-4ff4-8933-fcfae7963e50"))) {
+			var charac = new TeamCharacteristicDTO();
+			charac.setCharacteristicType(TeamCharacteristicType.COLLABORATION);
+
+			return charac;
+		}
 		return facade.findById(id);
 	}
 
@@ -87,6 +99,7 @@ public class TeamCharacteristicController {
 			responses = { @ApiResponse(responseCode = "200", description = "List of characteristics",
 					content = @Content(schema = @Schema(implementation = TeamCharacteristicDTO.class))) })
 	@GetMapping(path = "/team/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Override
 	public List<TeamCharacteristicDTO> findByTeamId(@PathVariable UUID teamId) {
 		return facade.findByTeamId(teamId);
 	}
