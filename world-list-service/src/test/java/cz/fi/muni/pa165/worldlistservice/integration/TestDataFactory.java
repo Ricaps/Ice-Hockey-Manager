@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
@@ -31,7 +32,7 @@ class TestDataFactory implements CommandLineRunner {
 
 	private final Faker faker = new Faker(new Random(12345L));
 
-	@Value("${server.database.seedTestData:true}")
+	@Value("${server.database.seedTestData:false}")
 	private boolean shouldSeed;
 
 	@Autowired
@@ -46,11 +47,13 @@ class TestDataFactory implements CommandLineRunner {
 	}
 
 	@Override
+	@Transactional
 	public void run(String... args) {
 		if (!shouldSeed) {
 			LOGGER.info("Seeding test data is turned off");
 			return;
 		}
+		clearData();
 		seedTestData();
 	}
 
@@ -64,6 +67,16 @@ class TestDataFactory implements CommandLineRunner {
 		seedPlayerCharacteristics();
 
 		LOGGER.info("Database seeding ended");
+	}
+
+	public void clearData() {
+		LOGGER.info("Clearing database...");
+		playerCharacteristicRepository.deleteAll();
+		playerRepository.deleteAll();
+		teamRepository.deleteAll();
+		championshipRepository.deleteAll();
+		championshipRegionRepository.deleteAll();
+		LOGGER.info("Clearing database finished.");
 	}
 
 	private void seedChampionshipRegions() {

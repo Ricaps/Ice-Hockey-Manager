@@ -37,3 +37,13 @@ tests:
   rules:
     - if: '$CI_COMMIT_BRANCH'
       when: always
+
+integration-tests:
+  stage: tests
+  tags:
+    - ihm-runner
+  script:
+    - mvn verify -Dskip.unit.tests=true $MAVEN_CLI_OPTS
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+      when: always
