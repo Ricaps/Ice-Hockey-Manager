@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService extends EntityServiceBase<User> {
 
 	private final UserRepository userRepository;
 
@@ -78,7 +78,7 @@ public class UserService {
 		validatePassword(user.getPasswordHash());
 		ValidationUtil.requireNull(user.getGuid(), "ID must be null when creating a new user!");
 
-		user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+		user.setPasswordHash(encodePassword(user.getPasswordHash()));
 		user.setIsActive(true);
 		user.setDeletedAt(null);
 
@@ -91,6 +91,8 @@ public class UserService {
 
 		User storedUser = getUserById(updatedUser.getGuid());
 		updatedUser.setPasswordHash(storedUser.getPasswordHash());
+		updatedUser.setRoles(storedUser.getRoles());
+		updatedUser.setPayments(storedUser.getPayments());
 
 		return userRepository.save(updatedUser);
 	}
@@ -130,25 +132,24 @@ public class UserService {
 			throw new ValidationException("Old password does not match!");
 		}
 
-		user.setPasswordHash(passwordEncoder.encode(newPassword));
+		user.setPasswordHash(encodePassword(newPassword));
 		return userRepository.save(user);
 	}
 
 	@Transactional
 	public User addRoleToUser(UUID userId, UUID roleId) {
 		validateUserAndRoleExists(userId, roleId);
+		User user = getUserById(userId);
+		Role role = roleRepository.findById(roleId)
+			.orElseThrow(() -> new EntityNotFoundException("Role with id: %s was not found!".formatted(userId)));
 
-		UserHasRole userHasRole = UserHasRole.builder()
-			.user(User.builder().guid(userId).build())
-			.role(Role.builder().guid(roleId).build())
-			.build();
+		UserHasRole userHasRole = UserHasRole.builder().user(user).role(role).build();
 
 		userHasRoleRepository.saveAndFlush(userHasRole);
 		entityManager.flush();
-		User updatedUser = getUserById(userId);
-		entityManager.refresh(updatedUser);
+		entityManager.refresh(user);
 
-		return updatedUser;
+		return user;
 	}
 
 	@Transactional
@@ -174,7 +175,7 @@ public class UserService {
 
 		User user = getUserById(userId);
 
-		user.setPasswordHash(passwordEncoder.encode(newPassword));
+		user.setPasswordHash(encodePassword(newPassword));
 		return userRepository.save(user);
 	}
 
@@ -188,11 +189,13 @@ public class UserService {
 		ValidationUtil.requireNotNull(user, "You must provide a valid user! Provided updatedUser is NULL!");
 		ValidationUtil.requireValidEmailAddress(user.getMail(), "Invalid email address!");
 
-		if (userRepository.findByMail(user.getMail()).isPresent()) {
+		Optional<User> existingUser = userRepository.findByMail(user.getMail());
+		if (areEntitiesDuplicated(user, existingUser)) {
 			throw new EntityExistsException("User with given email: %s already exists!".formatted(user.getMail()));
 		}
 
-		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+		existingUser = userRepository.findByUsername(user.getUsername());
+		if (areEntitiesDuplicated(user, existingUser)) {
 			throw new EntityExistsException("User with username: %s already exists!".formatted(user.getUsername()));
 		}
 	}
@@ -208,6 +211,10 @@ public class UserService {
 		if (!roleRepository.existsById(roleId)) {
 			throw new EntityNotFoundException("Role with id: %s was not found!".formatted(roleId));
 		}
+	}
+
+	public String encodePassword(String password) {
+		return passwordEncoder.encode(password);
 	}
 
 }

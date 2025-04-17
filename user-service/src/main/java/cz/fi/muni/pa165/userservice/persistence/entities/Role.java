@@ -1,5 +1,6 @@
 package cz.fi.muni.pa165.userservice.persistence.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class Role {
+public class Role implements Identifiable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -44,7 +44,7 @@ public class Role {
 	@Size(min = 1, max = 30)
 	private String code;
 
-	@OneToMany(mappedBy = "role")
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<UserHasRole> users = new HashSet<>();
 
 }

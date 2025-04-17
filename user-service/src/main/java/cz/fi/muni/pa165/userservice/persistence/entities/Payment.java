@@ -29,8 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-public class Payment {
+public class Payment implements Identifiable {
 
 	@Id
 	@NotNull

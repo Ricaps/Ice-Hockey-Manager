@@ -23,8 +23,6 @@ public class UserViewDto {
 
 	private UUID guid;
 
-	private UUID teamId;
-
 	@NotBlank
 	private String username;
 

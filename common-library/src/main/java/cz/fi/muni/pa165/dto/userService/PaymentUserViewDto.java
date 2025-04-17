@@ -17,8 +17,6 @@ public class PaymentUserViewDto {
 
 	private UUID guid;
 
-	private UUID teamId;
-
 	private String username;
 
 	private String mail;

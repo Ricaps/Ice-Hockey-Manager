@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+	public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 		return getResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 

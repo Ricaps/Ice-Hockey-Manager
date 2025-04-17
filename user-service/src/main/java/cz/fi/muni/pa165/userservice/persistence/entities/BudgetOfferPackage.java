@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.Value;
 
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-public class BudgetOfferPackage {
+public class BudgetOfferPackage implements Identifiable {
 
 	@Id
 	@NotNull

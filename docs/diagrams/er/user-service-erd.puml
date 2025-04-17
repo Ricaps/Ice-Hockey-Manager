@@ -2,7 +2,6 @@
 
 entity User {
     * guid : uuid <<generated>>
-    * team_id : uuid <<FK>>
     * username : text
     * mail : text
     * name : text
@@ -46,7 +45,5 @@ UserHasRole }o--|| User
 
 Payment }o--|| User
 Payment }o--|| BudgetOfferPackage
-
-note top of User : team_id is reference \nto the team in team service
 
 @enduml

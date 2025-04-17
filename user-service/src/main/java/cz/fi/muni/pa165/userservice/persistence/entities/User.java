@@ -35,15 +35,12 @@ import java.util.UUID;
 @ToString
 @Getter
 @Setter
-public class User {
+public class User implements Identifiable {
 
 	@Id
 	@NotNull
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID guid;
-
-	@Column(name = "team_id", unique = true)
-	private UUID teamId;
 
 	@Column(name = "username", unique = true, nullable = false)
 	@Size(min = 3, max = 255)

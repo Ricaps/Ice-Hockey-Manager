@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class RoleService {
+public class RoleService extends EntityServiceBase<Role> {
 
 	private final RoleRepository roleRepository;
 
@@ -80,11 +81,13 @@ public class RoleService {
 		ValidationUtil.requireNotBlankString(role.getName(), "Name cannot be null or empty! Provide a valid name!");
 		ValidationUtil.requireNotBlankString(role.getCode(), "Code cannot be null or empty! Provide a valid code!");
 
-		if (roleRepository.findByCode(role.getCode()).isPresent()) {
+		Optional<Role> existingRole = roleRepository.findByCode(role.getCode());
+		if (areEntitiesDuplicated(role, existingRole)) {
 			throw new EntityExistsException("Role with code " + role.getCode() + " already exists");
 		}
 
-		if (roleRepository.findByName(role.getName()).isPresent()) {
+		existingRole = roleRepository.findByName(role.getName());
+		if (areEntitiesDuplicated(role, existingRole)) {
 			throw new EntityExistsException("Role with name " + role.getName() + " already exists");
 		}
 	}

@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,7 +79,7 @@ public class PaymentControllerImpl implements PaymentController {
 							schema = @Schema(implementation = PaymentUpdateCreateDto.class))))
 	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public PaymentViewDto createPayment(@RequestBody PaymentUpdateCreateDto paymentDto) {
+	public PaymentViewDto createPayment(@RequestBody @Valid PaymentUpdateCreateDto paymentDto) {
 		return paymentFacade.createPayment(paymentDto);
 	}
 

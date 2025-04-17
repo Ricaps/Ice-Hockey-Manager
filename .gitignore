@@ -39,6 +39,7 @@ team-service/data/team-service.mv.db
 team-service/data/team-service.trace.db
 
 logs/*
+game-service/logs/*
 
 # H2 default data directory
 data/*

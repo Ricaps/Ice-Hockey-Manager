@@ -23,7 +23,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserHasRole {
+public class UserHasRole implements Identifiable {
 
 	@Id
 	@NotNull

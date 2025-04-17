@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class BudgetOfferPackageService {
+public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPackage> {
 
 	private final BudgetOfferPackageRepository budgetOfferPackageRepository;
 

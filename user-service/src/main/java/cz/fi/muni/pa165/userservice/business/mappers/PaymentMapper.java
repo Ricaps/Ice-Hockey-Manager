@@ -21,6 +21,10 @@ public interface PaymentMapper {
 			qualifiedByName = "mapUuidToBudgetOfferPackage")
 	Payment paymentUpdateCreateDtoToPayment(PaymentUpdateCreateDto paymentUpdateCreateDto);
 
+	@Mapping(source = "user.guid", target = "userId")
+	@Mapping(source = "budgetOfferPackage.guid", target = "budgetOfferPackageId")
+	PaymentUpdateCreateDto paymentToPaymentUpdateCreateDto(Payment payment);
+
 	@Named("mapUuidToUser")
 	default User mapUuidToUser(UUID userId) {
 		if (userId == null) {

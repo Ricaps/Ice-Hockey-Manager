@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PaymentService {
+public class PaymentService extends EntityServiceBase<Payment> {
 
 	private final PaymentRepository paymentRepository;
 
