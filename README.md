@@ -10,14 +10,29 @@ sold based on the financial availability of teams.
 
 ## How to run
 
-### Locally
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Java Development Kit (JDK) 21** — Required for building and running the services.
+- **Apache Maven 3.8.8+** — Used for building and managing dependencies.
+- **Docker** — To run the services in containers using Docker Compose.
+
+You can check your installations with:
+```bash
+java --version
+mvn --version
+docker --version
+```
+
+### Run locally
 
 How to run each service separately:
 
 1. Run `mvn clean install` in the root directory.
 2. Then for each service, go to its sub-folder (e.g. `cd game-service`) and use `mvn spring-boot:run`.
 
-### In docker
+### Run in Docker
 
 Run following command in the terminal:
 

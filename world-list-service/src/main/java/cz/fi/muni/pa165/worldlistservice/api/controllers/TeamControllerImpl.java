@@ -32,7 +32,7 @@ public class TeamControllerImpl implements TeamController {
 	private final TeamFacade teamFacade;
 
 	@Autowired
-	public TeamControllerImpl(TeamFacade teamFacade) {
+	TeamControllerImpl(TeamFacade teamFacade) {
 		this.teamFacade = teamFacade;
 	}
 
