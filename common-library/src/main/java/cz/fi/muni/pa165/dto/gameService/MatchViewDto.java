@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,9 +19,9 @@ public class MatchViewDto {
 
 	private ArenaViewDto arena;
 
-	private ZonedDateTime startAt;
+	private OffsetDateTime startAt;
 
-	private ZonedDateTime endAt;
+	private OffsetDateTime endAt;
 
 	private UUID homeTeamUid;
 

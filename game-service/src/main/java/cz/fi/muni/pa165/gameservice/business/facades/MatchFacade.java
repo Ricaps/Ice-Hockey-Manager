@@ -2,6 +2,7 @@ package cz.fi.muni.pa165.gameservice.business.facades;
 
 import cz.fi.muni.pa165.dto.gameService.MatchCreateDto;
 import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
 import cz.fi.muni.pa165.gameservice.business.mappers.MatchMapper;
 import cz.fi.muni.pa165.gameservice.business.services.ArenaService;
@@ -63,6 +64,10 @@ public class MatchFacade {
 
 	public List<MatchViewDto> getMatchesOfCompetition(@NotNull UUID competitionUUID, boolean includeResults) {
 		ValidationHelper.requireNonNull(competitionUUID, "Please provide UUID of competition");
+
+		if (!competitionService.exists(competitionUUID)) {
+			throw new ResourceNotFoundException("Competition with guid %s was not found!".formatted(competitionUUID));
+		}
 
 		var matches = matchService.getMatchesOfCompetition(competitionUUID);
 

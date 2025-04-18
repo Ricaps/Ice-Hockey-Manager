@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -266,8 +266,8 @@ class MatchServiceTest {
 	void publishResult_allGood_expectedEntitiesSaved() {
 		var result = MatchTestData.getResult(UUID.randomUUID());
 		var match = MatchTestData.getRandomMatches().stream().toList().getFirst();
-		var zonedID = match.getStartAt().getZone();
-		match.setEndAt(ZonedDateTime.now(zonedID));
+		var offset = match.getStartAt().getOffset();
+		match.setEndAt(OffsetDateTime.now().withOffsetSameInstant(offset));
 
 		matchService.publishResult(result, match);
 

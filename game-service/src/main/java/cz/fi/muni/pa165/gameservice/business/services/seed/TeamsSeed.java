@@ -53,6 +53,9 @@ public class TeamsSeed implements Seed<CompetitionHasTeam> {
 		List<CompetitionHasTeam> competitionTeams = new ArrayList<>();
 		Random random = new Random();
 
+		// Leave on competition without teams
+		competitions = competitions.stream().skip(1).toList();
+
 		// Ensure each competition has at least 2 teams
 		for (Competition competition : competitions) {
 			for (int i = 0; i < 2; i++) {

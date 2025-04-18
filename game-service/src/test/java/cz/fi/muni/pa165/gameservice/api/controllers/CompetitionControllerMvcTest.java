@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static cz.fi.muni.pa165.gameservice.utils.Assertions.exception;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -215,6 +216,7 @@ class CompetitionControllerMvcTest {
 		mockMvc
 			.perform(MockMvcRequestBuilders.get("/v1/competition/{guid}", competitionUUID)
 				.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(exception().hasMessage(message).isInstanceOf(ResourceNotFoundException.class))
 			.andExpect(status().isNotFound());
 	}
 

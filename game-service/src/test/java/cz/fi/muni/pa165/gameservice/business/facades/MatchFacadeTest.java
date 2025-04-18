@@ -7,7 +7,6 @@ import cz.fi.muni.pa165.gameservice.business.services.ArenaService;
 import cz.fi.muni.pa165.gameservice.business.services.CompetitionService;
 import cz.fi.muni.pa165.gameservice.business.services.MatchService;
 import cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed;
-import cz.fi.muni.pa165.gameservice.persistence.entities.Match;
 import cz.fi.muni.pa165.gameservice.testdata.CompetitionTestData;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
 import org.junit.jupiter.api.Test;
@@ -145,36 +144,33 @@ class MatchFacadeTest {
 			.hasMessage("Please provide UUID of competition")
 			.isInstanceOf(ValueIsMissingException.class);
 
+		Mockito.verify(competitionService, Mockito.never()).exists(Mockito.any());
 		Mockito.verify(matchService, Mockito.never()).getMatchesOfCompetition(Mockito.any());
 		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViews(Mockito.any());
 		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViewsIgnoreResult(Mockito.any());
 	}
 
 	@Test
-	void getMatchesOfCompetitionIncludeResults_notExistingCompetition_returnsEmptyList() {
+	void getMatchesOfCompetitionIncludeResults_notExistingCompetition_throwsException() {
 		var competition = CompetitionTestData.getCompetitionEntity();
-		List<Match> emptyList = List.of();
-		Mockito.when(matchService.getMatchesOfCompetition(competition.getGuid())).thenReturn(emptyList);
-		Mockito.when(matchMapper.listEntitiesToListViews(emptyList)).thenReturn(List.of());
+		Mockito.when(competitionService.exists(competition.getGuid())).thenReturn(false);
 
-		var returnedList = matchFacade.getMatchesOfCompetition(competition.getGuid(), true);
-		assertThat(returnedList).isEmpty();
+		assertThatThrownBy(() -> matchFacade.getMatchesOfCompetition(competition.getGuid(), true))
+			.isInstanceOf(ResourceNotFoundException.class);
 
-		Mockito.verify(matchMapper, Mockito.times(1)).listEntitiesToListViews(List.of());
+		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViews(List.of());
 		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViewsIgnoreResult(Mockito.any());
 	}
 
 	@Test
 	void getMatchesOfCompetitionDontInclude_notExistingCompetition_returnsEmptyList() {
 		var competition = CompetitionTestData.getCompetitionEntity();
-		List<Match> emptyList = List.of();
-		Mockito.when(matchService.getMatchesOfCompetition(competition.getGuid())).thenReturn(emptyList);
-		Mockito.when(matchMapper.listEntitiesToListViewsIgnoreResult(emptyList)).thenReturn(List.of());
+		Mockito.when(competitionService.exists(competition.getGuid())).thenReturn(false);
 
-		var returnedList = matchFacade.getMatchesOfCompetition(competition.getGuid(), false);
-		assertThat(returnedList).isEmpty();
+		assertThatThrownBy(() -> matchFacade.getMatchesOfCompetition(competition.getGuid(), true))
+			.isInstanceOf(ResourceNotFoundException.class);
 
-		Mockito.verify(matchMapper, Mockito.times(1)).listEntitiesToListViewsIgnoreResult(List.of());
+		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViewsIgnoreResult(List.of());
 		Mockito.verify(matchMapper, Mockito.never()).listEntitiesToListViews(Mockito.any());
 	}
 
@@ -186,6 +182,7 @@ class MatchFacadeTest {
 
 		Mockito.when(matchService.getMatchesOfCompetition(competition.getGuid())).thenReturn(matches);
 		Mockito.when(matchMapper.listEntitiesToListViews(matches)).thenReturn(viewDtos);
+		Mockito.when(competitionService.exists(competition.getGuid())).thenReturn(true);
 
 		var returnedList = matchFacade.getMatchesOfCompetition(competition.getGuid(), true);
 		assertThat(returnedList).isNotEmpty();
@@ -203,6 +200,7 @@ class MatchFacadeTest {
 
 		Mockito.when(matchService.getMatchesOfCompetition(competition.getGuid())).thenReturn(matches);
 		Mockito.when(matchMapper.listEntitiesToListViewsIgnoreResult(matches)).thenReturn(viewDtos);
+		Mockito.when(competitionService.exists(competition.getGuid())).thenReturn(true);
 
 		var returnedList = matchFacade.getMatchesOfCompetition(competition.getGuid(), false);
 		assertThat(returnedList).isNotEmpty();

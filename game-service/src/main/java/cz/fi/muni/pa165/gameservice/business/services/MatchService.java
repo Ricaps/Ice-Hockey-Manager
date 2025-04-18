@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -97,7 +97,7 @@ public class MatchService {
 		if (offset <= 0) {
 			throw new IllegalArgumentException("Offset should be positive number");
 		}
-		var schedulingTime = ZonedDateTime.now().plusHours(offset);
+		var schedulingTime = OffsetDateTime.now().plusHours(offset);
 		return matchRepository.getMatchesForScheduling(schedulingTime);
 	}
 
@@ -109,8 +109,8 @@ public class MatchService {
 		var returnedResult = resultRepository.save(result);
 
 		match.setResult(returnedResult);
-		var zonedID = match.getStartAt().getZone();
-		match.setEndAt(ZonedDateTime.now(zonedID));
+		var offset = match.getStartAt().getOffset();
+		match.setEndAt(OffsetDateTime.now().withOffsetSameInstant(offset));
 		return matchRepository.save(match);
 	}
 

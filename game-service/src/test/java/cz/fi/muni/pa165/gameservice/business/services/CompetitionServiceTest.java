@@ -117,12 +117,25 @@ class CompetitionServiceTest {
 	void updateCompetition_saveCompetition_success() {
 		var competition = CompetitionTestData.getCompetitionEntity();
 
+		Mockito.when(competitionRepository.existsById(competition.getGuid())).thenReturn(true);
 		Mockito.when(competitionRepository.save(competition)).thenReturn(competition);
 
 		var updatedCompetition = competitionService.updateCompetition(competition);
 
 		assertThat(updatedCompetition).isEqualTo(competition);
 		Mockito.verify(competitionRepository, Mockito.times(1)).save(competition);
+	}
+
+	@Test
+	void updateCompetition_competitionDoesntExist_resourceNotFoundException() {
+		var competition = CompetitionTestData.getCompetitionEntity();
+
+		Mockito.when(competitionRepository.existsById(competition.getGuid())).thenReturn(false);
+
+		assertThatThrownBy(() -> competitionService.updateCompetition(competition))
+			.isInstanceOf(ResourceNotFoundException.class);
+
+		Mockito.verify(competitionRepository, Mockito.never()).save(competition);
 	}
 
 	@Test

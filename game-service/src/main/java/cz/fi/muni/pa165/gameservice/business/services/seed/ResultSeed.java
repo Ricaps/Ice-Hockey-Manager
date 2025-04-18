@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -68,7 +68,7 @@ public class ResultSeed implements Seed<Result> {
 		var matches = matchRepository.findAll();
 
 		return matches.stream()
-			.filter(match -> match.getEndAt() != null && match.getEndAt().isBefore(ZonedDateTime.now()))
+			.filter(match -> match.getEndAt() != null && match.getEndAt().isBefore(OffsetDateTime.now()))
 			.map(match -> {
 				int scoreHome = ThreadLocalRandom.current().nextInt(0, 6);
 				int scoreAway = ThreadLocalRandom.current().nextInt(0, 6);

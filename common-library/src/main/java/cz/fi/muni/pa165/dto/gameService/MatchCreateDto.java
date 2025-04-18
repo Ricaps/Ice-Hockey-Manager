@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -21,7 +21,7 @@ public class MatchCreateDto {
 
 	@NotNull
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-	private ZonedDateTime startAt;
+	private OffsetDateTime startAt;
 
 	@NotNull
 	private UUID homeTeamUid;

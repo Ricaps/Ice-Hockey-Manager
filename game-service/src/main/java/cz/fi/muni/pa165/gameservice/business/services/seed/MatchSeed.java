@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Component
@@ -87,16 +87,16 @@ public class MatchSeed implements Seed<Match> {
 
 			boolean isPast = random.nextBoolean();
 
-			ZonedDateTime startAt;
-			ZonedDateTime endAt = null;
+			OffsetDateTime startAt;
+			OffsetDateTime endAt = null;
 
 			if (isPast) {
-				startAt = ZonedDateTime.now().minusDays(random.nextInt(10) + 1);
+				startAt = OffsetDateTime.now().minusDays(random.nextInt(10) + 1);
 				endAt = startAt.plusHours(2);
 
 			}
 			else {
-				startAt = ZonedDateTime.now().plusDays(random.nextInt(30) + 1);
+				startAt = OffsetDateTime.now().plusDays(random.nextInt(30) + 1);
 				// endAt and result stay null
 			}
 
@@ -113,6 +113,7 @@ public class MatchSeed implements Seed<Match> {
 				.matchType(MatchType.GROUP_STAGE)
 				.build();
 
+			competition.getMatches().add(match);
 			matches.add(match);
 		}
 		return matches;

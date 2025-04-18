@@ -220,7 +220,7 @@ public class CompetitionSeed implements Seed<Competition> {
 
 				Competition.builder()
 					.name("Olympic Ice Hockey Tournament")
-					.startAt(LocalDate.now().plusDays(15))
+					.startAt(LocalDate.now().minusDays(15))
 					.endAt(LocalDate.now().plusDays(35))
 					.build());
 	}

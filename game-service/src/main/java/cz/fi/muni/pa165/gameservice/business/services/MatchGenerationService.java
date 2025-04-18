@@ -10,7 +10,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -94,6 +93,8 @@ public class MatchGenerationService {
 		var arenas = arenaService.findAllArenas();
 
 		var startDate = competition.getStartAt();
+		var zoneOffset = ZonedDateTime.now().getOffset();
+
 		var matches = new ArrayList<Match>();
 		for (int i = 0; i < combinations.size(); i++) {
 			var currentCombination = combinations.get(i);
@@ -104,10 +105,12 @@ public class MatchGenerationService {
 				.arena(arenas.get(randomGenerator.nextInt(arenas.size())))
 				.homeTeamUid(currentCombination.getLeft())
 				.awayTeamUid(currentCombination.getRight())
-				.startAt(ZonedDateTime.of(currentMatchDate.atTime(8, 0), ZoneId.systemDefault()))
-				.endAt(ZonedDateTime.of(currentMatchDate.atTime(9, 0), ZoneId.systemDefault()))
+				.startAt(currentMatchDate.atTime(8, 0).atOffset(zoneOffset))
+				.endAt(currentMatchDate.atTime(9, 0).atOffset(zoneOffset))
 				.competition(competition)
 				.build();
+
+			competition.getMatches().add(match);
 			matches.add(match);
 		}
 		return matches;

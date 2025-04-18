@@ -5,6 +5,7 @@ import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
 import cz.fi.muni.pa165.gameservice.api.exception.ValueIsMissingException;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.CompetitionRepository;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,10 @@ public class CompetitionService {
 		ValidationHelper.requireNonNull(competition.getGuid(), "Competition's guid cannot be empty");
 		validateDateRange(competition);
 
+		if (!competitionRepository.existsById(competition.getGuid())) {
+			throw new ResourceNotFoundException(
+					"Competition with ID %s was not found".formatted(competition.getGuid()));
+		}
 		return competitionRepository.save(competition);
 	}
 
@@ -77,6 +82,10 @@ public class CompetitionService {
 		if (!endAt.isAfter(startAt)) {
 			throw new ValidationException("Start at must be later than end at!");
 		}
+	}
+
+	public boolean exists(@Nonnull UUID competitionUUID) {
+		return competitionRepository.existsById(competitionUUID);
 	}
 
 }

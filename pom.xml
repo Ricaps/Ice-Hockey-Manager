@@ -52,6 +52,7 @@
         <org.projectlombok-lombok-mapstruct-binding.version>0.2.0</org.projectlombok-lombok-mapstruct-binding.version>
         <spring-javaformat-maven-plugin>0.0.43</spring-javaformat-maven-plugin>
         <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>false</skip.integration.tests>
     </properties>
 
     <dependencies>
@@ -137,6 +138,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <configuration>
                         <argLine>-Dspring.profiles.active=test</argLine>
+                        <skipTests>${skip.integration.tests}</skipTests>
                     </configuration>
                 </plugin>
                 <plugin>

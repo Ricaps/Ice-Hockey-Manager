@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,10 +31,10 @@ public class Match {
 	private Arena arena;
 
 	@Column(name = "start_at", nullable = false)
-	private ZonedDateTime startAt;
+	private OffsetDateTime startAt;
 
 	@Column(name = "end_at")
-	private ZonedDateTime endAt;
+	private OffsetDateTime endAt;
 
 	@Column(name = "home_team_uid", nullable = false)
 	private UUID homeTeamUid;

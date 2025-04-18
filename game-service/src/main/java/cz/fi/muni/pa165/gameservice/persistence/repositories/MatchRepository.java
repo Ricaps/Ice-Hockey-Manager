@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +19,6 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 	Optional<Match> getMatchByGuid(UUID guid);
 
 	@Query("FROM Match WHERE Result IS NULL AND endAt IS NULL AND startAt <= :maxTime")
-	List<Match> getMatchesForScheduling(ZonedDateTime maxTime);
+	List<Match> getMatchesForScheduling(OffsetDateTime maxTime);
 
 }

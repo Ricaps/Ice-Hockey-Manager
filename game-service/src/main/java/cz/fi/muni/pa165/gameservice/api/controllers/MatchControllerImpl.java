@@ -42,6 +42,7 @@ public class MatchControllerImpl implements MatchController {
 							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)), })
 	@PostMapping(path = "/competition/{competitionUUID}")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Override
 	public List<MatchViewDto> generateMatches(@PathVariable UUID competitionUUID) {
 		return matchFacade.generateMatches(competitionUUID);
 	}
@@ -54,6 +55,7 @@ public class MatchControllerImpl implements MatchController {
 			@ApiResponse(responseCode = "400", description = "Competition UUID is not valid UUID",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)), })
 	@GetMapping(path = "/competition/{competitionUUID}")
+	@Override
 	public List<MatchViewDto> getMatchesForCompetition(@PathVariable UUID competitionUUID,
 			@Parameter(name = "results", description = "Decides if response contains also result of the match.",
 					in = ParameterIn.QUERY) @RequestParam(name = "results",
@@ -70,6 +72,7 @@ public class MatchControllerImpl implements MatchController {
 					@ApiResponse(responseCode = "400", description = "Match UUID is not valid UUID",
 							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)), })
 	@GetMapping(path = "/{matchUUID}")
+	@Override
 	public MatchViewDto getSingleMatch(@PathVariable UUID matchUUID,
 			@Parameter(name = "results", description = "Decides if response contains also result of the match.",
 					in = ParameterIn.QUERY) @RequestParam(name = "results",
@@ -90,6 +93,7 @@ public class MatchControllerImpl implements MatchController {
 							description = "Provided dependent resource probably doesn't exist.", content = @Content) })
 	@PostMapping(path = "/")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Override
 	public MatchViewDto createMatch(@RequestBody @Valid MatchCreateDto newMatch) {
 		return matchFacade.createMatch(newMatch);
 	}

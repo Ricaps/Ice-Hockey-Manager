@@ -23,6 +23,7 @@ public class TeamService {
 		if (assignedTeams != null && assignedTeams.contains(competitionHasTeam)) {
 			throw new ResourceAlreadyExists("Team is already assigned to the competition");
 		}
+		competitionHasTeam.getCompetition().getTeams().add(competitionHasTeam);
 		teamRepository.save(competitionHasTeam);
 	}
 

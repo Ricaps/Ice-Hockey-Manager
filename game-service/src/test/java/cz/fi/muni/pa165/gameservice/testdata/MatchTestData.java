@@ -6,13 +6,14 @@ import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed;
 import cz.fi.muni.pa165.gameservice.persistence.entities.*;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 public class MatchTestData {
 
-	public static final ZoneId ZONE_ID = ZoneId.of("Europe/Prague");
+	public static final ZoneId ZONE_ID = ZonedDateTime.now().getZone();
 
 	public static Set<Match> getRandomMatches() {
 		Set<Match> matches = new HashSet<>();
@@ -27,8 +28,8 @@ public class MatchTestData {
 				.guid(UUID.randomUUID())
 				.competition(competition)
 				.arena(arena)
-				.startAt(ZonedDateTime.now(ZONE_ID).plusDays(i))
-				.endAt(ZonedDateTime.now(ZONE_ID).plusDays(i).plusHours(2))
+				.startAt(OffsetDateTime.now(ZONE_ID).plusDays(i))
+				.endAt(OffsetDateTime.now(ZONE_ID).plusDays(i).plusHours(2))
 				.homeTeamUid(homeTeam)
 				.awayTeamUid(awayTeam)
 				.matchType(MatchType.GROUP_STAGE)
@@ -55,8 +56,8 @@ public class MatchTestData {
 			var match = MatchViewDto.builder()
 				.guid(UUID.randomUUID())
 				.arena(arenaView)
-				.startAt(ZonedDateTime.now(ZONE_ID).plusDays(i))
-				.endAt(ZonedDateTime.now(ZONE_ID).plusDays(i).plusHours(2))
+				.startAt(OffsetDateTime.now(ZONE_ID).plusDays(i))
+				.endAt(OffsetDateTime.now(ZONE_ID).plusDays(i).plusHours(2))
 				.homeTeamUid(homeTeam)
 				.awayTeamUid(awayTeam)
 				.matchType(MatchType.GROUP_STAGE.toString())
@@ -72,7 +73,7 @@ public class MatchTestData {
 			.arenaUid(UUID.randomUUID())
 			.awayTeamUid(UUID.randomUUID())
 			.homeTeamUid(UUID.randomUUID())
-			.startAt(ZonedDateTime.now(ZONE_ID))
+			.startAt(OffsetDateTime.now(ZONE_ID))
 			.build();
 
 	}
