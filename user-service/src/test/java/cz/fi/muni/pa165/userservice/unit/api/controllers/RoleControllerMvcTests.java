@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.userService.RoleViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.RoleController;
+import cz.fi.muni.pa165.service.userService.api.RoleController;
 import cz.fi.muni.pa165.userservice.api.controllers.RoleControllerImpl;
 import cz.fi.muni.pa165.userservice.business.facades.RoleFacade;
 import cz.fi.muni.pa165.userservice.security.SecurityConfig;
@@ -79,7 +79,7 @@ public class RoleControllerMvcTests {
 	void getAllRoles_whenValidRequest_shouldReturnRoles() throws Exception {
 		Mockito.when(roleFacade.getAllRoles()).thenReturn(Collections.singletonList(roleViewDto));
 
-		mockMvc.perform(get("/v1/role/all-roles").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/role/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].guid").value(roleId.toString()))
 			.andExpect(jsonPath("$[0].name").value(roleViewDto.getName()))

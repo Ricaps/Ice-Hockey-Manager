@@ -180,8 +180,7 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 	void getAllBudgetOfferPackages_whenValidRequest_shouldReturnPackages() throws Exception {
 		var allPackages = getExistingEntities();
 
-		ResultActions result = mockMvc
-			.perform(get("/v1/budget-package-offer/all-packages").contentType(MediaType.APPLICATION_JSON))
+		ResultActions result = mockMvc.perform(get("/v1/budget-package-offer/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$.length()").value(allPackages.size()));

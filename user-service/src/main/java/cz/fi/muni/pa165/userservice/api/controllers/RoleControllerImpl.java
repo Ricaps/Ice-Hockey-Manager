@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.api.controllers;
 
 import cz.fi.muni.pa165.dto.userService.RoleViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.RoleController;
+import cz.fi.muni.pa165.service.userService.api.RoleController;
 import cz.fi.muni.pa165.userservice.business.facades.RoleFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,7 +62,7 @@ public class RoleControllerImpl implements RoleController {
 			responses = { @ApiResponse(responseCode = "200", description = "List of all roles.",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 							array = @ArraySchema(schema = @Schema(implementation = RoleViewDto.class)))) })
-	@GetMapping(path = "/all-roles", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<RoleViewDto> getAllRoles() {
 		return roleFacade.getAllRoles();
 	}

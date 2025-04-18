@@ -82,7 +82,7 @@ public class RoleControllerIT extends BaseControllerIT<RoleRepository, Role> {
 	void getAllRoles_whenValidRequest_shouldReturnRoles() throws Exception {
 		var roles = getMappedEntities(roleMapper::roleToRoleViewDto);
 
-		ResultActions result = mockMvc.perform(get("/v1/role/all-roles").contentType(MediaType.APPLICATION_JSON))
+		ResultActions result = mockMvc.perform(get("/v1/role/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$").isArray())
 			.andExpect(jsonPath("$.length()").value(roles.size()));

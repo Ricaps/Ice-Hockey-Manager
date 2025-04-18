@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.UserController;
+import cz.fi.muni.pa165.service.userService.api.UserController;
 import cz.fi.muni.pa165.userservice.api.controllers.UserControllerImpl;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.security.SecurityConfig;
@@ -303,7 +303,7 @@ public class UserControllerMvcTests {
 		String newPassword = UserTestData.getChangePasswordRequestDto().getNewPassword();
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", userId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
 				.content(newPassword))
 			.andExpect(status().isNotFound());
 
@@ -317,7 +317,7 @@ public class UserControllerMvcTests {
 		String newPassword = "asd";
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", userId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
 				.content(newPassword))
 			.andExpect(status().isBadRequest());
 
@@ -331,7 +331,7 @@ public class UserControllerMvcTests {
 		String newPassword = UserTestData.getChangePasswordRequestDto().getNewPassword();
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", userId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
 				.content(newPassword))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
@@ -404,7 +404,7 @@ public class UserControllerMvcTests {
 	void getAllUsers_shouldReturnUsers() throws Exception {
 		Mockito.when(userFacade.getAllUsers()).thenReturn(Collections.singletonList(userViewDto));
 
-		mockMvc.perform(get("/v1/user/all-users").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/user/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].guid").value(userViewDto.getGuid().toString()))
 			.andExpect(jsonPath("$[0].mail").value(userViewDto.getMail()))
@@ -468,8 +468,7 @@ public class UserControllerMvcTests {
 		UUID roleId = UUID.randomUUID();
 		Mockito.when(userFacade.addRoleToUser(userId, roleId)).thenReturn(userViewDto);
 
-		mockMvc
-			.perform(put("/v1/user/add-role/{userId}/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
 			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
@@ -492,8 +491,7 @@ public class UserControllerMvcTests {
 		UUID roleId = UUID.randomUUID();
 		Mockito.when(userFacade.addRoleToUser(userId, roleId)).thenThrow(EntityNotFoundException.class);
 
-		mockMvc
-			.perform(put("/v1/user/add-role/{userId}/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(put("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
 		Mockito.verify(userFacade, Mockito.times(1)).addRoleToUser(userId, roleId);
@@ -505,8 +503,7 @@ public class UserControllerMvcTests {
 		Mockito.when(userFacade.deleteRoleFromUser(userId, roleId)).thenReturn(userViewDto);
 
 		mockMvc
-			.perform(put("/v1/user/delete-role/{userId}/{roleId}", userId, roleId)
-				.contentType(MediaType.APPLICATION_JSON))
+			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
 			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
@@ -526,8 +523,7 @@ public class UserControllerMvcTests {
 		Mockito.when(userFacade.deleteRoleFromUser(userId, roleId)).thenThrow(EntityNotFoundException.class);
 
 		mockMvc
-			.perform(put("/v1/user/delete-role/{userId}/{roleId}", userId, roleId)
-				.contentType(MediaType.APPLICATION_JSON))
+			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
 		Mockito.verify(userFacade, Mockito.times(1)).deleteRoleFromUser(userId, roleId);

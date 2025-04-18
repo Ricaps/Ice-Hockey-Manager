@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
 import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.PaymentController;
+import cz.fi.muni.pa165.service.userService.api.PaymentController;
 import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
 import cz.fi.muni.pa165.userservice.business.facades.PaymentFacade;
 import cz.fi.muni.pa165.userservice.security.SecurityConfig;
@@ -223,7 +223,7 @@ class PaymentControllerMvcTests {
 	void getAllPayments_whenValidRequest_returnsPaymentList() throws Exception {
 		Mockito.when(paymentFacade.getAllPayments()).thenReturn(List.of(paymentViewDto));
 
-		mockMvc.perform(get("/v1/payment/all-payments"))
+		mockMvc.perform(get("/v1/payment/"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.length()").value(1))
 			.andExpect(jsonPath("$[0].guid").value(paymentId.toString()))

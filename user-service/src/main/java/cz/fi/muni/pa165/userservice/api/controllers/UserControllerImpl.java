@@ -3,7 +3,7 @@ package cz.fi.muni.pa165.userservice.api.controllers;
 import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.UserController;
+import cz.fi.muni.pa165.service.userService.api.UserController;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,13 +15,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -155,7 +155,7 @@ public class UserControllerImpl implements UserController {
 					required = true,
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 							schema = @Schema(implementation = String.class))))
-	@PutMapping(path = "/reset-password/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(path = "/{userId}/password/reset", produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserViewDto resetUserPassword(
 			@Parameter(description = "UUID of the user whose password is being reset",
 					required = true) @PathVariable UUID userId,
@@ -224,7 +224,7 @@ public class UserControllerImpl implements UserController {
 			responses = { @ApiResponse(responseCode = "200", description = "List of all users.",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 							array = @ArraySchema(schema = @Schema(implementation = UserViewDto.class)))) })
-	@GetMapping(path = "/all-users", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<UserViewDto> getAllUsers() {
 		return userFacade.getAllUsers();
 	}
@@ -243,7 +243,7 @@ public class UserControllerImpl implements UserController {
 							required = true),
 					@Parameter(name = "roleId", description = "Id of role that should be added to user.",
 							required = true) })
-	@PutMapping(path = "/add-role/{userId}/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(path = "/{userId}/role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	public UserViewDto addRoleToUser(@PathVariable UUID userId, @PathVariable UUID roleId) {
 		return userFacade.addRoleToUser(userId, roleId);
@@ -263,7 +263,7 @@ public class UserControllerImpl implements UserController {
 							required = true),
 					@Parameter(name = "roleId", description = "Id of role that should be deleted from user.",
 							required = true) })
-	@PutMapping(path = "/delete-role/{userId}/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(path = "/{userId}/role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	public UserViewDto deleteRoleFromUser(@PathVariable UUID userId, @PathVariable UUID roleId) {
 		return userFacade.deleteRoleFromUser(userId, roleId);

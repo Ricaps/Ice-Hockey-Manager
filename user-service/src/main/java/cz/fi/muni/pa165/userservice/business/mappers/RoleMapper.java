@@ -5,10 +5,11 @@ import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RoleMapper {
 
 	@Mapping(source = "role.guid", target = "guid")

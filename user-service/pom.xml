@@ -10,7 +10,7 @@
 
     <artifactId>user-service</artifactId>
     <name>user-service</name>
-    <description>user-service</description>
+    <description>Service which is responsible for security, user management and payment system.</description>
 
     <dependencies>
         <dependency>
@@ -85,6 +85,19 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                        <configuration>
+                            <additionalProperties>
+                                <description>${project.description}</description>
+                            </additionalProperties>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

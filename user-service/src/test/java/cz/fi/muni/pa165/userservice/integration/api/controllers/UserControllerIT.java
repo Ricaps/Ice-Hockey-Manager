@@ -7,7 +7,6 @@ import cz.fi.muni.pa165.dto.userService.UserCreateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.business.mappers.UserMapper;
-import cz.fi.muni.pa165.userservice.business.services.UserService;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -325,7 +325,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var password = getValidPassword();
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", nonExistingId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/user/{userId}/password/reset", nonExistingId).contentType(MediaType.APPLICATION_JSON)
 				.content(password))
 			.andExpect(status().isNotFound());
 
@@ -339,7 +339,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var notValidPassword = "aaa";
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", existingUser.getGuid())
+			.perform(put("/v1/user/{userId}/password/reset", existingUser.getGuid())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(notValidPassword))
 			.andExpect(status().isBadRequest());
@@ -354,7 +354,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var hashBefore = getExistingEntity(index).getPasswordHash();
 
 		mockMvc
-			.perform(put("/v1/user/reset-password/{userId}", userBefore.getGuid())
+			.perform(put("/v1/user/{userId}/password/reset", userBefore.getGuid())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(getValidPassword()))
 			.andExpect(status().isOk())
@@ -430,7 +430,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 	void getAllUsers_shouldReturnUsers() throws Exception {
 		var allUsers = getExistingEntities();
 
-		ResultActions result = mockMvc.perform(get("/v1/user/all-users").contentType(MediaType.APPLICATION_JSON))
+		ResultActions result = mockMvc.perform(get("/v1/user/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		assertAllUsersEquals(result, allUsers);
@@ -505,7 +505,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 			.orElseThrow();
 
 		ResultActions result = mockMvc
-			.perform(put("/v1/user/add-role/{userId}/{roleId}", existingUser.getGuid(), role.getGuid())
+			.perform(put("/v1/user/{userId}/role/{roleId}", existingUser.getGuid(), role.getGuid())
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(existingUser.getGuid().toString()))
@@ -528,7 +528,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var nonExistingId = getNonExistingEntityId(roleRepository);
 
 		mockMvc
-			.perform(put("/v1/user/add-role/{userId}/{roleId}", userId, nonExistingId)
+			.perform(put("/v1/user/{userId}/role/{roleId}", userId, nonExistingId)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
@@ -542,7 +542,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var roleId = existingUser.getRoles().stream().findFirst().orElseThrow().getRole().getGuid();
 
 		ResultActions result = mockMvc
-			.perform(put("/v1/user/delete-role/{userId}/{roleId}", existingUser.getGuid(), roleId)
+			.perform(delete("/v1/user/{userId}/role/{roleId}", existingUser.getGuid(), roleId)
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(existingUser.getGuid().toString()))
@@ -564,8 +564,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var roleId = getNonExistingEntityId(roleRepository);
 
 		mockMvc
-			.perform(put("/v1/user/delete-role/{userId}/{roleId}", userId, roleId)
-				.contentType(MediaType.APPLICATION_JSON))
+			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
 		Mockito.verify(userFacade, Mockito.times(1)).deleteRoleFromUser(Mockito.eq(userId), Mockito.eq(roleId));

@@ -5,8 +5,9 @@ import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", uses = { RoleMapper.class })
+@Mapper(componentModel = "spring", uses = { RoleMapper.class }, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
 	@Mapping(source = "roles", target = "roles")

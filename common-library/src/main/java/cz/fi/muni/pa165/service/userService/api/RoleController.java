@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.service.userService.api.api;
+package cz.fi.muni.pa165.service.userService.api;
 
 import cz.fi.muni.pa165.dto.userService.RoleViewDto;
 

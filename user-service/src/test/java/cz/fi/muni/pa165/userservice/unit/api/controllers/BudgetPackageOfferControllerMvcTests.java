@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
-import cz.fi.muni.pa165.service.userService.api.api.BudgetOfferPackageController;
+import cz.fi.muni.pa165.service.userService.api.BudgetOfferPackageController;
 import cz.fi.muni.pa165.userservice.api.controllers.BudgetPackageOfferControllerImpl;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
 import cz.fi.muni.pa165.userservice.security.SecurityConfig;
@@ -168,7 +168,7 @@ public class BudgetPackageOfferControllerMvcTests {
 		Mockito.when(budgetOfferPackageFacade.getAllBudgetOfferPackages())
 			.thenReturn(Collections.singletonList(budgetOfferPackageDto));
 
-		mockMvc.perform(get("/v1/budget-package-offer/all-packages").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/budget-package-offer/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].guid").value(packageId.toString()))
 			.andExpect(jsonPath("$[0].budgetIncrease").value(budgetOfferPackageDto.getBudgetIncrease()))

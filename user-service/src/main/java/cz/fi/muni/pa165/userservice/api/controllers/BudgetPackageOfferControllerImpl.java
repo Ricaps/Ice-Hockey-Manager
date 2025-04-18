@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.api.controllers;
 
 import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
-import cz.fi.muni.pa165.service.userService.api.api.BudgetOfferPackageController;
+import cz.fi.muni.pa165.service.userService.api.BudgetOfferPackageController;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -120,7 +120,7 @@ public class BudgetPackageOfferControllerImpl implements BudgetOfferPackageContr
 			responses = { @ApiResponse(responseCode = "200", description = "List of all packages.",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 							array = @ArraySchema(schema = @Schema(implementation = BudgetOfferPackageDto.class)))) })
-	@GetMapping(path = "/all-packages", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<BudgetOfferPackageDto> getAllBudgetOfferPackages() {
 		return budgetOfferPackageFacade.getAllBudgetOfferPackages();
 	}

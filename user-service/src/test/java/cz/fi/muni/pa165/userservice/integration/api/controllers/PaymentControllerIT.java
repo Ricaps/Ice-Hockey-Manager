@@ -215,7 +215,7 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 	void getAllPayments_whenValidRequest_returnsPaymentList() throws Exception {
 		var allPayments = getExistingEntities();
 
-		ResultActions result = mockMvc.perform(get("/v1/payment/all-payments"))
+		ResultActions result = mockMvc.perform(get("/v1/payment/"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.length()").value(allPayments.size()));
 

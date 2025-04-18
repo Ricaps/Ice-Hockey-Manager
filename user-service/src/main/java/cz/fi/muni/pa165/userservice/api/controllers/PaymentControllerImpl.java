@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.userservice.api.controllers;
 
 import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
 import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
-import cz.fi.muni.pa165.service.userService.api.api.PaymentController;
+import cz.fi.muni.pa165.service.userService.api.PaymentController;
 import cz.fi.muni.pa165.userservice.business.facades.PaymentFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -110,7 +109,7 @@ public class PaymentControllerImpl implements PaymentController {
 			responses = { @ApiResponse(responseCode = "200", description = "List of all payments.",
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 							array = @ArraySchema(schema = @Schema(implementation = PaymentViewDto.class)))) })
-	@GetMapping(path = "/all-payments", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PaymentViewDto> getAllPayments() {
 		return paymentFacade.getAllPayments();
 	}
