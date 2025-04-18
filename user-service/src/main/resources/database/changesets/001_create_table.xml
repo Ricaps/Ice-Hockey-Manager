@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1744996898146-1" author="Angry">
+        <createTable tableName="budget_offer_package">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_budget_offer_package"/>
+            </column>
+            <column name="price_dollars" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_increase" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744996898146-2" author="Angry">
+        <createTable tableName="payment">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_payment"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_offer_package_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="paid" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744996898146-3" author="Angry">
+        <createTable tableName="role">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="code" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744996898146-4" author="Angry">
+        <createTable tableName="user">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mail" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birth_date" type="DATE"/>
+            <column name="password_hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744996898146-5" author="Angry">
+        <createTable tableName="user_has_role">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_has_role"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744996898146-6" author="Angry">
+        <addUniqueConstraint columnNames="code" constraintName="uc_role_code" tableName="role"/>
+    </changeSet>
+    <changeSet id="1744996898146-7" author="Angry">
+        <addUniqueConstraint columnNames="name" constraintName="uc_role_name" tableName="role"/>
+    </changeSet>
+    <changeSet id="1744996898146-8" author="Angry">
+        <addUniqueConstraint columnNames="mail" constraintName="uc_user_mail" tableName="user"/>
+    </changeSet>
+    <changeSet id="1744996898146-9" author="Angry">
+        <addUniqueConstraint columnNames="username" constraintName="uc_user_username" tableName="user"/>
+    </changeSet>
+    <changeSet id="1744996898146-10" author="Angry">
+        <addForeignKeyConstraint baseColumnNames="budget_offer_package_id" baseTableName="payment"
+                                 constraintName="FK_PAYMENT_ON_BUDGET_OFFER_PACKAGE" referencedColumnNames="guid"
+                                 referencedTableName="budget_offer_package"/>
+    </changeSet>
+    <changeSet id="1744996898146-11" author="Angry">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="payment" constraintName="FK_PAYMENT_ON_USER"
+                                 referencedColumnNames="guid" referencedTableName="user"/>
+    </changeSet>
+    <changeSet id="1744996898146-12" author="Angry">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_has_role"
+                                 constraintName="FK_USER_HAS_ROLE_ON_ROLE" referencedColumnNames="guid"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1744996898146-13" author="Angry">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_has_role"
+                                 constraintName="FK_USER_HAS_ROLE_ON_USER" referencedColumnNames="guid"
+                                 referencedTableName="user"/>
+    </changeSet>
+
+</databaseChangeLog>

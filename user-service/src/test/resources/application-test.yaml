@@ -17,6 +17,10 @@ spring:
       hibernate:
         format_sql: false
 
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
+    enabled: true
+
 server:
   servlet:
     context-path: /api
