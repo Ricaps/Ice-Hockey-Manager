@@ -405,7 +405,7 @@ public class UserServiceTests {
 		Role role = getRole();
 		Mockito.when(userRepository.existsById(userId)).thenReturn(true);
 		Mockito.when(roleRepository.existsById(roleId)).thenReturn(true);
-		Mockito.doNothing().when(userHasRoleRepository).deleteByUserIdAndRoleId(userId, roleId);
+		Mockito.when(userHasRoleRepository.deleteByUserIdAndRoleId(userId, roleId)).thenReturn(1);
 		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
 		// Act

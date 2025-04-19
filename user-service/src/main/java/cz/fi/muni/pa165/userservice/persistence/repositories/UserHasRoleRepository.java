@@ -12,6 +12,6 @@ public interface UserHasRoleRepository extends JpaRepository<UserHasRole, UUID> 
 
 	@Modifying
 	@Query("DELETE FROM UserHasRole uhr WHERE uhr.user.guid = :userId AND uhr.role.guid = :roleId")
-	void deleteByUserIdAndRoleId(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
+	int deleteByUserIdAndRoleId(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
 }

@@ -4,6 +4,9 @@ import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
 import cz.fi.muni.pa165.dto.userService.PaymentBudgetPackageOfferDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class BudgetOfferPackageTestData {
@@ -36,6 +39,22 @@ public class BudgetOfferPackageTestData {
 			.description("sdapfj aspdija apsodj")
 			.isAvailable(true)
 			.build();
+	}
+
+	public static List<BudgetOfferPackage> getBudgetOfferPackages(int count) {
+		List<BudgetOfferPackage> budgetOfferPackages = new ArrayList<BudgetOfferPackage>();
+
+		Random random = new Random(654321L);
+		for (int i = 0; i < count; i++) {
+			budgetOfferPackages.add(BudgetOfferPackage.builder()
+				.guid(null)
+				.isAvailable(random.nextBoolean())
+				.priceDollars(random.nextInt(0, 1000))
+				.budgetIncrease(random.nextInt(1, 100000000))
+				.build());
+		}
+
+		return budgetOfferPackages;
 	}
 
 }

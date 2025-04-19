@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.math.NumberUtils.min;
+
 public class RoleTestData {
 
 	public static Role getRole() {
@@ -23,14 +25,23 @@ public class RoleTestData {
 	}
 
 	public static List<Role> getListOfRoles() {
-		List<Role> roles = new ArrayList<Role>();
-		roles.add(getRole());
+		return getListOfRoles(10, true);
+	}
 
-		for (int i = 0; i < 10; i++) {
+	public static List<Role> getListOfRoles(int count, boolean withGuid) {
+		List<Role> roles = new ArrayList<Role>();
+
+		if (withGuid)
+			roles.add(getRole());
+
+		for (int i = 0; i < count; i++) {
+			String description = "TEST ".repeat(i);
+			description = description.substring(0, min(description.length(), 255));
+
 			roles.add(Role.builder()
-				.guid(UUID.randomUUID())
+				.guid(withGuid ? UUID.randomUUID() : null)
 				.code("CODE %d".formatted(i))
-				.description("TEST ".repeat(i))
+				.description(description)
 				.name("TEST - %d".formatted(i))
 				.build());
 		}
