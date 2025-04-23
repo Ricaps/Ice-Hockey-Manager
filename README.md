@@ -32,6 +32,8 @@ How to run each service separately:
 1. Run `mvn clean install` in the root directory.
 2. Then for each service, go to its sub-folder (e.g. `cd game-service`) and use `mvn spring-boot:run`.
 
+**WARNING** - To properly use the user-service, you need to run the Artemis broker yourself and correctly define its URL to match the user-service configuration (`spring.artemis.broker-url: tcp://artemis:61616`). If you decide to run the service with Docker, the Artemis broker will be started automatically. Without running the Artemis broker, payment methods may not function correctly when creating or updating.
+
 ### Run in Docker
 
 Run following command in the terminal:
@@ -113,3 +115,8 @@ roles (Player, Admin, etc...). The service will also serve as authentication ser
 ## Game service
 
 - Gen AI was used for generating random data for database seeders.
+
+## User service
+Gen AI was used for:
+- generating some test cases of controller unit tests, but had to be adjusted.
+- genarating methods to seed userHasRole and Payment tables

@@ -2,15 +2,17 @@ package cz.fi.muni.pa165.userservice.integration.api.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
 import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
+import cz.fi.muni.pa165.messaging.BudgetChangeMessage;
 import cz.fi.muni.pa165.userservice.business.mappers.PaymentMapper;
+import cz.fi.muni.pa165.userservice.business.messages.BudgetUpdateMessageResolver;
 import cz.fi.muni.pa165.userservice.business.services.PaymentService;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.PaymentRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -42,6 +47,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Payment> {
 
+	@MockitoBean
+	private JmsTemplate jmsTemplate;
+
+	private final ArgumentCaptor<BudgetChangeMessage> messageCaptor = ArgumentCaptor
+		.forClass(BudgetChangeMessage.class);
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -59,6 +70,12 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 
 	@MockitoSpyBean
 	PaymentService paymentService;
+
+	@Autowired
+	private EntityManager entityManager;
+
+	@Autowired
+	private BudgetUpdateMessageResolver budgetUpdateMessageResolver;
 
 	private final PaymentRepository paymentRepository;
 
@@ -97,11 +114,12 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 	}
 
 	@Test
-	void createPayment_whenValidRequest_returnsCreatedPayment() throws Exception {
+	void createPayment_whenValidRequestPaymentNotPaid_returnsCreatedPayment() throws Exception {
 		var allPayments = getExistingEntities();
 		var user = getExistingEntity(userRepository);
 		var budgetPackage = getExistingEntity(budgetOfferPackageRepository);
 		var paymentDto = getValidPaymentUpdateCreateDto(user.getGuid(), budgetPackage.getGuid());
+		paymentDto.setPaid(false);
 
 		ResultActions result = mockMvc
 			.perform(post("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
@@ -117,6 +135,34 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 
 		Assertions.assertEquals(allPayments.size() + 1, getExistingEntities().size());
 		Assertions.assertTrue(paymentRepository.existsById(viewDto.getGuid()));
+		Mockito.verify(jmsTemplate, Mockito.times(0))
+			.convertAndSend(Mockito.anyString(), Mockito.any(BudgetChangeMessage.class));
+	}
+
+	@Test
+	void createPayment_whenValidRequestPaymentPaid_returnsCreatedPayment() throws Exception {
+		var allPayments = getExistingEntities();
+		var user = getExistingEntity(userRepository);
+		var budgetPackage = getExistingEntity(budgetOfferPackageRepository);
+		var paymentDto = getValidPaymentUpdateCreateDto(user.getGuid(), budgetPackage.getGuid());
+		paymentDto.setPaid(true);
+
+		ResultActions result = mockMvc
+			.perform(post("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(paymentDto)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.guid").isNotEmpty())
+			.andExpect(jsonPath("$.paid").value(paymentDto.getPaid()))
+			.andExpect(jsonPath("$.user.guid").value(user.getGuid().toString()))
+			.andExpect(jsonPath("$.budgetOfferPackage.guid").value(budgetPackage.getGuid().toString()));
+
+		PaymentViewDto viewDto = objectMapper.readValue(result.andReturn().getResponse().getContentAsString(),
+				PaymentViewDto.class);
+
+		Assertions.assertEquals(allPayments.size() + 1, getExistingEntities().size());
+		Assertions.assertTrue(paymentRepository.existsById(viewDto.getGuid()));
+		Mockito.verify(jmsTemplate, Mockito.times(1))
+			.convertAndSend(Mockito.anyString(), Mockito.any(BudgetChangeMessage.class));
 	}
 
 	@Test
@@ -150,8 +196,45 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 	}
 
 	@Test
-	void updatePayment_whenValidRequest_returnsUpdatedPayment() throws Exception {
+	void updatePayment_whenValidRequestWithoutPaidChange_returnsUpdatedPayment() throws Exception {
 		var existingEntity = getExistingEntity();
+		entityManager.detach(existingEntity);
+		existingEntity.setPaid(existingEntity.getPaid());
+		existingEntity.setCreatedAt(LocalDateTime.of(1892, 1, 3, 1, 1, 1, 1));
+		existingEntity.setUser(userRepository.findAll()
+			.stream()
+			.filter(u -> !u.getGuid().equals(existingEntity.getUser().getGuid()))
+			.findFirst()
+			.orElseThrow());
+		existingEntity.setBudgetOfferPackage(budgetOfferPackageRepository.findAll()
+			.stream()
+			.filter(p -> !p.getGuid().equals(existingEntity.getBudgetOfferPackage().getGuid()))
+			.findFirst()
+			.orElseThrow());
+
+		PaymentUpdateCreateDto updateDto = paymentMapper.paymentToPaymentUpdateCreateDto(existingEntity);
+
+		ResultActions result = mockMvc
+			.perform(put("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+			.andExpect(status().isOk());
+
+		assertPaymentEquals(result, existingEntity);
+		var updatedEntity = paymentRepository.findById(existingEntity.getGuid()).orElseThrow();
+		Assertions.assertEquals(existingEntity.getGuid(), updatedEntity.getGuid());
+		Assertions.assertEquals(existingEntity.getPaid(), updatedEntity.getPaid());
+		Assertions.assertEquals(existingEntity.getCreatedAt(), updatedEntity.getCreatedAt());
+		Assertions.assertEquals(existingEntity.getUser().getGuid(), updatedEntity.getUser().getGuid());
+		Assertions.assertEquals(existingEntity.getBudgetOfferPackage().getGuid(),
+				updatedEntity.getBudgetOfferPackage().getGuid());
+		Mockito.verify(jmsTemplate, Mockito.times(0))
+			.convertAndSend(Mockito.anyString(), Mockito.any(BudgetChangeMessage.class));
+	}
+
+	@Test
+	void updatePayment_whenValidRequestWithPaidChangingToFalse_returnsUpdatedPayment() throws Exception {
+		var existingEntity = getFirstFilteredEntity(Payment::getPaid);
+		entityManager.detach(existingEntity);
 		existingEntity.setPaid(!existingEntity.getPaid());
 		existingEntity.setCreatedAt(LocalDateTime.of(1892, 1, 3, 1, 1, 1, 1));
 		existingEntity.setUser(userRepository.findAll()
@@ -180,6 +263,46 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 		Assertions.assertEquals(existingEntity.getUser().getGuid(), updatedEntity.getUser().getGuid());
 		Assertions.assertEquals(existingEntity.getBudgetOfferPackage().getGuid(),
 				updatedEntity.getBudgetOfferPackage().getGuid());
+		Mockito.verify(jmsTemplate, Mockito.times(1)).convertAndSend(Mockito.anyString(), messageCaptor.capture());
+		Assertions.assertEquals(-existingEntity.getBudgetOfferPackage().getBudgetIncrease(),
+				messageCaptor.getValue().getAmount());
+	}
+
+	@Test
+	void updatePayment_whenValidRequestWithPaidChangingToTrue_returnsUpdatedPayment() throws Exception {
+		var existingEntity = getFirstFilteredEntity(p -> !p.getPaid());
+		entityManager.detach(existingEntity);
+		existingEntity.setPaid(!existingEntity.getPaid());
+		existingEntity.setCreatedAt(LocalDateTime.of(1892, 1, 3, 1, 1, 1, 1));
+		existingEntity.setUser(userRepository.findAll()
+			.stream()
+			.filter(u -> !u.getGuid().equals(existingEntity.getUser().getGuid()))
+			.findFirst()
+			.orElseThrow());
+		existingEntity.setBudgetOfferPackage(budgetOfferPackageRepository.findAll()
+			.stream()
+			.filter(p -> !p.getGuid().equals(existingEntity.getBudgetOfferPackage().getGuid()))
+			.findFirst()
+			.orElseThrow());
+
+		PaymentUpdateCreateDto updateDto = paymentMapper.paymentToPaymentUpdateCreateDto(existingEntity);
+
+		ResultActions result = mockMvc
+			.perform(put("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+			.andExpect(status().isOk());
+
+		assertPaymentEquals(result, existingEntity);
+		var updatedEntity = paymentRepository.findById(existingEntity.getGuid()).orElseThrow();
+		Assertions.assertEquals(existingEntity.getGuid(), updatedEntity.getGuid());
+		Assertions.assertEquals(existingEntity.getPaid(), updatedEntity.getPaid());
+		Assertions.assertEquals(existingEntity.getCreatedAt(), updatedEntity.getCreatedAt());
+		Assertions.assertEquals(existingEntity.getUser().getGuid(), updatedEntity.getUser().getGuid());
+		Assertions.assertEquals(existingEntity.getBudgetOfferPackage().getGuid(),
+				updatedEntity.getBudgetOfferPackage().getGuid());
+		Mockito.verify(jmsTemplate, Mockito.times(1)).convertAndSend(Mockito.anyString(), messageCaptor.capture());
+		Assertions.assertEquals(existingEntity.getBudgetOfferPackage().getBudgetIncrease(),
+				messageCaptor.getValue().getAmount());
 	}
 
 	@Test

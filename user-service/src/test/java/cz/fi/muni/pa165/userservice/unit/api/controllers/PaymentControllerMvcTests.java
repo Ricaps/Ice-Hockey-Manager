@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.UUID;
@@ -83,58 +84,40 @@ class PaymentControllerMvcTests {
 		Mockito.when(paymentFacade.getPaymentById(paymentId)).thenReturn(paymentViewDto);
 		Mockito.when(paymentFacade.getPaymentById(paymentId)).thenReturn(paymentViewDto);
 
-		mockMvc.perform(get("/v1/payment/{id}", paymentId))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(paymentId.toString()))
-			.andExpect(jsonPath("$.paid").value(paymentViewDto.getPaid()))
-			.andExpect(jsonPath("$.createdAt").value(paymentViewDto.getCreatedAt().toString()))
-
-			.andExpect(jsonPath("$.user.guid").value(paymentViewDto.getUser().getGuid().toString()))
-			.andExpect(jsonPath("$.user.mail").value(paymentViewDto.getUser().getMail()))
-			.andExpect(jsonPath("$.user.username").value(paymentViewDto.getUser().getUsername()))
-			.andExpect(jsonPath("$.user.surname").value(paymentViewDto.getUser().getSurname()))
-			.andExpect(jsonPath("$.user.isActive").value(paymentViewDto.getUser().getIsActive()))
-
-			.andExpect(jsonPath("$.budgetOfferPackage.guid")
-				.value(paymentViewDto.getBudgetOfferPackage().getGuid().toString()))
-			.andExpect(jsonPath("$.budgetOfferPackage.budgetIncrease")
-				.value(paymentViewDto.getBudgetOfferPackage().getBudgetIncrease()))
-			.andExpect(jsonPath("$.budgetOfferPackage.priceDollars")
-				.value(paymentViewDto.getBudgetOfferPackage().getPriceDollars()))
-			.andExpect(jsonPath("$.budgetOfferPackage.isAvailable")
-				.value(paymentViewDto.getBudgetOfferPackage().getIsAvailable()));
+		ResultActions result = mockMvc.perform(get("/v1/payment/{id}", paymentId)).andExpect(status().isOk());
 
 		Mockito.verify(paymentFacade, Mockito.times(1)).getPaymentById(paymentId);
+		assertPaymentEqualsResponse(result);
 	}
 
 	@Test
-	void createPayment_whenValidRequest_returnsCreatedPayment() throws Exception {
+	void createPayment_whenValidRequestPaymentNotPaid_returnsCreatedPayment() throws Exception {
 		Mockito.when(paymentFacade.createPayment(any(PaymentUpdateCreateDto.class))).thenReturn(paymentViewDto);
+		paymentViewDto.setPaid(false);
+		paymentUpdateCreateDto.setPaid(false);
 
-		mockMvc
+		ResultActions result = mockMvc
 			.perform(post("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(paymentUpdateCreateDto)))
-			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.guid").value(paymentId.toString()))
-			.andExpect(jsonPath("$.paid").value(paymentViewDto.getPaid()))
-			.andExpect(jsonPath("$.createdAt").value(paymentViewDto.getCreatedAt().toString()))
-
-			.andExpect(jsonPath("$.user.guid").value(paymentViewDto.getUser().getGuid().toString()))
-			.andExpect(jsonPath("$.user.mail").value(paymentViewDto.getUser().getMail()))
-			.andExpect(jsonPath("$.user.username").value(paymentViewDto.getUser().getUsername()))
-			.andExpect(jsonPath("$.user.surname").value(paymentViewDto.getUser().getSurname()))
-			.andExpect(jsonPath("$.user.isActive").value(paymentViewDto.getUser().getIsActive()))
-
-			.andExpect(jsonPath("$.budgetOfferPackage.guid")
-				.value(paymentViewDto.getBudgetOfferPackage().getGuid().toString()))
-			.andExpect(jsonPath("$.budgetOfferPackage.budgetIncrease")
-				.value(paymentViewDto.getBudgetOfferPackage().getBudgetIncrease()))
-			.andExpect(jsonPath("$.budgetOfferPackage.priceDollars")
-				.value(paymentViewDto.getBudgetOfferPackage().getPriceDollars()))
-			.andExpect(jsonPath("$.budgetOfferPackage.isAvailable")
-				.value(paymentViewDto.getBudgetOfferPackage().getIsAvailable()));
+			.andExpect(status().isCreated());
 
 		Mockito.verify(paymentFacade, Mockito.times(1)).createPayment(any(PaymentUpdateCreateDto.class));
+		assertPaymentEqualsResponse(result);
+	}
+
+	@Test
+	void createPayment_whenValidRequestPaymentPaid_returnsCreatedPayment() throws Exception {
+		Mockito.when(paymentFacade.createPayment(any(PaymentUpdateCreateDto.class))).thenReturn(paymentViewDto);
+		paymentViewDto.setPaid(true);
+		paymentUpdateCreateDto.setPaid(true);
+
+		ResultActions result = mockMvc
+			.perform(post("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(paymentUpdateCreateDto)))
+			.andExpect(status().isCreated());
+
+		Mockito.verify(paymentFacade, Mockito.times(1)).createPayment(any(PaymentUpdateCreateDto.class));
+		assertPaymentEqualsResponse(result);
 	}
 
 	@Test
@@ -164,31 +147,13 @@ class PaymentControllerMvcTests {
 	}
 
 	@Test
-	void updatePayment_whenValidReques_returnsUpdatedPayment() throws Exception {
+	void updatePayment_whenValidRequest_returnsUpdatedPayment() throws Exception {
 		Mockito.when(paymentFacade.updatePayment(any(PaymentUpdateCreateDto.class))).thenReturn(paymentViewDto);
 
-		mockMvc
+		ResultActions result = mockMvc
 			.perform(put("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(paymentUpdateCreateDto)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(paymentId.toString()))
-			.andExpect(jsonPath("$.paid").value(paymentViewDto.getPaid()))
-			.andExpect(jsonPath("$.createdAt").value(paymentViewDto.getCreatedAt().toString()))
-
-			.andExpect(jsonPath("$.user.guid").value(paymentViewDto.getUser().getGuid().toString()))
-			.andExpect(jsonPath("$.user.mail").value(paymentViewDto.getUser().getMail()))
-			.andExpect(jsonPath("$.user.username").value(paymentViewDto.getUser().getUsername()))
-			.andExpect(jsonPath("$.user.surname").value(paymentViewDto.getUser().getSurname()))
-			.andExpect(jsonPath("$.user.isActive").value(paymentViewDto.getUser().getIsActive()))
-
-			.andExpect(jsonPath("$.budgetOfferPackage.guid")
-				.value(paymentViewDto.getBudgetOfferPackage().getGuid().toString()))
-			.andExpect(jsonPath("$.budgetOfferPackage.budgetIncrease")
-				.value(paymentViewDto.getBudgetOfferPackage().getBudgetIncrease()))
-			.andExpect(jsonPath("$.budgetOfferPackage.priceDollars")
-				.value(paymentViewDto.getBudgetOfferPackage().getPriceDollars()))
-			.andExpect(jsonPath("$.budgetOfferPackage.isAvailable")
-				.value(paymentViewDto.getBudgetOfferPackage().getIsAvailable()));
+			.andExpect(status().isOk());
 
 		Mockito.verify(paymentFacade, Mockito.times(1)).updatePayment(any(PaymentUpdateCreateDto.class));
 	}
@@ -241,6 +206,27 @@ class PaymentControllerMvcTests {
 			.andExpect(jsonPath("$[0].budgetOfferPackage.priceDollars")
 				.value(paymentViewDto.getBudgetOfferPackage().getPriceDollars()))
 			.andExpect(jsonPath("$[0].budgetOfferPackage.isAvailable")
+				.value(paymentViewDto.getBudgetOfferPackage().getIsAvailable()));
+	}
+
+	private void assertPaymentEqualsResponse(ResultActions result) throws Exception {
+		result.andExpect(jsonPath("$.guid").value(paymentId.toString()))
+			.andExpect(jsonPath("$.paid").value(paymentViewDto.getPaid()))
+			.andExpect(jsonPath("$.createdAt").value(paymentViewDto.getCreatedAt().toString()))
+
+			.andExpect(jsonPath("$.user.guid").value(paymentViewDto.getUser().getGuid().toString()))
+			.andExpect(jsonPath("$.user.mail").value(paymentViewDto.getUser().getMail()))
+			.andExpect(jsonPath("$.user.username").value(paymentViewDto.getUser().getUsername()))
+			.andExpect(jsonPath("$.user.surname").value(paymentViewDto.getUser().getSurname()))
+			.andExpect(jsonPath("$.user.isActive").value(paymentViewDto.getUser().getIsActive()))
+
+			.andExpect(jsonPath("$.budgetOfferPackage.guid")
+				.value(paymentViewDto.getBudgetOfferPackage().getGuid().toString()))
+			.andExpect(jsonPath("$.budgetOfferPackage.budgetIncrease")
+				.value(paymentViewDto.getBudgetOfferPackage().getBudgetIncrease()))
+			.andExpect(jsonPath("$.budgetOfferPackage.priceDollars")
+				.value(paymentViewDto.getBudgetOfferPackage().getPriceDollars()))
+			.andExpect(jsonPath("$.budgetOfferPackage.isAvailable")
 				.value(paymentViewDto.getBudgetOfferPackage().getIsAvailable()));
 	}
 

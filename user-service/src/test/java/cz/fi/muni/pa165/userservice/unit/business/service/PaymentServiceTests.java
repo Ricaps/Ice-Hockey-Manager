@@ -1,6 +1,7 @@
 package cz.fi.muni.pa165.userservice.unit.business.service;
 
 import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
+import cz.fi.muni.pa165.userservice.business.messages.BudgetUpdateMessageResolver;
 import cz.fi.muni.pa165.userservice.business.services.PaymentService;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
@@ -8,6 +9,7 @@ import cz.fi.muni.pa165.userservice.persistence.entities.User;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.PaymentRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
+import cz.fi.muni.pa165.userservice.unit.testData.BudgetOfferPackageTestData;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +38,9 @@ public class PaymentServiceTests {
 
 	@Mock
 	private BudgetOfferPackageRepository budgetOfferPackageRepository;
+
+	@Mock
+	private BudgetUpdateMessageResolver budgetIncreaseMessageResolver;
 
 	@InjectMocks
 	private PaymentService paymentService;
@@ -139,10 +144,11 @@ public class PaymentServiceTests {
 	}
 
 	@Test
-	void createPayment_whenValidPaymentIsGiven_shouldSavePayment() {
+	void createPayment_whenValidPaymentIsGivenAndPaymentNotPaid_shouldSavePayment() {
 		// Arrange
 		Payment paymentToCreate = getPayment();
 		paymentToCreate.setGuid(null);
+		paymentToCreate.setPaid(false);
 		Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(paymentToCreate);
 		Mockito.when(userRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
 		Mockito.when(budgetOfferPackageRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
@@ -153,6 +159,32 @@ public class PaymentServiceTests {
 		// Assert
 		assertNotNull(savedPayment);
 		Mockito.verify(paymentRepository, Mockito.times(1)).save(Mockito.any(Payment.class));
+		Mockito.verify(budgetIncreaseMessageResolver, Mockito.times(0))
+			.sendBudgetChangeMessage(Mockito.any(UUID.class), Mockito.anyInt());
+		Mockito.verify(budgetOfferPackageRepository, Mockito.times(0)).findById(Mockito.any(UUID.class));
+	}
+
+	@Test
+	void createPayment_whenValidPaymentIsGivenAndPaymentPaid_shouldSavePayment() {
+		// Arrange
+		Payment paymentToCreate = getPayment();
+		paymentToCreate.setGuid(null);
+		paymentToCreate.setPaid(true);
+		Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(paymentToCreate);
+		Mockito.when(userRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.findById(Mockito.any(UUID.class)))
+			.thenReturn(Optional.of(BudgetOfferPackageTestData.getBudgetOfferPackage()));
+
+		// Act
+		Payment savedPayment = paymentService.createPayment(paymentToCreate);
+
+		// Assert
+		assertNotNull(savedPayment);
+		Mockito.verify(paymentRepository, Mockito.times(1)).save(Mockito.any(Payment.class));
+		Mockito.verify(budgetIncreaseMessageResolver, Mockito.times(1))
+			.sendBudgetChangeMessage(Mockito.any(UUID.class), Mockito.anyInt());
+		Mockito.verify(budgetOfferPackageRepository, Mockito.times(1)).findById(Mockito.any(UUID.class));
 	}
 
 	@Test
@@ -207,11 +239,12 @@ public class PaymentServiceTests {
 	}
 
 	@Test
-	void updatePayment_whenValidPaymentIsGiven_shouldSavePayment() {
+	void updatePayment_whenValidPaymentIsGivenWithNoPaidChange_shouldSavePayment() {
 		// Arrange
 		Payment paymentToUpdate = getPayment();
 		paymentToUpdate.setGuid(UUID.randomUUID());
 		Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(paymentToUpdate);
+		Mockito.when(paymentRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(paymentToUpdate));
 		Mockito.when(userRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
 		Mockito.when(budgetOfferPackageRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
 
@@ -221,6 +254,65 @@ public class PaymentServiceTests {
 		// Assert
 		assertNotNull(updatedPayment);
 		Mockito.verify(paymentRepository, Mockito.times(1)).save(Mockito.any(Payment.class));
+		Mockito.verify(budgetOfferPackageRepository, Mockito.times(0)).findById(Mockito.any(UUID.class));
+		Mockito.verify(budgetIncreaseMessageResolver, Mockito.times(0))
+			.sendBudgetChangeMessage(Mockito.any(UUID.class), Mockito.anyInt());
+	}
+
+	@Test
+	void updatePayment_whenValidPaymentIsGivenWithPaidChangingToTrue_shouldSavePayment() {
+		// Arrange
+		Payment paymentToUpdate = getPayment();
+		paymentToUpdate.setGuid(UUID.randomUUID());
+		paymentToUpdate.setPaid(false);
+		Payment updatedPayment = getPayment();
+		paymentToUpdate.setGuid(paymentToUpdate.getGuid());
+		updatedPayment.setPaid(true);
+
+		Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(updatedPayment);
+		Mockito.when(paymentRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(paymentToUpdate));
+		Mockito.when(userRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.findById(Mockito.any(UUID.class)))
+			.thenReturn(Optional.of(BudgetOfferPackageTestData.getBudgetOfferPackage()));
+
+		// Act
+		Payment receivedPayment = paymentService.updatePayment(paymentToUpdate);
+
+		// Assert
+		assertNotNull(receivedPayment);
+		Mockito.verify(paymentRepository, Mockito.times(1)).save(Mockito.any(Payment.class));
+		Mockito.verify(budgetOfferPackageRepository, Mockito.times(1)).findById(Mockito.any(UUID.class));
+		Mockito.verify(budgetIncreaseMessageResolver, Mockito.times(1))
+			.sendBudgetChangeMessage(Mockito.any(UUID.class), Mockito.anyInt());
+	}
+
+	@Test
+	void updatePayment_whenValidPaymentIsGivenWithPaidChangingToFalse_shouldSavePayment() {
+		// Arrange
+		Payment paymentToUpdate = getPayment();
+		paymentToUpdate.setGuid(UUID.randomUUID());
+		paymentToUpdate.setPaid(true);
+		Payment updatedPayment = getPayment();
+		paymentToUpdate.setGuid(paymentToUpdate.getGuid());
+		updatedPayment.setPaid(false);
+
+		Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(updatedPayment);
+		Mockito.when(paymentRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(paymentToUpdate));
+		Mockito.when(userRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.existsById(Mockito.any(UUID.class))).thenReturn(true);
+		Mockito.when(budgetOfferPackageRepository.findById(Mockito.any(UUID.class)))
+			.thenReturn(Optional.of(BudgetOfferPackageTestData.getBudgetOfferPackage()));
+
+		// Act
+		Payment receivedPayment = paymentService.updatePayment(paymentToUpdate);
+
+		// Assert
+		assertNotNull(receivedPayment);
+		Mockito.verify(paymentRepository, Mockito.times(1)).save(Mockito.any(Payment.class));
+		Mockito.verify(budgetOfferPackageRepository, Mockito.times(1)).findById(Mockito.any(UUID.class));
+		Mockito.verify(budgetIncreaseMessageResolver, Mockito.times(1))
+			.sendBudgetChangeMessage(Mockito.any(UUID.class), Mockito.anyInt());
 	}
 
 	@Test

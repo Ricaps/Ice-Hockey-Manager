@@ -31,6 +31,8 @@ services:
       - "8083:8083"
     volumes:
       - configs:/app/etc
+    depends_on:
+      - artemis
   artemis:
     image: apache/activemq-artemis:latest-alpine
     environment:

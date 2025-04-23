@@ -1,6 +1,8 @@
 package cz.fi.muni.pa165.userservice.business.services;
 
 import cz.fi.muni.pa165.userservice.api.exception.ValidationUtil;
+import cz.fi.muni.pa165.userservice.business.messages.BudgetUpdateMessageResolver;
+import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.PaymentRepository;
@@ -23,12 +25,16 @@ public class PaymentService extends EntityServiceBase<Payment> {
 
 	private final BudgetOfferPackageRepository budgetOfferPackageRepository;
 
+	private final BudgetUpdateMessageResolver budgetIncreaseMessageResolver;
+
 	@Autowired
 	public PaymentService(PaymentRepository paymentRepository, UserRepository userRepository,
-			BudgetOfferPackageRepository budgetOfferPackageRepository) {
+			BudgetOfferPackageRepository budgetOfferPackageRepository,
+			BudgetUpdateMessageResolver budgetIncreaseMessageResolver) {
 		this.paymentRepository = paymentRepository;
 		this.userRepository = userRepository;
 		this.budgetOfferPackageRepository = budgetOfferPackageRepository;
+		this.budgetIncreaseMessageResolver = budgetIncreaseMessageResolver;
 	}
 
 	@Transactional
@@ -45,15 +51,26 @@ public class PaymentService extends EntityServiceBase<Payment> {
 		validatePayment(payment);
 		ValidationUtil.requireNull(payment.getGuid(), "ID must be null when creating a new payment!");
 
-		return paymentRepository.save(payment);
+		payment = paymentRepository.save(payment);
+		if (payment.getPaid()) {
+			sendIncreaseBudgetMessage(payment);
+		}
+
+		return payment;
 	}
 
 	@Transactional
 	public Payment updatePayment(@Valid Payment payment) {
 		validatePayment(payment);
 		ValidationUtil.requireNotNull(payment, "Payment is required! Provided payment is null.");
+		boolean wasPaid = paymentRepository.findById(payment.getGuid()).get().getPaid();
+		payment = paymentRepository.save(payment);
 
-		return paymentRepository.save(payment);
+		if (wasPaid != payment.getPaid()) {
+			sendIncreaseBudgetMessage(payment);
+		}
+
+		return payment;
 	}
 
 	@Transactional
@@ -77,6 +94,14 @@ public class PaymentService extends EntityServiceBase<Payment> {
 			throw new EntityNotFoundException(
 					"Budget offer package " + payment.getBudgetOfferPackage().getGuid() + " was not found");
 		}
+	}
+
+	private void sendIncreaseBudgetMessage(Payment payment) {
+		BudgetOfferPackage pkg = budgetOfferPackageRepository.findById(payment.getBudgetOfferPackage().getGuid())
+			.orElseThrow();
+		int increase = pkg.getBudgetIncrease() * (payment.getPaid() ? 1 : -1);
+
+		budgetIncreaseMessageResolver.sendBudgetChangeMessage(payment.getUser().getGuid(), increase);
 	}
 
 }

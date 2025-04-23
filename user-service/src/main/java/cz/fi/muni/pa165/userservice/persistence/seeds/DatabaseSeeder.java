@@ -1,40 +1,40 @@
-package cz.fi.muni.pa165.userservice.integration.api.controllers;
+package cz.fi.muni.pa165.userservice.persistence.seeds;
 
-import cz.fi.muni.pa165.userservice.persistence.seeds.UserServiceSeeder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @Slf4j
-class TestDataFactory implements CommandLineRunner {
+public class DatabaseSeeder implements CommandLineRunner {
 
 	private final UserServiceSeeder userServiceSeeder;
 
-	@Value("${server.database.seedTestData:true}")
+	@Value("${server.database.seed:true}")
 	private boolean shouldSeed;
 
+	@Value("${server.database.clear:false}")
+	private boolean shouldClear;
+
 	@Autowired
-	public TestDataFactory(UserServiceSeeder userServiceSeeder) {
+	public DatabaseSeeder(UserServiceSeeder userServiceSeeder) {
 		this.userServiceSeeder = userServiceSeeder;
 	}
 
 	@Override
 	public void run(String... args) {
+		if (shouldClear) {
+			userServiceSeeder.clearDatabase();
+		}
+
 		if (!shouldSeed) {
-			log.info("Seeding test data is turned off. No data were seeded.");
+			log.info("Seeding is disabled. No data were seeded.");
 			return;
 		}
 
 		userServiceSeeder.seedTestData(5, 50);
-	}
-
-	public String getUserPasswordById(UUID userId) {
-		return userServiceSeeder.getUserPasswordById(userId);
 	}
 
 }

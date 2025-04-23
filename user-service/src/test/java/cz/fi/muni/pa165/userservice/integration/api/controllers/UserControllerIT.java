@@ -670,7 +670,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		var user = getExistingEntity(index);
 
 		return ChangePasswordRequestDto.builder()
-			.oldPassword(testDataFactory.getUserPassword(user.getGuid()))
+			.oldPassword(testDataFactory.getUserPasswordById(user.getGuid()))
 			.userId(user.getGuid())
 			.newPassword("NewSafePassword123*+-")
 			.build();

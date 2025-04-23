@@ -7,6 +7,8 @@ server:
     include-stacktrace: never
   database:
     seed: true
+    clear: false
+
 spring:
   application:
     name: world-list-service
