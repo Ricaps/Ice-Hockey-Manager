@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.gameservice.testdata;
 
-import cz.fi.muni.pa165.dto.gameService.ArenaViewDto;
-import cz.fi.muni.pa165.dto.gameService.MatchCreateDto;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.ArenaViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed;
 import cz.fi.muni.pa165.gameservice.persistence.entities.*;
 

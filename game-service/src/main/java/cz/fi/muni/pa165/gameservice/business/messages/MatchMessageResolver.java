@@ -1,6 +1,6 @@
 package cz.fi.muni.pa165.gameservice.business.messages;
 
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
 import cz.fi.muni.pa165.gameservice.business.mappers.MatchMapper;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Match;

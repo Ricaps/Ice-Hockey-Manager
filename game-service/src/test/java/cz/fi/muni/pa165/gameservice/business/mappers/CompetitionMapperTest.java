@@ -1,10 +1,11 @@
 package cz.fi.muni.pa165.gameservice.business.mappers;
 
-import cz.fi.muni.pa165.dto.gameService.CompetitionTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionTeamDto;
 import cz.fi.muni.pa165.gameservice.persistence.entities.CompetitionHasTeam;
 import cz.fi.muni.pa165.gameservice.testdata.CompetitionTestData;
 import cz.fi.muni.pa165.gameservice.testdata.TeamsTestData;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CompetitionMapperTest {
 
-	CompetitionMapper competitionMapper = CompetitionMapper.INSTANCE;
+	CompetitionMapper competitionMapper = Mappers.getMapper(CompetitionMapper.class);
 
 	@Test
 	void map_entityToViewDto_success() {

@@ -1,7 +1,7 @@
-package cz.fi.muni.pa165.service.gameService.api;
+package cz.fi.muni.pa165.service.gameservice.api;
 
-import cz.fi.muni.pa165.dto.gameService.MatchCreateDto;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 
 import java.util.List;
 import java.util.UUID;

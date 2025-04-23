@@ -4,12 +4,13 @@ import cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed;
 import cz.fi.muni.pa165.gameservice.persistence.entities.MatchType;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MatchMapperTest {
 
-	private final MatchMapper matchMapper = MatchMapper.INSTANCE;
+	private final MatchMapper matchMapper = Mappers.getMapper(MatchMapper.class);
 
 	@Test
 	void matchCreateToMatchEntity() {

@@ -1,10 +1,10 @@
 package cz.fi.muni.pa165.gameservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.gameService.AssignTeamDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionCreateDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionViewDto;
+import cz.fi.muni.pa165.dto.gameservice.AssignTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.business.facades.CompetitionFacade;
-import cz.fi.muni.pa165.service.gameService.api.CompetitionController;
+import cz.fi.muni.pa165.service.gameservice.api.CompetitionController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

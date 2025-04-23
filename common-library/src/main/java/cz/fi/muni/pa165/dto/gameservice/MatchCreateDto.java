@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.dto.gameService;
+package cz.fi.muni.pa165.dto.gameservice;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

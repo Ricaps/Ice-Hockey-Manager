@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.gameservice.api.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.api.exception.ValueIsMissingException;
 import cz.fi.muni.pa165.gameservice.business.mappers.MatchMapper;
@@ -12,9 +12,9 @@ import cz.fi.muni.pa165.gameservice.persistence.entities.MatchType;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.ArenaRepository;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.CompetitionRepository;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.MatchRepository;
-import cz.fi.muni.pa165.gameservice.testdata.CompetitionITDataFactory;
-import cz.fi.muni.pa165.gameservice.testdata.MatchITDataFactory;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
+import cz.fi.muni.pa165.gameservice.testdata.factory.CompetitionITDataFactory;
+import cz.fi.muni.pa165.gameservice.testdata.factory.MatchITDataFactory;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +147,7 @@ class MatchControllerImplIT {
 
 		List<MatchViewDto> returnedMatches = mapResponseToMatchesList(response);
 
-		var matchesDB = matchRepository.getMatchByCompetition_Guid(competition.getGuid());
+		var matchesDB = matchRepository.getMatchesByCompetition_Guid(competition.getGuid());
 
 		assertThat(returnedMatches).containsAll(matchMapper.listEntitiesToListViews(matchesDB.stream().toList()));
 	}

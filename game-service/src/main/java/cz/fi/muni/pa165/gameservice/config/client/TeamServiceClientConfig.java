@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.gameservice.config;
+package cz.fi.muni.pa165.gameservice.config.client;
 
 import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
 import org.springframework.beans.factory.annotation.Value;

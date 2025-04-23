@@ -1,9 +1,9 @@
 package cz.fi.muni.pa165.gameservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.gameService.MatchCreateDto;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.business.facades.MatchFacade;
-import cz.fi.muni.pa165.service.gameService.api.MatchController;
+import cz.fi.muni.pa165.service.gameservice.api.MatchController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

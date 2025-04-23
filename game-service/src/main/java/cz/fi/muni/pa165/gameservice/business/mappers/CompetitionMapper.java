@@ -1,20 +1,18 @@
 package cz.fi.muni.pa165.gameservice.business.mappers;
 
-import cz.fi.muni.pa165.dto.gameService.AssignTeamDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionCreateDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionViewDto;
+import cz.fi.muni.pa165.dto.gameservice.AssignTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 import cz.fi.muni.pa165.gameservice.persistence.entities.CompetitionHasTeam;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CompetitionMapper {
-
-	CompetitionMapper INSTANCE = Mappers.getMapper(CompetitionMapper.class);
 
 	CompetitionViewDto competitionToCompetitionViewDto(Competition competition);
 

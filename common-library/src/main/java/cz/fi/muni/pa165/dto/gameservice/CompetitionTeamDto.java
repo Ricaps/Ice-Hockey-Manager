@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.dto.gameService;
+package cz.fi.muni.pa165.dto.gameservice;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,17 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArenaViewDto {
+@Builder
+public class CompetitionTeamDto {
 
-	private UUID guid;
-
-	private String countryCode;
-
-	private String cityName;
-
-	private String arenaName;
+	private UUID teamUid;
 
 }

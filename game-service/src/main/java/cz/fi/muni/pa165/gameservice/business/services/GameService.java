@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 import java.util.Map;
@@ -104,11 +105,13 @@ public class GameService {
 	 * randomization
 	 * @return random score
 	 */
-	private int getRandomScore(UUID homeTeam) {
-		var teamChars = teamCharacteristicController.findByTeamId(homeTeam);
+	private int getRandomScore(UUID teamUUID) {
+		var teamChars = getTeamCharacteristics(teamUUID);
 
-		if (teamChars == null || teamChars.isEmpty()) {
-			LOGGER.error("Failed to fetch teams characteristics. Falling back to the simple randomization...");
+		if (teamChars.isEmpty()) {
+			LOGGER.error(
+					"Failed to fetch teams characteristics for team ID={}. Falling back to the simple randomization...",
+					teamUUID);
 			return random.nextInt(0, 5);
 		}
 
@@ -140,6 +143,17 @@ public class GameService {
 			.mapToInt(value -> characteristicMap.getOrDefault(value, 0))
 			.average()
 			.orElse(0);
+	}
+
+	private List<TeamCharacteristicDTO> getTeamCharacteristics(UUID teamUUID) {
+		try {
+			return teamCharacteristicController.findByTeamId(teamUUID);
+		}
+		catch (RestClientException e) {
+			LOGGER.error("Team Service is not available", e);
+		}
+
+		return List.of();
 	}
 
 }

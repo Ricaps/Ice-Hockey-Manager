@@ -1,14 +1,12 @@
 package cz.fi.muni.pa165.gameservice.business.mappers;
 
-import cz.fi.muni.pa165.dto.gameService.ResultViewDto;
+import cz.fi.muni.pa165.dto.gameservice.ResultViewDto;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Result;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ResultMapper {
-
-	ResultMapper INSTANCE = Mappers.getMapper(ResultMapper.class);
 
 	ResultViewDto mapEntityToView(Result result);
 

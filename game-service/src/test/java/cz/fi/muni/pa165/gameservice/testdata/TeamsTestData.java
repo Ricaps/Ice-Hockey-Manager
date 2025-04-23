@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.gameservice.testdata;
 
-import cz.fi.muni.pa165.dto.gameService.AssignTeamDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.AssignTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionTeamDto;
 import cz.fi.muni.pa165.gameservice.persistence.entities.CompetitionHasTeam;
 import org.apache.commons.lang3.tuple.Pair;
 

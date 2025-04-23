@@ -179,7 +179,7 @@ class MatchServiceTest {
 			.hasMessage("Please provide competition UUID")
 			.isInstanceOf(ValueIsMissingException.class);
 
-		Mockito.verify(matchRepository, Mockito.never()).getMatchByCompetition_Guid(Mockito.any());
+		Mockito.verify(matchRepository, Mockito.never()).getMatchesByCompetition_Guid(Mockito.any());
 	}
 
 	@Test
@@ -187,12 +187,12 @@ class MatchServiceTest {
 		var matches = MatchTestData.getRandomMatches().stream().toList();
 		var competitionUUID = UUID.randomUUID();
 
-		Mockito.when(matchRepository.getMatchByCompetition_Guid(competitionUUID)).thenReturn(matches);
+		Mockito.when(matchRepository.getMatchesByCompetition_Guid(competitionUUID)).thenReturn(matches);
 
 		var returnedMatches = matchService.getMatchesOfCompetition(competitionUUID);
 		assertThat(returnedMatches).containsAll(matches);
 
-		Mockito.verify(matchRepository, Mockito.times(1)).getMatchByCompetition_Guid(competitionUUID);
+		Mockito.verify(matchRepository, Mockito.times(1)).getMatchesByCompetition_Guid(competitionUUID);
 	}
 
 	@Test

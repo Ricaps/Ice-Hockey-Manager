@@ -76,7 +76,7 @@ public class MatchService {
 	public List<Match> getMatchesOfCompetition(@NotNull UUID competitionUUID) {
 		ValidationHelper.requireNonNull(competitionUUID, "Please provide competition UUID");
 
-		return this.matchRepository.getMatchByCompetition_Guid(competitionUUID);
+		return this.matchRepository.getMatchesByCompetition_Guid(competitionUUID);
 	}
 
 	public Match getMatch(@NotNull UUID matchUUID) {

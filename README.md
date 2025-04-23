@@ -40,13 +40,18 @@ Run following command in the terminal:
 docker compose up -d
 ```
 
+## Swagger
+
+You can access Swagger UI at following path:
+```http://localhost:<service-port>/api```
+
 ## Microservices
 
 ### 1. Word List Service
 
 > Responsible person: Matej Keznikl
 
-World List service takes care about the list of the real ice hockey teams. Use can see player characteristics,
+World List service takes care about the list of the real ice hockey teams. User can see player characteristics,
 information about championship where the player and its team belongs. There are multiple types of the
 championships (International, Continental, National, ...). Users can choose players listed in this service into his
 team.

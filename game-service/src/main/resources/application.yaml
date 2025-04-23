@@ -29,7 +29,7 @@ spring.jpa:
 # Seed configuration
 seed:
   enabled: true
-  included: cz.fi.muni.pa165.gameservice.business.services.seed.ArenaSeed
+  log-data: false
 # Logging
 logging:
   logback:

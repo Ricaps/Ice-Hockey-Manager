@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.gameservice.testdata;
+package cz.fi.muni.pa165.gameservice.testdata.factory;
 
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.CompetitionRepository;

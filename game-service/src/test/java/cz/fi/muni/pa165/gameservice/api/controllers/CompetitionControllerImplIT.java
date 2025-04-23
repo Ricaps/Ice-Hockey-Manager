@@ -1,9 +1,9 @@
 package cz.fi.muni.pa165.gameservice.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.gameService.AssignTeamDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionCreateDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionViewDto;
+import cz.fi.muni.pa165.dto.gameservice.AssignTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ActionForbidden;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceAlreadyExists;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
@@ -12,8 +12,8 @@ import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 import cz.fi.muni.pa165.gameservice.persistence.entities.CompetitionHasTeam;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.CompetitionRepository;
-import cz.fi.muni.pa165.gameservice.testdata.CompetitionITDataFactory;
 import cz.fi.muni.pa165.gameservice.testdata.CompetitionTestData;
+import cz.fi.muni.pa165.gameservice.testdata.factory.CompetitionITDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

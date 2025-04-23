@@ -1,9 +1,9 @@
 package cz.fi.muni.pa165.gameservice.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.gameService.AssignTeamDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionCreateDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionViewDto;
+import cz.fi.muni.pa165.dto.gameservice.AssignTeamDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.business.facades.CompetitionFacade;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;

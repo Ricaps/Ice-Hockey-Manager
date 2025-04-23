@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.gameservice.business.facades;
 
-import cz.fi.muni.pa165.dto.gameService.MatchCreateDto;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
 import cz.fi.muni.pa165.gameservice.business.mappers.MatchMapper;

@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.gameservice.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.gameService.MatchViewDto;
+import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.business.facades.MatchFacade;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;

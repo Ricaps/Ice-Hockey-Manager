@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.gameservice.testdata;
 
-import cz.fi.muni.pa165.dto.gameService.CompetitionCreateDto;
-import cz.fi.muni.pa165.dto.gameService.CompetitionViewDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
+import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 
 import java.time.LocalDate;

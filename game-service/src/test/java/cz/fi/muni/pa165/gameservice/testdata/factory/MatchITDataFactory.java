@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.gameservice.testdata;
+package cz.fi.muni.pa165.gameservice.testdata.factory;
 
 import cz.fi.muni.pa165.gameservice.persistence.entities.Match;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.MatchRepository;
@@ -13,6 +13,10 @@ public class MatchITDataFactory {
 	@Autowired
 	public MatchITDataFactory(MatchRepository matchRepository) {
 		this.matchRepository = matchRepository;
+	}
+
+	public Match getMatch() {
+		return matchRepository.findAll().getFirst();
 	}
 
 	public Match getMatchWithResult() {

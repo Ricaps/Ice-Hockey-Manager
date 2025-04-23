@@ -14,11 +14,11 @@ import java.util.UUID;
 @Repository
 public interface MatchRepository extends JpaRepository<Match, UUID> {
 
-	List<Match> getMatchByCompetition_Guid(@NotNull UUID competitionGuid);
+	List<Match> getMatchesByCompetition_Guid(@NotNull UUID competitionGuid);
 
 	Optional<Match> getMatchByGuid(UUID guid);
 
-	@Query("FROM Match WHERE Result IS NULL AND endAt IS NULL AND startAt <= :maxTime")
+	@Query("FROM Match WHERE result IS NULL AND endAt IS NULL AND startAt <= :maxTime")
 	List<Match> getMatchesForScheduling(OffsetDateTime maxTime);
 
 }
