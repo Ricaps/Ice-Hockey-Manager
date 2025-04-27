@@ -40,4 +40,7 @@ public class FictiveTeam {
 	@JoinColumn(name = "budget_system_id", referencedColumnName = "guid")
 	private BudgetSystem budgetSystem;
 
+	@Column(name = "owner_id", nullable = false)
+	private UUID ownerId;
+
 }

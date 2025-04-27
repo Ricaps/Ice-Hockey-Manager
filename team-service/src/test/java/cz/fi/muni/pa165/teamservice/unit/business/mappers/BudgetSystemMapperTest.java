@@ -1,8 +1,9 @@
-package cz.fi.muni.pa165.teamservice.business.mappers;
+package cz.fi.muni.pa165.teamservice.unit.business.mappers;
 
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.teamservice.business.mappers.BudgetSystemMapper;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,6 +7,7 @@ import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.mappers.BudgetSystemMapper;
 import cz.fi.muni.pa165.teamservice.business.services.BudgetSystemService;
+import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +25,21 @@ public class BudgetSystemFacade {
 
 	private final BudgetSystemMapper budgetSystemMapper;
 
+	private final FictiveTeamRepository fictiveTeamRepository;
+
 	@Autowired
-	public BudgetSystemFacade(BudgetSystemService budgetSystemService, BudgetSystemMapper budgetSystemMapper) {
+	public BudgetSystemFacade(BudgetSystemService budgetSystemService, BudgetSystemMapper budgetSystemMapper,
+			FictiveTeamRepository fictiveTeamRepository) {
 		this.budgetSystemService = budgetSystemService;
 		this.budgetSystemMapper = budgetSystemMapper;
+		this.fictiveTeamRepository = fictiveTeamRepository;
 	}
 
-	public BudgetSystemDTO createBudgetSystem(BudgetSystemCreateDTO createDTO) throws ResourceAlreadyExistsException {
+	public BudgetSystemDTO createBudgetSystem(BudgetSystemCreateDTO createDTO)
+			throws ResourceAlreadyExistsException, ResourceNotFoundException {
+		if (!fictiveTeamRepository.existsById(createDTO.getTeamId())) {
+			throw new ResourceNotFoundException("Team not found");
+		}
 		return budgetSystemMapper.toDto(budgetSystemService.createBudgetSystem(budgetSystemMapper.toEntity(createDTO)));
 	}
 

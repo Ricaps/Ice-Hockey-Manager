@@ -59,4 +59,12 @@ public class FictiveTeamFacade {
 		return fictiveTeamService.findAll().stream().map(fictiveTeamMapper::toDto).collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
+	public List<FictiveTeamDTO> findByOwnerId(UUID ownerId) {
+		return fictiveTeamService.findByOwnerId(ownerId)
+			.stream()
+			.map(fictiveTeamMapper::toDto)
+			.collect(Collectors.toList());
+	}
+
 }

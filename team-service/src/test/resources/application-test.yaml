@@ -3,7 +3,7 @@ spring:
     name: team-service
 
   datasource:
-    url: jdbc:h2:file:./data/team-service
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
 
   jpa:
     hibernate:
@@ -12,6 +12,9 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
+    enabled: true
 
 server:
   servlet:

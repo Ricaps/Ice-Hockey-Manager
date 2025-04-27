@@ -1,9 +1,10 @@
-package cz.fi.muni.pa165.teamservice.business.mappers;
+package cz.fi.muni.pa165.teamservice.unit.business.mappers;
 
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
+import cz.fi.muni.pa165.teamservice.business.mappers.TeamCharacteristicMapper;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

@@ -1,13 +1,15 @@
-package cz.fi.muni.pa165.teamservice.business.facades;
+package cz.fi.muni.pa165.teamservice.unit.business.facades;
 
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.facades.BudgetSystemFacade;
 import cz.fi.muni.pa165.teamservice.business.mappers.BudgetSystemMapper;
 import cz.fi.muni.pa165.teamservice.business.services.BudgetSystemService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
+import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +36,9 @@ public class BudgetSystemFacadeTest {
 
 	@Mock
 	private BudgetSystemMapper mapper;
+
+	@Mock
+	private FictiveTeamRepository fictiveTeamRepository;
 
 	@InjectMocks
 	private BudgetSystemFacade facade;
@@ -66,6 +71,8 @@ public class BudgetSystemFacadeTest {
 
 	@Test
 	void createBudgetSystem() throws ResourceAlreadyExistsException {
+		when(fictiveTeamRepository.existsById(createDTO.getTeamId())).thenReturn(true);
+
 		when(mapper.toEntity(createDTO)).thenReturn(budgetSystem);
 		when(service.createBudgetSystem(budgetSystem)).thenReturn(budgetSystem);
 		when(mapper.toDto(budgetSystem)).thenReturn(budgetSystemDTO);

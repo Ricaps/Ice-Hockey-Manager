@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1744983144200-1" author="honza">
+        <createTable tableName="budget_system">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_budget_system"/>
+            </column>
+            <column name="amount" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744983144200-2" author="honza">
+        <createTable tableName="fictive_team">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_fictive_team"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="characteristic_type" type="VARCHAR(255)"/>
+            <column name="budget_system_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744983144200-3" author="honza">
+        <createTable tableName="team_characteristic">
+            <column name="guid" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_team_characteristic"/>
+            </column>
+            <column name="team_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="characteristic_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="characteristic_value" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744983144200-4" author="honza">
+        <createTable tableName="team_players">
+            <column name="team_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="player_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1744983144200-5" author="honza">
+        <addUniqueConstraint columnNames="budget_system_id" constraintName="uc_fictive_team_budget_system"
+                             tableName="fictive_team"/>
+    </changeSet>
+    <changeSet id="1744983144200-6" author="honza">
+        <addForeignKeyConstraint baseColumnNames="budget_system_id" baseTableName="fictive_team"
+                                 constraintName="FK_FICTIVE_TEAM_ON_BUDGET_SYSTEM" referencedColumnNames="guid"
+                                 referencedTableName="budget_system"/>
+    </changeSet>
+    <changeSet id="1744983144200-7" author="honza">
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="team_players"
+                                 constraintName="fk_team_players_on_fictive_team" referencedColumnNames="guid"
+                                 referencedTableName="fictive_team"/>
+    </changeSet>
+
+</databaseChangeLog>

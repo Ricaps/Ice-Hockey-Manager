@@ -1,7 +1,8 @@
-package cz.fi.muni.pa165.teamservice.business.services;
+package cz.fi.muni.pa165.teamservice.unit.business.services;
 
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.services.FictiveTeamService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
 import org.junit.jupiter.api.BeforeEach;

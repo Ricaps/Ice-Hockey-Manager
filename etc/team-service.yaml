@@ -1,0 +1,3 @@
+# Externalized configuration prepared for the docker
+spring.artemis:
+  broker-url: tcp://artemis:61616

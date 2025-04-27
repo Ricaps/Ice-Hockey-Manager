@@ -56,4 +56,9 @@ public class FictiveTeamService {
 		return teamRepository.findAll();
 	}
 
+	@Transactional(readOnly = true)
+	public List<FictiveTeam> findByOwnerId(UUID ownerId) {
+		return teamRepository.findByOwnerId(ownerId);
+	}
+
 }

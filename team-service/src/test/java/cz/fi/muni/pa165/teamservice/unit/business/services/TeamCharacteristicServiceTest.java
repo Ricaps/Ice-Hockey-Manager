@@ -1,7 +1,8 @@
-package cz.fi.muni.pa165.teamservice.business.services;
+package cz.fi.muni.pa165.teamservice.unit.business.services;
 
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.services.TeamCharacteristicService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.TeamCharacteristicRepository;
 import org.junit.jupiter.api.BeforeEach;

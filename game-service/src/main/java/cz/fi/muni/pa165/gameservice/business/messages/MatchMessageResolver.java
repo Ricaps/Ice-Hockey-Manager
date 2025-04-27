@@ -21,7 +21,7 @@ public class MatchMessageResolver {
 
 	private final MatchMapper matchMapper;
 
-	public MatchMessageResolver(@Qualifier("topicJmsTemplate") JmsTemplate jmsTemplate, MatchMapper matchMapper) {
+	public MatchMessageResolver(@Qualifier("queueJmsTemplate") JmsTemplate jmsTemplate, MatchMapper matchMapper) {
 		this.jmsTemplate = jmsTemplate;
 		this.matchMapper = matchMapper;
 	}
@@ -30,18 +30,9 @@ public class MatchMessageResolver {
 		ValidationHelper.requireNonNull(match, "Please provide non null match");
 
 		var matchView = matchMapper.matchEntityToMatchViewDto(match);
-		jmsTemplate.convertAndSend("game.match.result.topic", matchView);
+		jmsTemplate.convertAndSend("game.match.result.queue", matchView);
 
-		LOGGER.debug("Send topic 'game.match.result.topic' for match ID {}", matchView.getGuid());
-	}
-
-	/**
-	 * TODO: Just placeholder, will be removed
-	 * @param result
-	 */
-	@JmsListener(destination = "game.match.result.topic", containerFactory = "topicListenerFactory")
-	public void receiveMessage(MatchViewDto result) {
-		System.out.println("Received: " + result);
+		LOGGER.debug("Send topic 'game.match.result.queue' for match ID {}", matchView.getGuid());
 	}
 
 }

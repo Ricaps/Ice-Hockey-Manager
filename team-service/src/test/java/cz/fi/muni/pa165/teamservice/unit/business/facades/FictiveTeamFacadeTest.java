@@ -1,10 +1,11 @@
-package cz.fi.muni.pa165.teamservice.business.facades;
+package cz.fi.muni.pa165.teamservice.unit.business.facades;
 
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamDTO;
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamUpdateDTO;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.facades.FictiveTeamFacade;
 import cz.fi.muni.pa165.teamservice.business.mappers.FictiveTeamMapper;
 import cz.fi.muni.pa165.teamservice.business.services.FictiveTeamService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;

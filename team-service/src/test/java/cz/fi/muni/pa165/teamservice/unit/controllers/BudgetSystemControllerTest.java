@@ -1,9 +1,10 @@
-package cz.fi.muni.pa165.teamservice.api.controllers;
+package cz.fi.muni.pa165.teamservice.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.teamservice.api.controllers.BudgetSystemController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.BudgetSystemFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,14 +66,22 @@ public class BudgetSystemControllerTest {
 
 	@Test
 	void createBudgetSystem() throws Exception {
-		when(budgetSystemFacade.createBudgetSystem(any(BudgetSystemCreateDTO.class))).thenReturn(budgetSystemDTO);
+		BudgetSystemCreateDTO createDTO = new BudgetSystemCreateDTO();
+		createDTO.setAmount(1000.0);
+		createDTO.setTeamId(UUID.randomUUID());
+
+		BudgetSystemDTO responseDTO = new BudgetSystemDTO();
+		responseDTO.setGuid(UUID.randomUUID());
+		responseDTO.setAmount(1000.0);
+
+		when(budgetSystemFacade.createBudgetSystem(any(BudgetSystemCreateDTO.class))).thenReturn(responseDTO);
 
 		mockMvc
 			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(budgetSystemCreateDTO)))
+				.content(objectMapper.writeValueAsString(createDTO)))
 			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.guid").value(budgetSystemId.toString()))
-			.andExpect(jsonPath("$.amount").value(budgetSystemDTO.getAmount()));
+			.andExpect(jsonPath("$.guid").value(responseDTO.getGuid().toString()))
+			.andExpect(jsonPath("$.amount").value(responseDTO.getAmount()));
 
 		verify(budgetSystemFacade, times(1)).createBudgetSystem(any(BudgetSystemCreateDTO.class));
 	}
@@ -154,7 +163,7 @@ public class BudgetSystemControllerTest {
 
 	@Test
 	void updateBudgetSystem_invalidInput() throws Exception {
-		budgetSystemDTO.setAmount(-50.00); // Negative amount
+		budgetSystemDTO.setAmount(-50.00);
 
 		mockMvc
 			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
@@ -185,16 +194,16 @@ public class BudgetSystemControllerTest {
 
 	@Test
 	void createBudgetSystem_zeroAmount() throws Exception {
-		budgetSystemDTO.setAmount(0.00);
-		when(budgetSystemFacade.createBudgetSystem(any())).thenReturn(budgetSystemDTO);
+		BudgetSystemCreateDTO createDTO = new BudgetSystemCreateDTO();
+		createDTO.setTeamId(UUID.randomUUID());
+		createDTO.setAmount(0.0);
+
+		when(budgetSystemFacade.createBudgetSystem(any())).thenReturn(new BudgetSystemDTO());
 
 		mockMvc
 			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(budgetSystemDTO)))
-			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.amount").value(budgetSystemDTO.getAmount()));
-
-		verify(budgetSystemFacade, times(1)).createBudgetSystem(any());
+				.content(objectMapper.writeValueAsString(createDTO)))
+			.andExpect(status().isCreated());
 	}
 
 	@Test

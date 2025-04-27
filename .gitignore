@@ -47,4 +47,5 @@ data/*
 openapi/*
 openapi/world-list-service.yaml
 world-list-service/logs/*
+team-service/logs/*
 

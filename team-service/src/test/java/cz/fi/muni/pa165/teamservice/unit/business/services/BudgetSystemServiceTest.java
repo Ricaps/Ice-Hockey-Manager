@@ -1,9 +1,12 @@
-package cz.fi.muni.pa165.teamservice.business.services;
+package cz.fi.muni.pa165.teamservice.unit.business.services;
 
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.services.BudgetSystemService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
+import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.BudgetSystemRepository;
+import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,26 +33,40 @@ class BudgetSystemServiceTest {
 	@Mock
 	private BudgetSystemRepository repository;
 
+	@Mock
+	private FictiveTeamRepository fictiveTeamRepository;
+
 	@InjectMocks
 	private BudgetSystemService service;
 
 	private BudgetSystem budgetSystem;
 
+	private FictiveTeam team;
+
 	@BeforeEach
 	void setUp() {
+		team = new FictiveTeam();
+		UUID teamId = UUID.randomUUID();
+		team.setGuid(teamId);
+		team.setName("Test Team");
+
 		budgetSystem = new BudgetSystem();
 		budgetSystem.setGuid(budgetSystemId);
 		budgetSystem.setAmount(100000.0);
+		budgetSystem.setTeam(team);
 	}
 
 	@Test
 	void createBudgetSystem_success() throws ResourceAlreadyExistsException {
 		when(repository.existsById(budgetSystemId)).thenReturn(false);
+		when(fictiveTeamRepository.existsById(team.getGuid())).thenReturn(true);
 		when(repository.save(budgetSystem)).thenReturn(budgetSystem);
 
 		BudgetSystem result = service.createBudgetSystem(budgetSystem);
 
 		assertThat(result).isEqualTo(budgetSystem);
+		verify(repository).existsById(budgetSystemId);
+		verify(fictiveTeamRepository).existsById(team.getGuid());
 		verify(repository).save(budgetSystem);
 	}
 

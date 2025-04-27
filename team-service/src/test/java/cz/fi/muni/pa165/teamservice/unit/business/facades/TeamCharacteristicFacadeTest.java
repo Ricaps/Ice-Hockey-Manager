@@ -1,10 +1,11 @@
-package cz.fi.muni.pa165.teamservice.business.facades;
+package cz.fi.muni.pa165.teamservice.unit.business.facades;
 
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.facades.TeamCharacteristicFacade;
 import cz.fi.muni.pa165.teamservice.business.mappers.TeamCharacteristicMapper;
 import cz.fi.muni.pa165.teamservice.business.services.TeamCharacteristicService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;

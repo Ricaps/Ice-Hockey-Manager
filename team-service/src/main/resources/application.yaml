@@ -3,16 +3,12 @@ spring:
     name: team-service
   banner:
     location: classpath:banner.txt
-  datasource:
-    url: jdbc:h2:file:./data/team-service
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
+  threads:
+    virtual:
+      enabled: true
+  liquibase:
+    change-log: classpath:database/main-changelog.xml
+    enabled: true
 
 server:
   servlet:
@@ -20,3 +16,29 @@ server:
   port: 8081
   error:
     include-stacktrace: never
+
+
+spring.datasource:
+  url: jdbc:h2:file:./data/team-service
+spring.jpa:
+  hibernate:
+    ddl-auto: create-drop
+  show-sql: false
+  properties:
+    hibernate:
+      format_sql: false
+# Logging
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+      max-file-size: 20MB
+  file:
+    name: "logs/team-service.log"
+  level.cz.fi.muni.pa165: DEBUG
+# Active MQ Artemis configuration
+spring.artemis:
+  user: artemis
+  password: artemis
+  broker-url: tcp://localhost:61616
+

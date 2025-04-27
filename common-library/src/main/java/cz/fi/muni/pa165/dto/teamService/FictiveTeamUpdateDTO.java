@@ -40,4 +40,8 @@ public class FictiveTeamUpdateDTO {
 	@Schema(description = "Primary characteristic type of the team", example = "STRENGTH")
 	private TeamCharacteristicType characteristicType;
 
+	@Schema(description = "UUID of the team's owner", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
+	@NotNull(message = "Owner ID cannot be null")
+	private UUID ownerId;
+
 }

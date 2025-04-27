@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
+import java.util.UUID;
+
 /**
  * @author Jan Martinek
  */
@@ -16,5 +18,9 @@ public class BudgetSystemCreateDTO {
 	@NotNull
 	@PositiveOrZero
 	private Double amount;
+
+	@Schema(description = "ID of the associated team", required = true)
+	@NotNull
+	private UUID teamId;
 
 }

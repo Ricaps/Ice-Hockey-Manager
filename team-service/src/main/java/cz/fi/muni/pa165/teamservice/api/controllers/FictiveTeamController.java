@@ -103,4 +103,16 @@ public class FictiveTeamController {
 		return fictiveTeamFacade.findAll();
 	}
 
+	@Operation(description = "Finds all fictiveTeams by owner UUID",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "List of teams owned by the user",
+							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+									schema = @Schema(implementation = FictiveTeamDTO[].class))),
+					@ApiResponse(responseCode = "400", description = "Invalid UUID format", content = @Content) },
+			parameters = @Parameter(name = "ownerId", description = "UUID of the team owner", required = true))
+	@GetMapping(path = "/owner/{ownerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<FictiveTeamDTO> getTeamsByOwner(@PathVariable UUID ownerId) {
+		return fictiveTeamFacade.findByOwnerId(ownerId);
+	}
+
 }

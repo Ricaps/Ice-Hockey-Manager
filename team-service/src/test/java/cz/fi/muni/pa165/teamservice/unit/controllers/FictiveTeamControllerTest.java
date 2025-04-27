@@ -1,10 +1,11 @@
-package cz.fi.muni.pa165.teamservice.api.controllers;
+package cz.fi.muni.pa165.teamservice.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamDTO;
 import cz.fi.muni.pa165.dto.teamService.FictiveTeamUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
+import cz.fi.muni.pa165.teamservice.api.controllers.FictiveTeamController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.FictiveTeamFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,11 +59,13 @@ class FictiveTeamControllerTest {
 		fictiveTeamDTO = new FictiveTeamDTO();
 		fictiveTeamDTO.setGuid(teamId);
 		fictiveTeamDTO.setName("Avengers");
+		fictiveTeamDTO.setOwnerId(UUID.randomUUID());
 		fictiveTeamDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		fictiveTeamDTO.setBudgetAmount(1000000.00);
 
 		createDTO = new FictiveTeamCreateDTO();
 		createDTO.setName("Avengers");
+		createDTO.setOwnerId(UUID.randomUUID());
 		createDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		createDTO.setPlayerIds(List.of(UUID.randomUUID()));
 

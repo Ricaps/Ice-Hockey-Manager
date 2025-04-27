@@ -21,4 +21,8 @@ public class BudgetSystem {
 	@Column(nullable = false)
 	private double amount;
 
+	@OneToOne
+	@JoinColumn(name = "team_id", referencedColumnName = "guid")
+	private FictiveTeam team;
+
 }

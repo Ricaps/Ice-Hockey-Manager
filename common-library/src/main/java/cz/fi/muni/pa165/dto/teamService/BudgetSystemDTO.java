@@ -18,4 +18,7 @@ public class BudgetSystemDTO {
 	@Schema(description = "Budget amount")
 	private Double amount;
 
+	@Schema(description = "ID of the associated team")
+	private UUID teamId;
+
 }
