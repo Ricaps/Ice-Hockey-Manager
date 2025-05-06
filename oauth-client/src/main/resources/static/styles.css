@@ -1,0 +1,7 @@
+.code-block {
+    max-width: 500px;
+    word-wrap: anywhere;
+    border: 1px black solid;
+    margin: 3px;
+    padding: 5px;
+}

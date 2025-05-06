@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.gameservice.ArenaCreateDto;
 import cz.fi.muni.pa165.dto.gameservice.ArenaViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.gameservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Arena;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.ArenaRepository;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import(ObjectMapperConfig.class)
+@Import({ ObjectMapperConfig.class, DisableSecurityTestConfig.class })
 class ArenaControllerImplIT {
 
 	@Autowired

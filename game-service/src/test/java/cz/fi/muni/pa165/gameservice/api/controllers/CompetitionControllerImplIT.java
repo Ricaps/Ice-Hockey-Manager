@@ -8,6 +8,7 @@ import cz.fi.muni.pa165.gameservice.api.exception.ActionForbidden;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceAlreadyExists;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.business.services.seed.CompetitionSeed;
+import cz.fi.muni.pa165.gameservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Competition;
 import cz.fi.muni.pa165.gameservice.persistence.entities.CompetitionHasTeam;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import(ObjectMapperConfig.class)
+@Import({ ObjectMapperConfig.class, DisableSecurityTestConfig.class })
 class CompetitionControllerImplIT {
 
 	@Autowired

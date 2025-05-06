@@ -15,6 +15,8 @@ services:
       - "8081:8081"
     volumes:
       - configs:/app/etc
+    depends_on:
+      - artemis
   game-service:
     build:
       args:
@@ -23,6 +25,8 @@ services:
       - "8082:8082"
     volumes:
       - configs:/app/etc
+    depends_on:
+      - artemis
   user-service:
     build:
       args:
@@ -33,6 +37,14 @@ services:
       - configs:/app/etc
     depends_on:
       - artemis
+  oauth-client:
+    build:
+      args:
+        - SERVICE_NAME=oauth-client
+    ports:
+      - "8084:8084"
+    volumes:
+      - configs:/app/etc
   artemis:
     image: apache/activemq-artemis:latest-alpine
     environment:

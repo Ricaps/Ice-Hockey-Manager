@@ -3,6 +3,7 @@ package cz.fi.muni.pa165.gameservice.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.gameservice.MatchViewDto;
 import cz.fi.muni.pa165.gameservice.business.facades.MatchFacade;
+import cz.fi.muni.pa165.gameservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MatchControllerImpl.class)
-@Import(ObjectMapperConfig.class)
+@Import({ ObjectMapperConfig.class, DisableSecurityTestConfig.class })
 class MatchControllerImplMvcTest {
 
 	@Autowired

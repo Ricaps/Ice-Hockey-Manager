@@ -1,0 +1,25 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: OAuth2 client
+  security:
+    oauth2:
+      client:
+        registration:
+          muni:
+            client-id: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
+            client-secret: 48a2b2e3-4b2b-471e-b7b7-b81a85b6eeef22f347f2-3fc9-4e16-8698-3e2492701a89
+            client-name: "MUNI Unified Login"
+            provider: muni
+            scope:
+              - openid
+              - profile
+              - email
+              - eduperson_scoped_affiliation
+              - test_read
+              - test_write
+        provider:
+          muni:
+            # URL to which .well-know/openid-configuration will be added to download metadata
+            issuer-uri: https://id.muni.cz/oidc/

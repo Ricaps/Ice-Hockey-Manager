@@ -6,6 +6,7 @@ import cz.fi.muni.pa165.dto.gameservice.CompetitionCreateDto;
 import cz.fi.muni.pa165.dto.gameservice.CompetitionViewDto;
 import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.business.facades.CompetitionFacade;
+import cz.fi.muni.pa165.gameservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.testdata.CompetitionTestData;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CompetitionControllerImpl.class)
-@Import(ObjectMapperConfig.class)
+@Import({ ObjectMapperConfig.class, DisableSecurityTestConfig.class })
 class CompetitionControllerMvcTest {
 
 	@Autowired

@@ -19,8 +19,11 @@ COPY user-service/src user-service/src
 COPY common-library/pom.xml common-library/pom.xml
 COPY common-library/src common-library/src
 
+COPY oauth-client/pom.xml oauth-client/pom.xml
+COPY oauth-client/src oauth-client/src
+
 RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -Dskip.unit.tests=true -Dskip.integration.tests=true
 
 FROM alpine/java:21
 WORKDIR /app

@@ -7,6 +7,7 @@ import cz.fi.muni.pa165.gameservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.gameservice.api.exception.ValueIsMissingException;
 import cz.fi.muni.pa165.gameservice.business.mappers.MatchMapper;
 import cz.fi.muni.pa165.gameservice.business.mappers.ResultMapper;
+import cz.fi.muni.pa165.gameservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.gameservice.config.ObjectMapperConfig;
 import cz.fi.muni.pa165.gameservice.persistence.entities.MatchType;
 import cz.fi.muni.pa165.gameservice.persistence.repositories.ArenaRepository;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(ObjectMapperConfig.class)
+@Import({ ObjectMapperConfig.class, DisableSecurityTestConfig.class })
 @Transactional
 class MatchControllerImplIT {
 

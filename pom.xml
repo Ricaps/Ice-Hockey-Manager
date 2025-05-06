@@ -15,6 +15,7 @@
         <module>team-service</module>
         <module>user-service</module>
         <module>world-list-service</module>
+        <module>oauth-client</module>
     </modules>
 
     <groupId>cz.fi.muni.pa165</groupId>
@@ -85,6 +86,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>io.spring.javaformat</groupId>

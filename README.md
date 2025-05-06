@@ -47,6 +47,16 @@ docker compose up -d
 You can access Swagger UI at following path:
 ```http://localhost:<service-port>/api```
 
+## How to test authentication
+
+1. Run [oauth client](/oauth-client) in Docker or using `mvn spring-boot:run`
+2. Go to `http://localhost:8084` - login page should appear
+3. Login using MUNI provider with your credentials
+4. After login, you should be redirected to the `/token` page, where you can find your `Bearer` JWT token
+5. Go to the Swagger UI of desired service. In the upper right corner, click on the green `Authorize`. Insert your JWT
+   into the popup.
+6. Run request - `Bearer` token should be automatically applied to the `Authorization` header.
+
 ## Grafana
 
 You can access grafana UI at the following path (if ran by docker):
