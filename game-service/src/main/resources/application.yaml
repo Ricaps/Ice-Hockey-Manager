@@ -52,3 +52,12 @@ spring.artemis:
 # Location of other REST services
 services.baseUrl:
   team-service: http://localhost:8081/api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true

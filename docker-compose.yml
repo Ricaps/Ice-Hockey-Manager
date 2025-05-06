@@ -41,6 +41,23 @@ services:
     ports:
       - "61616:61616"
       - "8161:8161"
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./etc/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - data:/prometheus
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
 
 volumes:
   configs:
@@ -49,3 +66,9 @@ volumes:
       type: none
       o: bind
       device: ./etc
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data

@@ -10,6 +10,16 @@ spring:
     change-log: classpath:database/main-changelog.xml
     enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 server:
   servlet:
     context-path: /api

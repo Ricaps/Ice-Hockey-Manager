@@ -47,6 +47,14 @@ docker compose up -d
 You can access Swagger UI at following path:
 ```http://localhost:<service-port>/api```
 
+## Grafana
+
+You can access grafana UI at the following path (if ran by docker):
+
+```http://localhost:3000/```
+
+As credentials, use the default ones ;)
+
 ## Microservices
 
 ### 1. Word List Service

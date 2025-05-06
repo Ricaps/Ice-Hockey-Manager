@@ -54,3 +54,13 @@ logging:
   file:
     name: "logs/world-list-service.log"
   level.cz.fi.muni.pa165: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
