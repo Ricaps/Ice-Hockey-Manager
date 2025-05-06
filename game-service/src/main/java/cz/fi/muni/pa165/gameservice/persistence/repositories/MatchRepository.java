@@ -21,4 +21,6 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 	@Query("FROM Match WHERE result IS NULL AND endAt IS NULL AND startAt <= :maxTime")
 	List<Match> getMatchesForScheduling(OffsetDateTime maxTime);
 
+	long countMatchByArena_Guid(UUID arenaGuid);
+
 }

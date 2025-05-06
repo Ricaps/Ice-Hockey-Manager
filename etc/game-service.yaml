@@ -6,5 +6,8 @@ spring.artemis:
 services.baseUrl:
   team-service: http://team-service:8081/api
 
+seed:
+  log-data: true
+
 logging:
-  level.cz.fi.muni.pa165: INFO
+  level.cz.fi.muni.pa165: DEBUG

@@ -114,4 +114,8 @@ public class MatchService {
 		return matchRepository.save(match);
 	}
 
+	public long countMatchesAtArena(UUID arenaUid) {
+		return matchRepository.countMatchByArena_Guid(arenaUid);
+	}
+
 }

@@ -202,7 +202,7 @@ class MatchControllerImplIT {
 				.content(objectMapper.writeValueAsString(match)))
 			.andExpect(status().isNotFound())
 			.andExpect(exception().isInstanceOf(ResourceNotFoundException.class)
-				.hasMessage("Desired arena was not found in the system"));
+				.hasMessage("Arena with id %s doesn't exists!".formatted(match.getArenaUid())));
 	}
 
 	@Test
