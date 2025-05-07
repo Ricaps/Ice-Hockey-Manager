@@ -60,6 +60,8 @@ spring.artemis:
 services.baseUrl:
   team-service: http://localhost:8081/api
 management:
+  security:
+    token: EzGvDzOsbm-F7UtHCu6XmL0zyv3U9oqF
   endpoints:
     web:
       exposure:
