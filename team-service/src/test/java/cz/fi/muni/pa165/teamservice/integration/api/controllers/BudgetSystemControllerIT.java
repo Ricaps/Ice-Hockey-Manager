@@ -3,12 +3,14 @@ package cz.fi.muni.pa165.teamservice.integration.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
 import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.BudgetSystemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import({ DisableSecurityTestConfig.class })
 @Transactional
 class BudgetSystemControllerIT {
 
