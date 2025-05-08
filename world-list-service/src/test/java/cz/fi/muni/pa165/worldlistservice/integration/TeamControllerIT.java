@@ -5,6 +5,7 @@ import cz.fi.muni.pa165.dto.worldlistservice.team.create.TeamCreateDto;
 import cz.fi.muni.pa165.dto.worldlistservice.team.update.TeamUpdateDto;
 import cz.fi.muni.pa165.worldlistservice.business.facades.interfaces.TeamFacade;
 import cz.fi.muni.pa165.worldlistservice.business.mappers.TeamMapper;
+import cz.fi.muni.pa165.worldlistservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.worldlistservice.persistence.entities.PlayerEntity;
 import cz.fi.muni.pa165.worldlistservice.persistence.repositories.ChampionshipRepository;
 import cz.fi.muni.pa165.worldlistservice.persistence.repositories.PlayerRepository;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Import(DisableSecurityTestConfig.class)
 class TeamControllerIT {
 
 	@Autowired
