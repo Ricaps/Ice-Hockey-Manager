@@ -64,6 +64,8 @@ logging:
   level.cz.fi.muni.pa165: DEBUG
 
 management:
+  security:
+    token: EzGvDzOsbm-F7UtHCu6XmL0zyv3U9oqF
   endpoints:
     web:
       exposure:
