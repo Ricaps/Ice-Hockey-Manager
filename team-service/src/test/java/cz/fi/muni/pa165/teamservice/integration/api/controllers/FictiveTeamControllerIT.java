@@ -7,6 +7,7 @@ import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +43,11 @@ class FictiveTeamControllerIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@BeforeEach
+	public void setup() {
+		fictiveTeamRepository.deleteAll();
+	}
 
 	@Test
 	void createFictiveTeam_withValidData_shouldReturnCreated() throws Exception {

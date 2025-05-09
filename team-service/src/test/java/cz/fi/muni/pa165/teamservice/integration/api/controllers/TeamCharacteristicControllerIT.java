@@ -7,6 +7,7 @@ import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.TeamCharacteristicRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,6 +42,11 @@ class TeamCharacteristicControllerIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@BeforeEach
+	public void setup() {
+		teamCharacteristicRepository.deleteAll();
+	}
 
 	@Test
 	void createTeamCharacteristic_withValidData_shouldReturnCreated() throws Exception {

@@ -36,6 +36,9 @@ server:
   port: 8081
   error:
     include-stacktrace: never
+  database:
+    seed: true
+    clear: false
 
 
 spring.datasource:
