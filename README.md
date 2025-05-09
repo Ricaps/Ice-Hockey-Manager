@@ -65,6 +65,40 @@ You can access grafana UI at the following path (if ran by docker):
 
 As credentials, use the default ones ;)
 
+## Showcase
+
+We prepared showcase using `locust.io`. The showcase shows complete workflow - choosing the players, creation of fictive
+teams and running the friendly match. After the match, the winning team receives a reward to its budget (or both in case
+of draw).
+
+You must have installed Docker on your system. We prepared Docker image, so the Python version is the same on all
+devices.
+
+**Make sure all the micro-services are running with the newest build** - see [Run in Docker](#run-in-docker)
+or [Run locally](#run-locally)
+
+Please follow these steps to run:
+
+1. Go to `e2e/locust` folder
+
+```bash
+cd e2e/locust
+```
+
+2. Build Docker image
+
+```bash
+docker build -t showcase .
+```
+
+3. Run the Docker image. Instead of `<oauth2_token>`, please insert your OAuth2 token obtained
+   via [oauth client](/oauth-client) -
+   see [How to test authentication](#how-to-test-authentication)
+
+```bash
+docker run -it --rm showcase <oauth2_token>
+```
+
 ## Microservices
 
 ### 1. Word List Service
