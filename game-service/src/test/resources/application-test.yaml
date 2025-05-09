@@ -36,5 +36,8 @@ tasks:
     offset:
       match-schedule-offset: 1
     fetch-interval: 60
-services.baseUrl:
-  team-service: http://localhost:8081/api
+services:
+  api-key:
+    team-service: hjeigejgij5k13opko1p1po
+  baseUrl:
+    team-service: http://localhost:8081/api

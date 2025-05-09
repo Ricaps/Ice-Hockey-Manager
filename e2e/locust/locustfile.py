@@ -28,6 +28,9 @@ class FriendlyMatchRunnableScenario(HttpUser):
         team_predators = self.create_fictive_team(0)
         team_ducks = self.create_fictive_team(1)
 
+        self.create_team_characteristic(team_predators["guid"])
+        self.create_team_characteristic(team_ducks["guid"])
+
         budget_before_match_predators = self.create_budget_system(team_predators["guid"])
         budget_before_match_ducks = self.create_budget_system(team_ducks["guid"])
 
@@ -123,7 +126,7 @@ class FriendlyMatchRunnableScenario(HttpUser):
         """TODO: Doesn't make much sense to create this in here - it should be created by allocating players from the WorldListService. Will be fixed in M4."""
 
         team_characteristic = self.client.post(TEAM_SERVICE_URL + "/api/team-characteristics", json={
-            "amount": 1000,
+            "teamId": team_uuid,
             "characteristicType": "SPEED" if randint(0, 1) == 1 else "SHOOTING",
             "characteristicValue": randint(0, 99)
         }, headers=self.get_authorization_header()).json()

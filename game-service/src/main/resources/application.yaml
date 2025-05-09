@@ -57,8 +57,11 @@ spring.artemis:
   password: artemis
   broker-url: tcp://localhost:61616
 # Location of other REST services
-services.baseUrl:
-  team-service: http://localhost:8081/api
+services:
+  api-key:
+    team-service: hjeigejgij5k13opko1p1po
+  baseUrl:
+    team-service: http://localhost:8081/api
 management:
   security:
     token: EzGvDzOsbm-F7UtHCu6XmL0zyv3U9oqF

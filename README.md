@@ -188,3 +188,8 @@ user-service:
 Gen AI was used for:
 - generating some test cases of controller unit tests, but had to be adjusted.
 - genarating methods to seed userHasRole and Payment tables
+
+## Team Service
+
+- GenAI was used to help with clarification how Spring Security works - especially in case of designing authentication
+  flow for `X-Api-Key` header

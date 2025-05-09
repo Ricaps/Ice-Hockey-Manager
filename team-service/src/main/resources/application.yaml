@@ -10,6 +10,7 @@ spring:
     change-log: classpath:database/main-changelog.xml
     enabled: true
   security:
+    api-key: hjeigejgij5k13opko1p1po
     oauth2:
       resourceserver:
         opaque-token:
