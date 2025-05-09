@@ -230,4 +230,10 @@ public class CompetitionSeed implements Seed<Competition> {
 		return this.data;
 	}
 
+	@Override
+	public void clearData() {
+		LOGGER.debug("Cleared data of {}", this.getClass().getSimpleName());
+		this.competitionRepository.deleteAll();
+	}
+
 }

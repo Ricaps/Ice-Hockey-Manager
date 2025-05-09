@@ -103,7 +103,8 @@
     </changeSet>
     <changeSet id="1744737293176-10" author="martin">
         <addForeignKeyConstraint baseColumnNames="result_uid" baseTableName="match" constraintName="MATCH_RESULT_FK"
-                                 referencedColumnNames="match_uid" referencedTableName="result"/>
+                                 referencedColumnNames="match_uid" referencedTableName="result" onDelete="CASCADE"
+                                 deleteCascade="true"/>
     </changeSet>
     <changeSet id="1744737293176-11" author="martin">
         <addForeignKeyConstraint baseColumnNames="match_uid" baseTableName="result" constraintName="RESULT_MATCH_FK"

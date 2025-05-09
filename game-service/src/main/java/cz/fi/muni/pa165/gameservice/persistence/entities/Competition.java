@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -38,10 +40,11 @@ public class Competition {
 	private LocalDate endAt;
 
 	@OneToMany(mappedBy = "competition")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@Builder.Default
 	private Set<CompetitionHasTeam> teams = new HashSet<>();
 
-	@OneToMany(mappedBy = "competition")
+	@OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
 	@Builder.Default
 	private Set<Match> matches = new HashSet<>();
 

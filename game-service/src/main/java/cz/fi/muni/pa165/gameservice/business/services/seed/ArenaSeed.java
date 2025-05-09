@@ -174,4 +174,10 @@ public class ArenaSeed implements Seed<Arena> {
 		return this.data;
 	}
 
+	@Override
+	public void clearData() {
+		LOGGER.debug("Cleared data of {}", this.getClass().getSimpleName());
+		this.arenaRepository.deleteAll();
+	}
+
 }

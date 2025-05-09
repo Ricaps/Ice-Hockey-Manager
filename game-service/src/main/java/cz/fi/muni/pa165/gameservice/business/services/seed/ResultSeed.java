@@ -96,4 +96,10 @@ public class ResultSeed implements Seed<Result> {
 		return this.data;
 	}
 
+	@Override
+	public void clearData() {
+		LOGGER.debug("Cleared data of {}", this.getClass().getSimpleName());
+		this.resultRepository.deleteAll();
+	}
+
 }

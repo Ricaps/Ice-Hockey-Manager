@@ -16,4 +16,6 @@ public interface Seed<T> {
 	 */
 	List<T> getData();
 
+	void clearData();
+
 }

@@ -88,4 +88,10 @@ public class TeamsSeed implements Seed<CompetitionHasTeam> {
 		return this.data;
 	}
 
+	@Override
+	public void clearData() {
+		LOGGER.debug("Cleared data of {}", this.getClass().getSimpleName());
+		this.teamRepository.deleteAll();
+	}
+
 }

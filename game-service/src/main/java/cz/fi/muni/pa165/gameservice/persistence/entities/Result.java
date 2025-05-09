@@ -18,7 +18,7 @@ public class Result {
 	@Column(name = "match_uid")
 	private UUID matchGuid;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@MapsId("match_uid")
 	@JoinColumn(name = "match_uid", foreignKey = @ForeignKey(name = "result_match_fk"))
 	private Match match;

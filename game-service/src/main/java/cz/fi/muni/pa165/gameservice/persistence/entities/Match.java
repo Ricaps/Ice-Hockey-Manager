@@ -3,6 +3,8 @@ package cz.fi.muni.pa165.gameservice.persistence.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -46,7 +48,8 @@ public class Match {
 	@Enumerated(EnumType.STRING)
 	private MatchType matchType;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "result_uid", foreignKey = @ForeignKey(name = "match_result_fk"))
 	private Result result;
 

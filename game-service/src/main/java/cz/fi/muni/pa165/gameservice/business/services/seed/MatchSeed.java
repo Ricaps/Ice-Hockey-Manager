@@ -124,4 +124,10 @@ public class MatchSeed implements Seed<Match> {
 		return this.data;
 	}
 
+	@Override
+	public void clearData() {
+		LOGGER.debug("Cleared data of {}", this.getClass().getSimpleName());
+		this.matchRepository.deleteAll();
+	}
+
 }

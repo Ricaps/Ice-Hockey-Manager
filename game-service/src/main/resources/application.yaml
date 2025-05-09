@@ -21,6 +21,8 @@ server:
   servlet:
     context-path: /api
   port: 8082
+  database:
+    clear: false
   error:
     include-stacktrace: never
 # JPA and Hibernate configuration
@@ -28,7 +30,7 @@ spring.datasource:
   url: jdbc:h2:file:./data/game-service
 spring.jpa:
   hibernate:
-    ddl-auto: create-drop
+    ddl-auto: none
   show-sql: false
   properties:
     hibernate:

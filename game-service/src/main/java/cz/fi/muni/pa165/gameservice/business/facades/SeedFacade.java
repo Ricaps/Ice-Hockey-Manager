@@ -6,6 +6,7 @@ import cz.fi.muni.pa165.gameservice.config.SeedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -23,6 +24,9 @@ public class SeedFacade implements ApplicationRunner {
 	private final SeedConfiguration seedConfiguration;
 
 	private final List<? extends Seed<?>> seeds;
+
+	@Value("${server.database.clear:false}")
+	private boolean shouldClear;
 
 	@Autowired
 	public SeedFacade(SeedConfiguration seedConfiguration, List<? extends Seed<?>> seeds) {
@@ -56,8 +60,16 @@ public class SeedFacade implements ApplicationRunner {
 		}
 	}
 
+	private void clearDatabase() {
+		if (!shouldClear) {
+			return;
+		}
+		seeds.reversed().forEach(Seed::clearData);
+	}
+
 	@Override
 	public void run(ApplicationArguments args) {
+		clearDatabase();
 		runSeed();
 	}
 
