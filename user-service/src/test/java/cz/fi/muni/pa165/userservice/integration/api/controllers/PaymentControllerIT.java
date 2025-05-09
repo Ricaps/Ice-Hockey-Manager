@@ -6,7 +6,6 @@ import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
 import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
 import cz.fi.muni.pa165.messaging.BudgetChangeMessage;
 import cz.fi.muni.pa165.userservice.business.mappers.PaymentMapper;
-import cz.fi.muni.pa165.userservice.business.messages.BudgetUpdateMessageResolver;
 import cz.fi.muni.pa165.userservice.business.services.PaymentService;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
@@ -73,9 +72,6 @@ public class PaymentControllerIT extends BaseControllerIT<PaymentRepository, Pay
 
 	@Autowired
 	private EntityManager entityManager;
-
-	@Autowired
-	private BudgetUpdateMessageResolver budgetUpdateMessageResolver;
 
 	private final PaymentRepository paymentRepository;
 

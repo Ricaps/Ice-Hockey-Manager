@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @Slf4j
 class TestDataFactory implements CommandLineRunner {
@@ -30,11 +28,7 @@ class TestDataFactory implements CommandLineRunner {
 			return;
 		}
 
-		userServiceSeeder.seedTestData(5, 50);
-	}
-
-	public String getUserPasswordById(UUID userId) {
-		return userServiceSeeder.getUserPasswordById(userId);
+		userServiceSeeder.seedTestData(50);
 	}
 
 }

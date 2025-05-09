@@ -1,20 +1,14 @@
 package cz.fi.muni.pa165.userservice.business.services;
 
+import cz.fi.muni.pa165.userservice.api.exception.UnauthorizedException;
 import cz.fi.muni.pa165.userservice.api.exception.ValidationUtil;
-import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
-import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
-import cz.fi.muni.pa165.userservice.persistence.repositories.RoleRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.UserHasRoleRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
-import cz.fi.muni.pa165.util.PasswordValidationUtil;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,22 +22,12 @@ public class UserService extends EntityServiceBase<User> {
 
 	private final UserRepository userRepository;
 
-	private final RoleRepository roleRepository;
-
-	private final UserHasRoleRepository userHasRoleRepository;
-
-	private final PasswordEncoder passwordEncoder;
-
-	private final EntityManager entityManager;
+	private final AuthUtil authUtil;
 
 	@Autowired
-	public UserService(UserRepository userRepository, RoleRepository roleRepository,
-			UserHasRoleRepository userHasRoleRepository, PasswordEncoder passwordEncoder, EntityManager entityManager) {
+	public UserService(UserRepository userRepository, AuthUtil authUtil) {
 		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.roleRepository = roleRepository;
-		this.userHasRoleRepository = userHasRoleRepository;
-		this.entityManager = entityManager;
+		this.authUtil = authUtil;
 	}
 
 	@Transactional
@@ -75,12 +59,12 @@ public class UserService extends EntityServiceBase<User> {
 	@Transactional
 	public User registerUser(@Valid User user) {
 		validateUser(user);
-		validatePassword(user.getPasswordHash());
+		ValidationUtil.requireValidEmailAddress(user.getMail(), "Invalid email address!");
 		ValidationUtil.requireNull(user.getGuid(), "ID must be null when creating a new user!");
 
-		user.setPasswordHash(encodePassword(user.getPasswordHash()));
 		user.setIsActive(true);
 		user.setDeletedAt(null);
+		user.setIsAdmin(false);
 
 		return userRepository.save(user);
 	}
@@ -90,9 +74,11 @@ public class UserService extends EntityServiceBase<User> {
 		validateUser(updatedUser);
 
 		User storedUser = getUserById(updatedUser.getGuid());
-		updatedUser.setPasswordHash(storedUser.getPasswordHash());
-		updatedUser.setRoles(storedUser.getRoles());
 		updatedUser.setPayments(storedUser.getPayments());
+		updatedUser.setIsAdmin(storedUser.getIsAdmin());
+		updatedUser.setDeletedAt(storedUser.getDeletedAt());
+		updatedUser.setIsActive(storedUser.getIsActive());
+		updatedUser.setMail(storedUser.getMail());
 
 		return userRepository.save(updatedUser);
 	}
@@ -122,45 +108,19 @@ public class UserService extends EntityServiceBase<User> {
 	}
 
 	@Transactional
-	public User changePassword(UUID userId, String oldPassword, String newPassword) {
-		ValidationUtil.requireNotNull(userId, "You must provide user ID. Provided user id is NULL!");
-		validatePassword(newPassword);
+	public void setUserIsAdmin(UUID userId, boolean isAdmin) {
+		validateUserExists(userId);
+		validateLoggedUserIsAdmin();
 
-		User user = getUserById(userId);
-
-		if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
-			throw new ValidationException("Old password does not match!");
-		}
-
-		user.setPasswordHash(encodePassword(newPassword));
-		return userRepository.save(user);
+		userRepository.updateIsAdminByGuid(userId, isAdmin);
 	}
 
 	@Transactional
-	public User addRoleToUser(UUID userId, UUID roleId) {
-		validateUserAndRoleExists(userId, roleId);
-		User user = getUserById(userId);
-		Role role = roleRepository.findById(roleId)
-			.orElseThrow(() -> new EntityNotFoundException("Role with id: %s was not found!".formatted(userId)));
+	public Boolean isUserAdmin(UUID userId) {
+		validateUserExists(userId);
+		Optional<Boolean> isAdmin = userRepository.findIsAdminByGuid(userId);
 
-		UserHasRole userHasRole = UserHasRole.builder().user(user).role(role).build();
-
-		userHasRoleRepository.saveAndFlush(userHasRole);
-		entityManager.flush();
-		entityManager.refresh(user);
-
-		return user;
-	}
-
-	@Transactional
-	public User deleteRoleFromUser(UUID userId, UUID roleId) {
-		validateUserAndRoleExists(userId, roleId);
-
-		userHasRoleRepository.deleteByUserIdAndRoleId(userId, roleId);
-		entityManager.flush();
-		User updatedUser = getUserById(userId);
-		entityManager.refresh(updatedUser);
-		return getUserById(userId);
+		return isAdmin.isPresent() && isAdmin.get();
 	}
 
 	@Transactional
@@ -168,53 +128,26 @@ public class UserService extends EntityServiceBase<User> {
 		return userRepository.findAll();
 	}
 
-	@Transactional
-	public User resetPassword(UUID userId, String newPassword) {
-		ValidationUtil.requireNotNull(userId, "You must provide user ID. Provided user id is NULL!");
-		validatePassword(newPassword);
-
-		User user = getUserById(userId);
-
-		user.setPasswordHash(encodePassword(newPassword));
-		return userRepository.save(user);
-	}
-
-	private void validatePassword(String password) {
-		if (!PasswordValidationUtil.isPasswordValid(password)) {
-			throw new ValidationException(PasswordValidationUtil.requirementDescription);
-		}
-	}
-
 	private void validateUser(User user) {
 		ValidationUtil.requireNotNull(user, "You must provide a valid user! Provided updatedUser is NULL!");
-		ValidationUtil.requireValidEmailAddress(user.getMail(), "Invalid email address!");
 
-		Optional<User> existingUser = userRepository.findByMail(user.getMail());
-		if (areEntitiesDuplicated(user, existingUser)) {
-			throw new EntityExistsException("User with given email: %s already exists!".formatted(user.getMail()));
-		}
-
-		existingUser = userRepository.findByUsername(user.getUsername());
+		Optional<User> existingUser = userRepository.findByUsername(user.getUsername());
 		if (areEntitiesDuplicated(user, existingUser)) {
 			throw new EntityExistsException("User with username: %s already exists!".formatted(user.getUsername()));
 		}
 	}
 
-	private void validateUserAndRoleExists(UUID userId, UUID roleId) {
+	private void validateUserExists(UUID userId) {
 		ValidationUtil.requireNotNull(userId, "You must provide user ID. Provided user id is NULL!");
-		ValidationUtil.requireNotNull(roleId, "You must provide role ID. Provided role id is NULL!");
 
 		if (!userRepository.existsById(userId)) {
 			throw new EntityNotFoundException("User with id: %s was not found!".formatted(userId));
 		}
-
-		if (!roleRepository.existsById(roleId)) {
-			throw new EntityNotFoundException("Role with id: %s was not found!".formatted(roleId));
-		}
 	}
 
-	public String encodePassword(String password) {
-		return passwordEncoder.encode(password);
+	private void validateLoggedUserIsAdmin() {
+		if (!authUtil.isAuthenticatedUserAdmin())
+			throw new UnauthorizedException("To set admin roles, you have to be admin!");
 	}
 
 }

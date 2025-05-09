@@ -1,16 +1,13 @@
 package cz.fi.muni.pa165.userservice.unit.business.service;
 
 import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
+import cz.fi.muni.pa165.userservice.api.exception.UnauthorizedException;
 import cz.fi.muni.pa165.userservice.business.services.UserService;
-import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
-import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
-import cz.fi.muni.pa165.userservice.persistence.repositories.RoleRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.UserHasRoleRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
-import jakarta.persistence.EntityManager;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,28 +35,16 @@ public class UserServiceTests {
 	private UserRepository userRepository;
 
 	@Mock
-	private RoleRepository roleRepository;
-
-	@Mock
-	private UserHasRoleRepository userHasRoleRepository;
-
-	@Mock
-	private PasswordEncoder passwordEncoder;
-
-	@Mock
-	private EntityManager entityManager;
+	private AuthUtil authUtil;
 
 	@InjectMocks
 	private UserService userService;
 
 	private UUID userId;
 
-	private UUID roleId;
-
 	@BeforeEach
 	void setUp() {
 		userId = UUID.randomUUID();
-		roleId = UUID.randomUUID();
 	}
 
 	@Test
@@ -152,62 +137,10 @@ public class UserServiceTests {
 	}
 
 	@Test
-	void registerUser_whenPasswordIsShort_shouldThrowValidationException() {
-		// Arrange
-		User userToRegister = getUser();
-		userToRegister.setPasswordHash("short");
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.registerUser(userToRegister));
-	}
-
-	@Test
-	void registerUser_whenPasswordDoesNotContainDigit_shouldThrowValidationException() {
-		// Arrange
-		User userToRegister = getUser();
-		userToRegister.setPasswordHash("shortABC****");
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.registerUser(userToRegister));
-	}
-
-	@Test
-	void registerUser_whenPasswordDoesNotContainUpperCaseLetter_shouldThrowValidationException() {
-		// Arrange
-		User userToRegister = getUser();
-		userToRegister.setPasswordHash("paassword123*");
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.registerUser(userToRegister));
-	}
-
-	@Test
-	void registerUser_whenPasswordDoesNotContainLowerCaseLetter_shouldThrowValidationException() {
-		// Arrange
-		User userToRegister = getUser();
-		userToRegister.setPasswordHash("PASSWORD123*");
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.registerUser(userToRegister));
-	}
-
-	@Test
-	void registerUser_whenPasswordDoesNotContainSpecialCharacter_shouldThrowValidationException() {
-		// Arrange
-		User userToRegister = getUser();
-		userToRegister.setPasswordHash("password123");
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.registerUser(userToRegister));
-	}
-
-	@Test
 	void registerUser_whenValidUser_shouldRegisterSuccessfully() {
 		// Arrange
 		User userToRegister = getUser();
 		userToRegister.setGuid(null);
-		Mockito.when(passwordEncoder.encode(userToRegister.getPasswordHash()))
-			.thenReturn(userToRegister.getPasswordHash());
 		Mockito.when(userRepository.save(any(User.class))).thenReturn(userToRegister);
 
 		// Act
@@ -320,127 +253,83 @@ public class UserServiceTests {
 	}
 
 	@Test
-	void changePassword_whenOldPasswordDoesNotMatch_shouldThrowValidationException() {
+	void isUserAdmin_whenUserIsAdmin_shouldReturnTrue() {
 		// Arrange
-		User user = getUser();
-		String oldPassword = user.getPasswordHash() + "AA";
-		String newPassword = "newPassword123*";
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		Mockito.when(passwordEncoder.matches(oldPassword, user.getPasswordHash())).thenReturn(false);
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.changePassword(userId, oldPassword, newPassword));
-	}
-
-	@Test
-	void changePassword_whenOldPasswordMatches_shouldChangePassword() {
-		// Arrange
-		User user = getUser();
-		String oldPassword = user.getPasswordHash();
-		String newPassword = "newPassword*123";
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		Mockito.when(passwordEncoder.matches(Mockito.any(String.class), Mockito.any(String.class))).thenReturn(true);
-		Mockito.when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
-		Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
-
-		// Act
-		User updatedUser = userService.changePassword(userId, oldPassword, newPassword);
-
-		// Assert
-		assertNotNull(updatedUser);
-		Mockito.verify(userRepository, times(1)).save(any(User.class));
-	}
-
-	@Test
-	void changePassword_whenNewPasswordIsNotValid_shouldThrowValidationException() {
-		// Arrange
-		User user = getUser();
-		String oldPassword = user.getPasswordHash();
-		String newPassword = "newPassword*123";
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		Mockito.when(passwordEncoder.matches(oldPassword, user.getPasswordHash())).thenReturn(false);
-
-		// Act & Assert
-		assertThrows(ValidationException.class, () -> userService.changePassword(userId, oldPassword, newPassword));
-	}
-
-	@Test
-	void addRoleToUser_whenUserOrRoleDoesNotExist_shouldThrowEntityNotFoundException() {
-		// Act & Assert
-		assertThrows(EntityNotFoundException.class, () -> userService.addRoleToUser(userId, roleId));
-	}
-
-	@Test
-	void addRoleToUser_whenValid_shouldAddRoleToUser() {
-		// Arrange
-		User user = getUser();
-		Role role = getRole();
+		Mockito.when(userRepository.findIsAdminByGuid(userId)).thenReturn(Optional.of(true));
 		Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-		Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-		Mockito.when(roleRepository.existsById(roleId)).thenReturn(true);
-		Mockito.when(roleRepository.findById(roleId)).thenReturn(Optional.of(role));
-		Mockito.when(userHasRoleRepository.saveAndFlush(any(UserHasRole.class))).thenReturn(null);
-		Mockito.doNothing().when(entityManager).flush();
-		Mockito.doNothing().when(entityManager).refresh(any(Object.class));
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
 		// Act
-		User updatedUser = userService.addRoleToUser(userId, roleId);
+		Boolean isUserAdmin = userService.isUserAdmin(userId);
 
 		// Assert
-		assertNotNull(updatedUser);
-		Mockito.verify(userHasRoleRepository, times(1)).saveAndFlush(any(UserHasRole.class));
+		Assertions.assertTrue(isUserAdmin);
+		Mockito.verify(userRepository, times(1)).findIsAdminByGuid(userId);
 	}
 
 	@Test
-	void deleteRoleFromUser_whenUserOrRoleDoesNotExist_shouldThrowEntityNotFoundException() {
-		// Act & Assert
-		assertThrows(EntityNotFoundException.class, () -> userService.deleteRoleFromUser(userId, roleId));
-	}
-
-	@Test
-	void deleteRoleFromUser_whenValid_shouldDeleteRoleFromUser() {
+	void isUserAdmin_whenUserIsNotAdmin_shouldReturnFalse() {
 		// Arrange
-		User user = getUser();
-		Role role = getRole();
+		Mockito.when(userRepository.findIsAdminByGuid(userId)).thenReturn(Optional.of(false));
 		Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-		Mockito.when(roleRepository.existsById(roleId)).thenReturn(true);
-		Mockito.when(userHasRoleRepository.deleteByUserIdAndRoleId(userId, roleId)).thenReturn(1);
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
 		// Act
-		User updatedUser = userService.deleteRoleFromUser(userId, roleId);
+		Boolean isUserAdmin = userService.isUserAdmin(userId);
 
 		// Assert
-		assertNotNull(updatedUser);
-		Mockito.verify(userHasRoleRepository, times(1)).deleteByUserIdAndRoleId(userId, roleId);
+		Assertions.assertFalse(isUserAdmin);
+		Mockito.verify(userRepository, times(1)).findIsAdminByGuid(userId);
 	}
 
 	@Test
-	void resetPassword_whenUserDoesNotExist_shouldThrowEntityNotFoundException() {
+	void isUserAdmin_whenUserDoesNotExists_shouldThrowEntityNotFoundException() {
 		// Arrange
-		String newPassword = "newPassword123*";
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+		Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
-		// Act & Assert
-		assertThrows(EntityNotFoundException.class, () -> userService.resetPassword(userId, newPassword));
+		// Act
+		assertThrows(EntityNotFoundException.class, () -> userService.isUserAdmin(userId));
 	}
 
 	@Test
-	void resetPassword_whenValid_shouldResetPassword() {
+	void setUserIsAdmin_whenUserExists_shouldCallRepositoryMethod() {
 		// Arrange
-		String newPassword = "123LLLaaaa@";
-		User user = getUser();
-		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		Mockito.when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
-		Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
+		boolean shouldBeAdmin = false;
+		Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+		Mockito.doNothing().when(userRepository).updateIsAdminByGuid(userId, shouldBeAdmin);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act
-		User updatedUser = userService.resetPassword(userId, newPassword);
+		userService.setUserIsAdmin(userId, false);
 
 		// Assert
-		assertNotNull(updatedUser);
-		Mockito.verify(userRepository, times(1)).save(any(User.class));
+		Mockito.verify(userRepository, times(1)).updateIsAdminByGuid(userId, shouldBeAdmin);
+	}
+
+	@Test
+	void setUserIsAdmin_whenAuthenticatedUserIsNotAdmin_shouldThrowUnauthenticatedException() {
+		// Arrange
+		boolean shouldBeAdmin = false;
+		Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(false);
+
+		// Act
+		assertThrows(UnauthorizedException.class, () -> userService.setUserIsAdmin(userId, false));
+
+		// Assert
+		Mockito.verify(userRepository, times(0)).updateIsAdminByGuid(userId, shouldBeAdmin);
+	}
+
+	@Test
+	void setUserIsAdmin_whenUserDoesNotExists_shouldThrowEntityNotFoundException() {
+		// Arrange
+		boolean shouldBeAdmin = false;
+		Mockito.when(userRepository.existsById(userId)).thenReturn(false);
+
+		// Act
+		assertThrows(EntityNotFoundException.class, () -> userService.setUserIsAdmin(userId, shouldBeAdmin));
+
+		// Assert
+		Mockito.verify(userRepository, never())
+			.updateIsAdminByGuid(Mockito.any(UUID.class), Mockito.any(Boolean.class));
 	}
 
 	@Test
@@ -462,16 +351,12 @@ public class UserServiceTests {
 			.guid(userId)
 			.name("John")
 			.surname("Unnamed")
-			.passwordHash("Password*123")
 			.mail("john@oasiudhoisdf.aa")
 			.isActive(true)
 			.username("asdfaf")
 			.deletedAt(null)
+			.isAdmin(false)
 			.build();
-	}
-
-	private Role getRole() {
-		return Role.builder().guid(roleId).description("role").code("some code").name("name").build();
 	}
 
 }

@@ -2,20 +2,14 @@ package cz.fi.muni.pa165.userservice.integration.api.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.business.mappers.UserMapper;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
-import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
-import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
-import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.PaymentRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.RoleRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.UserHasRoleRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,13 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,22 +50,10 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private BudgetOfferPackageRepository budgetOfferPackageRepository;
-
-	@Autowired
 	private UserMapper userMapper;
 
-	@Autowired
-	private PaymentRepository paymentRepository;
-
-	@Autowired
-	private TestDataFactory testDataFactory;
-
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private UserHasRoleRepository userHasRoleRepository;
+	@MockitoBean
+	AuthUtil authUtil;
 
 	private final UserRepository userRepository;
 
@@ -162,6 +144,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 	void registerUser_whenValidUser_shouldReturnCreatedUser() throws Exception {
 		var allUsersSize = getExistingEntities().size();
 		var newUser = getValidUserCreateDto();
+		Mockito.when(authUtil.getAuthMail()).thenReturn(newUser.getMail());
 
 		mockMvc
 			.perform(post("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -177,13 +160,15 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 			.andExpect(jsonPath("$.isActive").value(true));
 
 		Assertions.assertEquals(allUsersSize + 1, getExistingEntities().size());
+
 	}
 
 	@Test
 	void registerUser_whenValidationFails_shouldReturnBadRequest() throws Exception {
+		Mockito.when(authUtil.getAuthMail()).thenReturn("valid@mail.com");
 		var allUsersSize = getExistingEntities().size();
 		var newUser = getValidUserCreateDto();
-		newUser.setPassword("abc");
+		newUser.setUsername("");
 
 		mockMvc
 			.perform(post("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -191,183 +176,6 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 			.andExpect(status().isBadRequest());
 
 		Assertions.assertEquals(allUsersSize, getExistingEntities().size());
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordIsShort_shouldReturnBadRequest() throws Exception {
-		int index = 42;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setNewPassword("s");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainUpperCaseLetter_shouldReturnBadRequest() throws Exception {
-		int index = 24;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setNewPassword("pswd123*****");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainLowerCaseLetter_shouldReturnBadRequest() throws Exception {
-		int index = 4;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setNewPassword("PSWD123*****");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainDigit_shouldReturnBadRequest() throws Exception {
-		int index = 9;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setNewPassword("PSWDpswd*****");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainSpecialCharacter_shouldReturnBadRequest() throws Exception {
-		int index = 18;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setNewPassword("PSWD123pswd");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenOldPasswordDoesNotMatch_shouldReturnBadRequest() throws Exception {
-		int index = 40;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		requestDto.setOldPassword("ThisPasswordFakerProbablyDidNotGenerated");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(userBefore.getPasswordHash(), getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void changeUserPassword_whenUserDoesNotExists_shouldReturnNotFound() throws Exception {
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(6);
-		requestDto.setUserId(getNonExistingId());
-
-		var r = mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isNotFound());
-
-		Mockito.verify(userFacade, Mockito.times(1)).changePassword(Mockito.any());
-	}
-
-	@Test
-	void changeUserPassword_whenValid_shouldReturnUserViewDto() throws Exception {
-		int index = 23;
-		User userBefore = getExistingEntity(index);
-		ChangePasswordRequestDto requestDto = getValidChangePasswordRequestDto(index);
-		String hashBefore = getExistingEntity(index).getPasswordHash();
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userBefore.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userBefore.getMail()))
-			.andExpect(jsonPath("$.name").value(userBefore.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userBefore.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userBefore.getSurname()))
-			.andExpect(jsonPath("$.username").value(userBefore.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userBefore.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userBefore.getIsActive()));
-
-		Assertions.assertNotEquals(hashBefore, getExistingEntity(index).getPasswordHash());
-	}
-
-	@Test
-	void resetUserPassword_whenUserNotFound_shouldReturnNotFound() throws Exception {
-		var nonExistingId = getNonExistingId();
-		var password = getValidPassword();
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", nonExistingId).contentType(MediaType.APPLICATION_JSON)
-				.content(password))
-			.andExpect(status().isNotFound());
-
-		Mockito.verify(userFacade, Mockito.times(1)).resetPassword(Mockito.eq(nonExistingId), Mockito.eq(password));
-	}
-
-	@Test
-	void resetUserPassword_whenNotValidPassword_shouldReturnBadRequest() throws Exception {
-		int userIndex = 11;
-		User existingUser = getExistingEntity(userIndex);
-		var notValidPassword = "aaa";
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", existingUser.getGuid())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(notValidPassword))
-			.andExpect(status().isBadRequest());
-
-		Assertions.assertEquals(existingUser.getPasswordHash(), getExistingEntity(userIndex).getPasswordHash());
-	}
-
-	@Test
-	void resetUserPassword_whenValid_shouldReturnUserViewDto() throws Exception {
-		int index = 4;
-		User userBefore = getExistingEntity(index);
-		var hashBefore = getExistingEntity(index).getPasswordHash();
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", userBefore.getGuid())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(getValidPassword()))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userBefore.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userBefore.getMail()))
-			.andExpect(jsonPath("$.name").value(userBefore.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userBefore.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userBefore.getSurname()))
-			.andExpect(jsonPath("$.username").value(userBefore.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userBefore.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userBefore.getIsActive()));
-
-		Assertions.assertNotEquals(hashBefore, getExistingEntity(index).getPasswordHash());
 	}
 
 	@Test
@@ -443,7 +251,6 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		userViewDto.setBirthDate(LocalDate.now());
 		userViewDto.setSurname("NewSurname");
 		userViewDto.setUsername("NewUsername");
-		userViewDto.setMail("NewMail@mail.example");
 
 		mockMvc
 			.perform(put("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -483,7 +290,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 	void updateUser_whenValidationFails_shouldReturnBadRequest() throws Exception {
 		var nonValidDto = getValidUserViewDto();
 		var lastValidMail = nonValidDto.getMail();
-		nonValidDto.setMail("aaa");
+		nonValidDto.setUsername("");
 
 		mockMvc
 			.perform(put("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -494,80 +301,84 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 	}
 
 	@Test
-	void addRoleToUser_whenValid_shouldReturnUpdatedUser() throws Exception {
-		var existingUser = getExistingEntity();
-		var userRoleIds = new HashSet<UUID>(
-				existingUser.getRoles().stream().map(ur -> ur.getRole().getGuid()).toList());
-		var role = roleRepository.findAll()
-			.stream()
-			.filter(r -> !userRoleIds.contains(r.getGuid()))
-			.findFirst()
-			.orElseThrow();
+	void isUserAdmin_whenUserExistsAndIsNotAdmin_shouldReturnFalse() throws Exception {
+		var nonAdminUser = getFirstFilteredEntity(u -> !u.getIsAdmin());
 
-		ResultActions result = mockMvc
-			.perform(put("/v1/user/{userId}/role/{roleId}", existingUser.getGuid(), role.getGuid())
-				.contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/user/{id}/is-admin", nonAdminUser.getGuid()).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(existingUser.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(existingUser.getMail()))
-			.andExpect(jsonPath("$.name").value(existingUser.getName()))
-			.andExpect(jsonPath("$.birthDate").value(existingUser.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(existingUser.getSurname()))
-			.andExpect(jsonPath("$.username").value(existingUser.getUsername()))
-			.andExpect(jsonPath("$.isActive").value(existingUser.getIsActive()))
-			.andExpect(jsonPath("$.roles").isArray())
-			.andExpect(jsonPath("$.roles").isNotEmpty())
-			.andExpect(jsonPath("$.roles.length()").value(userRoleIds.size() + 1));
-
-		assertUserEquals(result, userRepository.findById(existingUser.getGuid()).orElseThrow());
+			.andExpect(jsonPath("$").value(false));
 	}
 
 	@Test
-	void addRoleToUser_whenNotFound_shouldReturnNotFound() throws Exception {
-		var userId = getExistingEntity().getGuid();
-		var nonExistingId = getNonExistingEntityId(roleRepository);
+	void isUserAdmin_whenUserExistsAndIsAdmin_shouldReturnTrue() throws Exception {
+		var adminUser = getFirstFilteredEntity(User::getIsAdmin);
 
-		mockMvc
-			.perform(put("/v1/user/{userId}/role/{roleId}", userId, nonExistingId)
-				.contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/user/{id}/is-admin", adminUser.getGuid()).contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$").value(true));
+	}
+
+	@Test
+	void isUserAdmin_whenUserDoesNotExists_shouldReturnNotExists() throws Exception {
+		mockMvc.perform(get("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
-		Mockito.verify(userFacade, Mockito.times(1)).addRoleToUser(Mockito.eq(userId), Mockito.eq(nonExistingId));
+		Mockito.verify(userFacade, Mockito.times(1)).isUserAdmin(Mockito.any(UUID.class));
 	}
 
 	@Test
-	void deleteRoleFromUser_whenValid_shouldReturnUpdatedUser() throws Exception {
-		var existingUser = getFirstFilteredEntity(u -> !u.getRoles().isEmpty());
-		var roleCountBefore = existingUser.getRoles().size();
-		var roleId = existingUser.getRoles().stream().findFirst().orElseThrow().getRole().getGuid();
-
-		ResultActions result = mockMvc
-			.perform(delete("/v1/user/{userId}/role/{roleId}", existingUser.getGuid(), roleId)
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(existingUser.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(existingUser.getMail()))
-			.andExpect(jsonPath("$.name").value(existingUser.getName()))
-			.andExpect(jsonPath("$.birthDate").value(existingUser.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(existingUser.getSurname()))
-			.andExpect(jsonPath("$.username").value(existingUser.getUsername()))
-			.andExpect(jsonPath("$.isActive").value(existingUser.getIsActive()))
-			.andExpect(jsonPath("$.roles").isArray())
-			.andExpect(jsonPath("$.roles.length()").value(roleCountBefore - 1));
-
-		assertUserEquals(result, userRepository.findById(existingUser.getGuid()).orElseThrow());
-	}
-
-	@Test
-	void deleteRoleFromUser_whenNotFound_shouldReturnNotFound() throws Exception {
-		var userId = getExistingEntity().getGuid();
-		var roleId = getNonExistingEntityId(roleRepository);
-
+	void setIsUserAdmin_whenUserDoesNotExists_shouldReturnNotExists() throws Exception {
 		mockMvc
-			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+			.perform(patch("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(false)))
 			.andExpect(status().isNotFound());
 
-		Mockito.verify(userFacade, Mockito.times(1)).deleteRoleFromUser(Mockito.eq(userId), Mockito.eq(roleId));
+		Mockito.verify(userFacade, Mockito.times(1)).setIsUserAdmin(Mockito.any(UUID.class), Mockito.anyBoolean());
+	}
+
+	@Test
+	void setIsUserAdmin_whenUserExistsAndIsAdmin_shouldMakeUserNonAdmin() throws Exception {
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
+		var adminUser = getFirstFilteredEntity(User::getIsAdmin);
+
+		mockMvc
+			.perform(patch("/v1/user/{id}/is-admin", adminUser.getGuid()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(false)))
+			.andExpect(status().isNoContent());
+
+		var isAdmin = repository.findIsAdminByGuid(adminUser.getGuid());
+		Assertions.assertTrue(isAdmin.isPresent());
+		Assertions.assertFalse(isAdmin.get());
+	}
+
+	@Test
+	void setIsUserAdmin_whenUserExistsAndIsNotAdmin_shouldMakeUserAdmin() throws Exception {
+		var adminUser = getFirstFilteredEntity(u -> !u.getIsAdmin());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
+
+		mockMvc
+			.perform(patch("/v1/user/{id}/is-admin", adminUser.getGuid()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(true)))
+			.andExpect(status().isNoContent());
+
+		var isAdmin = repository.findIsAdminByGuid(adminUser.getGuid());
+		Assertions.assertTrue(isAdmin.isPresent());
+		Assertions.assertTrue(isAdmin.get());
+	}
+
+	@Test
+	void setIsUserAdmin_whenAuthenticatedUserIsNotAdmin_shouldReturnUnauthorized() throws Exception {
+		var adminUser = getFirstFilteredEntity(u -> !u.getIsAdmin());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(false);
+
+		mockMvc
+			.perform(patch("/v1/user/{id}/is-admin", adminUser.getGuid()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(true)))
+			.andExpect(status().isUnauthorized());
+
+		var isAdmin = repository.findIsAdminByGuid(adminUser.getGuid());
+		Assertions.assertTrue(isAdmin.isPresent());
+		Assertions.assertFalse(isAdmin.get());
 	}
 
 	private void assertAllUsersEquals(ResultActions result, List<User> users) throws Exception {
@@ -596,7 +407,7 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 		assertUserEquals(jsonUser, user);
 	}
 
-	private void assertUserEquals(Map<String, Object> jsonUser, User user) throws Exception {
+	private void assertUserEquals(Map<String, Object> jsonUser, User user) {
 		Assertions.assertEquals(jsonUser.get("guid"), user.getGuid().toString());
 		Assertions.assertEquals(jsonUser.get("mail"), user.getMail());
 		Assertions.assertEquals(jsonUser.get("surname"), user.getSurname());
@@ -606,31 +417,6 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 
 		List<Map<String, Object>> jsonPayments = (List<Map<String, Object>>) jsonUser.get("payments");
 		assertAllUserPaymentsEquals(jsonPayments, user);
-
-		List<Map<String, Object>> jsonRoles = (List<Map<String, Object>>) jsonUser.get("roles");
-		assertAllUserRolesEquals(jsonRoles, user);
-	}
-
-	private void assertUserRoleEquals(Map<String, Object> jsonRole, Role role) throws Exception {
-		Assertions.assertEquals(role.getGuid().toString(), jsonRole.get("guid"));
-		Assertions.assertEquals(role.getCode(), jsonRole.get("code"));
-		Assertions.assertEquals(role.getName(), jsonRole.get("name"));
-		Assertions.assertEquals(role.getDescription(), jsonRole.get("description"));
-	}
-
-	private void assertAllUserRolesEquals(List<Map<String, Object>> jsonRoles, User user) throws Exception {
-		for (Map<String, Object> jsonRole : jsonRoles) {
-			UUID roleId = UUID.fromString(jsonRole.get("guid").toString());
-
-			Role expectedRole = user.getRoles()
-				.stream()
-				.map(UserHasRole::getRole)
-				.filter(u -> u.getGuid().equals(roleId))
-				.findFirst()
-				.orElseThrow(() -> new EntityNotFoundException("Role with guid " + roleId + " not found in user!"));
-
-			assertUserRoleEquals(jsonRole, expectedRole);
-		}
 	}
 
 	private void assertUserPaymentEquals(Map<String, Object> jsonPayment, Payment payment) {
@@ -661,29 +447,13 @@ public class UserControllerIT extends BaseControllerIT<UserRepository, User> {
 			.name("John")
 			.surname("Example")
 			.username("princess123")
-			.password("*1*VeryBigSecret++")
 			.birthDate(LocalDate.of(2000, 1, 1))
 			.build();
 	}
 
-	private ChangePasswordRequestDto getValidChangePasswordRequestDto(int index) {
-		var user = getExistingEntity(index);
-
-		return ChangePasswordRequestDto.builder()
-			.oldPassword(testDataFactory.getUserPasswordById(user.getGuid()))
-			.userId(user.getGuid())
-			.newPassword("NewSafePassword123*+-")
-			.build();
-	}
-
-	private String getValidPassword() {
-		return "poiajPIJ123*+";
-	}
-
 	private UserViewDto getValidUserViewDto() {
 		var entity = getExistingEntity();
-		UserViewDto dto = userMapper.userToUserViewDto(entity);
-		return dto;
+		return userMapper.userToUserViewDto(entity);
 	}
 
 }

@@ -1,20 +1,20 @@
 package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.service.userService.api.UserController;
-import cz.fi.muni.pa165.userservice.api.controllers.UserControllerImpl;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
-import cz.fi.muni.pa165.userservice.security.SecurityConfig;
+import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.unit.testData.UserTestData;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -29,7 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserController.class)
-@Import(SecurityConfig.class)
+@Import(SecurityTestConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class UserControllerMvcTests {
 
 	@Autowired
@@ -38,8 +39,8 @@ public class UserControllerMvcTests {
 	@MockitoBean
 	private UserFacade userFacade;
 
-	@InjectMocks
-	private UserControllerImpl userController;
+	@MockitoBean
+	private AuthUtil authUtil;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -152,6 +153,8 @@ public class UserControllerMvcTests {
 
 	@Test
 	void registerUser_whenValidUser_shouldReturnCreatedUser() throws Exception {
+		Mockito.when(authUtil.getAuthMail()).thenReturn(userViewDto.getMail());
+
 		Mockito.when(userFacade.registerUser(Mockito.any(UserCreateDto.class))).thenReturn(userViewDto);
 
 		mockMvc
@@ -168,11 +171,13 @@ public class UserControllerMvcTests {
 			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()));
 
 		Mockito.verify(userFacade, Mockito.times(1)).registerUser(Mockito.any(UserCreateDto.class));
+
 	}
 
 	@Test
 	void registerUser_whenValidationFails_shouldReturnBadRequest() throws Exception {
-		userViewDto.setMail("");
+		Mockito.when(authUtil.getAuthMail()).thenReturn("valid@mail.com");
+		userViewDto.setUsername("");
 
 		mockMvc
 			.perform(post("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -180,170 +185,6 @@ public class UserControllerMvcTests {
 			.andExpect(status().isBadRequest());
 
 		Mockito.verify(userFacade, Mockito.never()).registerUser(Mockito.any(UserCreateDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordIsShort_shouldReturnBadRequest() throws Exception {
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-		requestDto.setNewPassword("newpswd");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.never()).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainUpperCaseLetter_shouldReturnBadRequest() throws Exception {
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-		requestDto.setNewPassword("pswd123*****");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.never()).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainLowerCaseLetter_shouldReturnBadRequest() throws Exception {
-		ChangePasswordRequestDto requestDto = new ChangePasswordRequestDto("oldPassword", "PSWD123*****",
-				userViewDto.getGuid());
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.never()).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainDigit_shouldReturnBadRequest() throws Exception {
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-		requestDto.setNewPassword("PSWDpswd*****");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.never()).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenPasswordDoesNotContainSpecialCharacter_shouldReturnBadRequest() throws Exception {
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-		requestDto.setNewPassword("PSWD123pswd");
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.never()).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenOldPasswordDoesNotMatch_shouldReturnBadRequest() throws Exception {
-		Mockito.when(userFacade.changePassword(Mockito.any(ChangePasswordRequestDto.class)))
-			.thenThrow(ValidationException.class);
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.times(1)).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenUserDoesNotExists_shouldReturnNotFound() throws Exception {
-		Mockito.when(userFacade.changePassword(Mockito.any(ChangePasswordRequestDto.class)))
-			.thenThrow(EntityNotFoundException.class);
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isNotFound());
-
-		Mockito.verify(userFacade, Mockito.times(1)).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void changeUserPassword_whenValid_shouldReturnUserViewDto() throws Exception {
-		Mockito.when(userFacade.changePassword(Mockito.any(ChangePasswordRequestDto.class))).thenReturn(userViewDto);
-		ChangePasswordRequestDto requestDto = UserTestData.getChangePasswordRequestDto();
-
-		mockMvc
-			.perform(put("/v1/user/change-password").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
-			.andExpect(jsonPath("$.name").value(userViewDto.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userViewDto.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userViewDto.getSurname()))
-			.andExpect(jsonPath("$.username").value(userViewDto.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userViewDto.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()));
-
-		Mockito.verify(userFacade, Mockito.times(1)).changePassword(Mockito.any(ChangePasswordRequestDto.class));
-	}
-
-	@Test
-	void resetUserPassword_whenUserNotFound_shouldReturnNotFound() throws Exception {
-		Mockito.when(userFacade.resetPassword(Mockito.any(UUID.class), Mockito.any(String.class)))
-			.thenThrow(EntityNotFoundException.class);
-		String newPassword = UserTestData.getChangePasswordRequestDto().getNewPassword();
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
-				.content(newPassword))
-			.andExpect(status().isNotFound());
-
-		Mockito.verify(userFacade, Mockito.times(1)).resetPassword(userId, newPassword);
-	}
-
-	@Test
-	void resetUserPassword_whenNotValidPassword_shouldReturnBadRequest() throws Exception {
-		Mockito.when(userFacade.resetPassword(Mockito.any(UUID.class), Mockito.any(String.class)))
-			.thenThrow(ValidationException.class);
-		String newPassword = "asd";
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
-				.content(newPassword))
-			.andExpect(status().isBadRequest());
-
-		Mockito.verify(userFacade, Mockito.times(1)).resetPassword(userId, newPassword);
-	}
-
-	@Test
-	void resetUserPassword_whenValid_shouldReturnUserViewDto() throws Exception {
-		Mockito.when(userFacade.resetPassword(Mockito.any(UUID.class), Mockito.any(String.class)))
-			.thenReturn(userViewDto);
-		String newPassword = UserTestData.getChangePasswordRequestDto().getNewPassword();
-
-		mockMvc
-			.perform(put("/v1/user/{userId}/password/reset", userId).contentType(MediaType.APPLICATION_JSON)
-				.content(newPassword))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
-			.andExpect(jsonPath("$.name").value(userViewDto.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userViewDto.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userViewDto.getSurname()))
-			.andExpect(jsonPath("$.username").value(userViewDto.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userViewDto.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()));
-
-		Mockito.verify(userFacade, Mockito.times(1)).resetPassword(userId, newPassword);
 	}
 
 	@Test
@@ -420,7 +261,7 @@ public class UserControllerMvcTests {
 
 	@Test
 	void updateUser_whenValid_shouldReturnUpdatedUser() throws Exception {
-		Mockito.when(userFacade.updateUser(Mockito.any(UserViewDto.class))).thenReturn(userViewDto);
+		Mockito.when(userFacade.updateUser(Mockito.any(UserUpdateDto.class))).thenReturn(userViewDto);
 
 		mockMvc
 			.perform(put("/v1/user/").contentType(MediaType.APPLICATION_JSON)
@@ -435,12 +276,12 @@ public class UserControllerMvcTests {
 			.andExpect(jsonPath("$.deletedAt").value(userViewDto.getDeletedAt()))
 			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()));
 
-		Mockito.verify(userFacade, Mockito.times(1)).updateUser(Mockito.any(UserViewDto.class));
+		Mockito.verify(userFacade, Mockito.times(1)).updateUser(Mockito.any(UserUpdateDto.class));
 	}
 
 	@Test
 	void updateUser_whenUserDoesNotExist_shouldReturnNotFound() throws Exception {
-		Mockito.when(userFacade.updateUser(Mockito.any(UserViewDto.class)))
+		Mockito.when(userFacade.updateUser(Mockito.any(UserUpdateDto.class)))
 			.thenThrow(new EntityNotFoundException("User not found"));
 
 		mockMvc
@@ -448,85 +289,66 @@ public class UserControllerMvcTests {
 				.content(objectMapper.writeValueAsString(userViewDto)))
 			.andExpect(status().isNotFound());
 
-		Mockito.verify(userFacade, Mockito.times(1)).updateUser(Mockito.any(UserViewDto.class));
+		Mockito.verify(userFacade, Mockito.times(1)).updateUser(Mockito.any(UserUpdateDto.class));
 	}
 
 	@Test
 	void updateUser_whenValidationFails_shouldReturnBadRequest() throws Exception {
-		userViewDto.setMail("ssss");
+		userViewDto.setUsername("");
 
 		mockMvc
 			.perform(put("/v1/user/").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(userViewDto)))
 			.andExpect(status().isBadRequest());
 
-		Mockito.verify(userFacade, Mockito.never()).updateUser(Mockito.any(UserViewDto.class));
+		Mockito.verify(userFacade, Mockito.never()).updateUser(Mockito.any(UserUpdateDto.class));
 	}
 
 	@Test
-	void addRoleToUser_whenValid_shouldReturnUpdatedUser() throws Exception {
-		UUID roleId = UUID.randomUUID();
-		Mockito.when(userFacade.addRoleToUser(userId, roleId)).thenReturn(userViewDto);
+	void isUserAdmin_whenUserExists_shouldReturnTrue() throws Exception {
+		Mockito.when(userFacade.isUserAdmin(Mockito.any(UUID.class))).thenReturn(true);
 
-		mockMvc.perform(put("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
-			.andExpect(jsonPath("$.name").value(userViewDto.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userViewDto.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userViewDto.getSurname()))
-			.andExpect(jsonPath("$.username").value(userViewDto.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userViewDto.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()))
-			.andExpect(jsonPath("$.roles[0].guid").value(userViewDto.getRoles().getFirst().getGuid().toString()))
-			.andExpect(jsonPath("$.roles[0].code").value(userViewDto.getRoles().getFirst().getCode()))
-			.andExpect(jsonPath("$.roles[0].description").value(userViewDto.getRoles().getFirst().getDescription()))
-			.andExpect(jsonPath("$.roles[0].name").value(userViewDto.getRoles().getFirst().getName()));
+			.andExpect(jsonPath("$").value(true));
 
-		Mockito.verify(userFacade, Mockito.times(1)).addRoleToUser(userId, roleId);
+		Mockito.verify(userFacade, Mockito.times(1)).isUserAdmin(Mockito.any(UUID.class));
 	}
 
 	@Test
-	void addRoleToUser_whenNotFound_shouldReturnNotFound() throws Exception {
-		UUID roleId = UUID.randomUUID();
-		Mockito.when(userFacade.addRoleToUser(userId, roleId)).thenThrow(EntityNotFoundException.class);
+	void isUserAdmin_whenUserDoesNotExist_shouldReturnNotExists() throws Exception {
+		Mockito.when(userFacade.isUserAdmin(Mockito.any(UUID.class))).thenThrow(new EntityNotFoundException());
 
-		mockMvc.perform(put("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound());
 
-		Mockito.verify(userFacade, Mockito.times(1)).addRoleToUser(userId, roleId);
+		Mockito.verify(userFacade, Mockito.times(1)).isUserAdmin(Mockito.any(UUID.class));
 	}
 
 	@Test
-	void deleteRoleFromUser_whenValid_shouldReturnUpdatedUser() throws Exception {
-		UUID roleId = UUID.randomUUID();
-		Mockito.when(userFacade.deleteRoleFromUser(userId, roleId)).thenReturn(userViewDto);
+	void setIsUserAdmin_whenUserDoesNotExist_shouldReturnNotExists() throws Exception {
+		Mockito.doThrow(new EntityNotFoundException())
+			.when(userFacade)
+			.setIsUserAdmin(Mockito.any(UUID.class), Mockito.anyBoolean());
 
 		mockMvc
-			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.guid").value(userViewDto.getGuid().toString()))
-			.andExpect(jsonPath("$.mail").value(userViewDto.getMail()))
-			.andExpect(jsonPath("$.name").value(userViewDto.getName()))
-			.andExpect(jsonPath("$.birthDate").value(userViewDto.getBirthDate().toString()))
-			.andExpect(jsonPath("$.surname").value(userViewDto.getSurname()))
-			.andExpect(jsonPath("$.username").value(userViewDto.getUsername()))
-			.andExpect(jsonPath("$.deletedAt").value(userViewDto.getDeletedAt()))
-			.andExpect(jsonPath("$.isActive").value(userViewDto.getIsActive()));
-
-		Mockito.verify(userFacade, Mockito.times(1)).deleteRoleFromUser(userId, roleId);
-	}
-
-	@Test
-	void deleteRoleFromUser_whenNotFound_shouldReturnNotFound() throws Exception {
-		UUID roleId = UUID.randomUUID();
-		Mockito.when(userFacade.deleteRoleFromUser(userId, roleId)).thenThrow(EntityNotFoundException.class);
-
-		mockMvc
-			.perform(delete("/v1/user/{userId}/role/{roleId}", userId, roleId).contentType(MediaType.APPLICATION_JSON))
+			.perform(patch("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(false)))
 			.andExpect(status().isNotFound());
 
-		Mockito.verify(userFacade, Mockito.times(1)).deleteRoleFromUser(userId, roleId);
+		Mockito.verify(userFacade, Mockito.times(1)).setIsUserAdmin(Mockito.any(UUID.class), Mockito.anyBoolean());
+	}
+
+	@Test
+	void setIsUserAdmin_whenUserExists_shouldCallServiceMethods() throws Exception {
+		Mockito.doNothing().when(userFacade).setIsUserAdmin(Mockito.any(UUID.class), Mockito.anyBoolean());
+
+		mockMvc
+			.perform(patch("/v1/user/{id}/is-admin", UUID.randomUUID()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(false)))
+			.andExpect(status().isNoContent());
+
+		Mockito.verify(userFacade, Mockito.times(1)).setIsUserAdmin(Mockito.any(UUID.class), Mockito.anyBoolean());
 	}
 
 }

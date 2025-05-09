@@ -4,29 +4,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
+import java.time.LocalDate;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class RoleViewDto {
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserCreateRequestDto {
 
-	private UUID guid;
+	@Size(min = 3, max = 50)
+	@NotBlank
+	private String username;
 
+	@Size(min = 2, max = 50)
 	@NotBlank
 	private String name;
 
+	@Size(min = 2, max = 50)
 	@NotBlank
-	private String description;
+	private String surname;
 
-	@NotBlank
-	@Size(max = 50)
-	private String code;
+	private LocalDate birthDate;
 
 }

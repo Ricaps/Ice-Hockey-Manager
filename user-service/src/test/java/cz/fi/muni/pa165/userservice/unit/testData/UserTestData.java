@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.userservice.unit.testData;
 
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.PaymentUserViewDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
 import net.datafaker.Faker;
@@ -24,7 +24,6 @@ public class UserTestData {
 			.deletedAt(null)
 			.isActive(true)
 			.deletedAt(null)
-			.passwordHash("$2a$12$sqj05k2qPWFG3URhtNolXeWNvW/Gp8n9lizM5VL.7U5VBb64o/GOe")
 			.mail("mail@test.cz")
 			.name("Jakub")
 			.surname("Miskar")
@@ -37,7 +36,6 @@ public class UserTestData {
 		return UserCreateDto.builder()
 			.username("usernameBro")
 			.mail("test@mail.ok")
-			.password("@validPassword1")
 			.name("Petr")
 			.surname("Klicenka")
 			.birthDate(LocalDate.now())
@@ -54,13 +52,8 @@ public class UserTestData {
 			.name("Petr")
 			.surname("Klicenka")
 			.birthDate(LocalDate.now())
-			.roles(List.of(RoleTestData.getRoleViewDto()))
 			.payments(List.of(PaymentTestData.getUserPaymentDto()))
 			.build();
-	}
-
-	public static ChangePasswordRequestDto getChangePasswordRequestDto() {
-		return new ChangePasswordRequestDto("oldPassword", "PSWs123@@", UUID.randomUUID());
 	}
 
 	public static PaymentUserViewDto getPaymentUserViewDto() {
@@ -74,10 +67,20 @@ public class UserTestData {
 			.build();
 	}
 
+	public static UserUpdateDto getUserUpdateDto() {
+		return UserUpdateDto.builder()
+			.guid(UUID.randomUUID())
+			.username("usernameBro")
+			.name("Petr")
+			.surname("Klicenka")
+			.birthDate(LocalDate.now().minusDays(894))
+			.build();
+	}
+
 	public static List<User> getListOfUsers(int count) {
 		List<User> users = new ArrayList<>();
 
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < count; i++) {
 			User user = new User();
 			user.setUsername(faker.internet().username());
 			user.setMail(faker.internet().emailAddress());
@@ -85,7 +88,7 @@ public class UserTestData {
 			user.setSurname(faker.name().lastName());
 			user.setIsActive(true);
 			user.setBirthDate(faker.timeAndDate().birthday());
-			user.setPasswordHash(faker.internet().password());
+			user.setIsAdmin(i % 2 == 0);
 
 			if (i == 10 || i == 20) {
 				user.setIsActive(false);

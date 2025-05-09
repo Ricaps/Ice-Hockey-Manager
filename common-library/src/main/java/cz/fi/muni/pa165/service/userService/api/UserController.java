@@ -1,10 +1,8 @@
 package cz.fi.muni.pa165.service.userService.api;
 
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
-import cz.fi.muni.pa165.dto.userService.UserCreateDto;
-import cz.fi.muni.pa165.dto.userService.UserLoginDto;
+import cz.fi.muni.pa165.dto.userService.UserCreateRequestDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,13 +15,9 @@ public interface UserController {
 
 	UserViewDto getUserByUsername(String username);
 
-	UserViewDto registerUser(UserCreateDto userCreateDto);
+	UserViewDto registerUser(UserCreateRequestDto userCreateRequestDto);
 
-	UserViewDto changeUserPassword(ChangePasswordRequestDto changePasswordRequestDto);
-
-	UserViewDto resetUserPassword(UUID userId, String password);
-
-	UserViewDto updateUser(UserViewDto userViewDto);
+	UserViewDto updateUser(UserUpdateDto userUpdateDto);
 
 	UserViewDto deactivateUser(UUID id);
 
@@ -31,8 +25,8 @@ public interface UserController {
 
 	List<UserViewDto> getAllUsers();
 
-	UserViewDto addRoleToUser(UUID userId, UUID roleId);
+	boolean isUserAdmin(UUID id);
 
-	UserViewDto deleteRoleFromUser(UUID userId, UUID roleId);
+	void setIsUserAdmin(UUID id, boolean isAdmin);
 
 }

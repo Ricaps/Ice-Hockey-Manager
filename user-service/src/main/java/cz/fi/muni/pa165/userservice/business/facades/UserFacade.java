@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.business.facades;
 
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.business.mappers.UserMapper;
 import cz.fi.muni.pa165.userservice.business.services.UserService;
@@ -53,31 +53,17 @@ public class UserFacade {
 		return userMapper.userToUserViewDto(userService.activateUser(userId));
 	}
 
-	public UserViewDto updateUser(UserViewDto userViewDto) {
-		final User user = userService.updateUser(userMapper.userViewDtoToUser(userViewDto));
+	public UserViewDto updateUser(UserUpdateDto userUpdateDto) {
+		final User user = userService.updateUser(userMapper.userUpdateDtoToUser(userUpdateDto));
 		return userMapper.userToUserViewDto(user);
 	}
 
-	public UserViewDto changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
-		final User user = userService.changePassword(changePasswordRequestDto.getUserId(),
-				changePasswordRequestDto.getOldPassword(), changePasswordRequestDto.getNewPassword());
-
-		return userMapper.userToUserViewDto(user);
+	public void setIsUserAdmin(UUID userId, boolean isAdmin) {
+		userService.setUserIsAdmin(userId, isAdmin);
 	}
 
-	public UserViewDto addRoleToUser(UUID userId, UUID roleId) {
-		final User user = userService.addRoleToUser(userId, roleId);
-		return userMapper.userToUserViewDto(user);
-	}
-
-	public UserViewDto deleteRoleFromUser(UUID userId, UUID roleId) {
-		final User user = userService.deleteRoleFromUser(userId, roleId);
-		return userMapper.userToUserViewDto(user);
-	}
-
-	public UserViewDto resetPassword(UUID userId, String newPassword) {
-		final User user = userService.resetPassword(userId, newPassword);
-		return userMapper.userToUserViewDto(user);
+	public boolean isUserAdmin(UUID userId) {
+		return userService.isUserAdmin(userId);
 	}
 
 	public List<UserViewDto> getAllUsers() {

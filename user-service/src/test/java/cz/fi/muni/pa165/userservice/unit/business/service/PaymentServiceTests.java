@@ -335,7 +335,6 @@ public class PaymentServiceTests {
 			.guid(UUID.randomUUID())
 			.mail("adfdasf@sadfsf.bmn")
 			.deletedAt(null)
-			.passwordHash("sadfadfasd")
 			.name("AAAAA")
 			.surname("BBBBBB")
 			.build();

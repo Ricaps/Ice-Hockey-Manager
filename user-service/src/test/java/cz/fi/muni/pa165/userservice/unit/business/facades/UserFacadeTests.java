@@ -1,12 +1,13 @@
 package cz.fi.muni.pa165.userservice.unit.business.facades;
 
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.business.mappers.UserMapper;
 import cz.fi.muni.pa165.userservice.business.services.UserService;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +34,7 @@ public class UserFacadeTests {
 	private UserFacade userFacade;
 
 	@Test
-	public void testGetUserById() {
+	public void getUserById_whenUserFound_shouldReceiveCorrectDto() {
 		// Arrange
 		UUID userId = UUID.randomUUID();
 		User user = new User();
@@ -52,7 +53,7 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testGetUserByMail() {
+	public void getUserByMail_whenUserFound_shouldReceiveCorrectDto() {
 		// Arrange
 		String mail = "test@example.com";
 		User user = new User();
@@ -71,7 +72,7 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testGetUserByUsername() {
+	public void getUserByUsername_whenUserFound_shouldReceiveCorrectDto() {
 		// Arrange
 		String username = "testuser";
 		User user = new User();
@@ -90,7 +91,7 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testRegisterUser() {
+	public void registerUser_whenValidDtoProvided_shouldReceiveCorrectDto() {
 		// Arrange
 		UserCreateDto userCreateDto = new UserCreateDto();
 		User user = new User();
@@ -110,7 +111,7 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testDeactivateUser() {
+	public void deactivateUser_whenUserFound_shouldReceiveCorrectDto() {
 		// Arrange
 		UUID userId = UUID.randomUUID();
 		User user = new User();
@@ -128,7 +129,7 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testActivateUser() {
+	public void activateUser_whenUserFound_shouldReceiveCorrectDto() {
 		// Arrange
 		UUID userId = UUID.randomUUID();
 		User user = new User();
@@ -146,105 +147,22 @@ public class UserFacadeTests {
 	}
 
 	@Test
-	public void testUpdateUser() {
+	public void updateUser_whenValidUser_shouldReceiveCorrectDto() {
 		// Arrange
-		UserViewDto userViewDto = new UserViewDto();
+		UserUpdateDto userUpdateDto = new UserUpdateDto();
 		User user = new User();
 		UserViewDto updatedUserViewDto = new UserViewDto();
-		Mockito.when(userMapper.userViewDtoToUser(userViewDto)).thenReturn(user);
+		Mockito.when(userMapper.userUpdateDtoToUser(userUpdateDto)).thenReturn(user);
 		Mockito.when(userService.updateUser(user)).thenReturn(user);
 		Mockito.when(userMapper.userToUserViewDto(user)).thenReturn(updatedUserViewDto);
 
 		// Act
-		UserViewDto result = userFacade.updateUser(userViewDto);
+		UserViewDto result = userFacade.updateUser(userUpdateDto);
 
 		// Assert
 		assertEquals(updatedUserViewDto, result);
-		Mockito.verify(userMapper, Mockito.times(1)).userViewDtoToUser(userViewDto);
+		Mockito.verify(userMapper, Mockito.times(1)).userUpdateDtoToUser(userUpdateDto);
 		Mockito.verify(userService, Mockito.times(1)).updateUser(user);
-		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
-	}
-
-	@Test
-	public void changePassword_whenValid_shouldReturnValidDto() {
-		// Arrange
-		ChangePasswordRequestDto changePasswordRequestDto = new ChangePasswordRequestDto();
-		changePasswordRequestDto.setUserId(UUID.randomUUID());
-		changePasswordRequestDto.setOldPassword("oldPassword");
-		changePasswordRequestDto.setNewPassword("newPassword");
-		User user = new User();
-		UserViewDto userViewDto = new UserViewDto();
-		Mockito
-			.when(userService.changePassword(changePasswordRequestDto.getUserId(),
-					changePasswordRequestDto.getOldPassword(), changePasswordRequestDto.getNewPassword()))
-			.thenReturn(user);
-		Mockito.when(userMapper.userToUserViewDto(user)).thenReturn(userViewDto);
-
-		// Act
-		UserViewDto result = userFacade.changePassword(changePasswordRequestDto);
-
-		// Assert
-		assertEquals(userViewDto, result);
-		Mockito.verify(userService, Mockito.times(1))
-			.changePassword(changePasswordRequestDto.getUserId(), changePasswordRequestDto.getOldPassword(),
-					changePasswordRequestDto.getNewPassword());
-		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
-	}
-
-	@Test
-	public void addRoleToUser_whenValid_shouldReturnValidDto() {
-		// Arrange
-		UUID userId = UUID.randomUUID();
-		UUID roleId = UUID.randomUUID();
-		User user = new User();
-		UserViewDto userViewDto = new UserViewDto();
-		Mockito.when(userService.addRoleToUser(userId, roleId)).thenReturn(user);
-		Mockito.when(userMapper.userToUserViewDto(user)).thenReturn(userViewDto);
-
-		// Act
-		UserViewDto result = userFacade.addRoleToUser(userId, roleId);
-
-		// Assert
-		assertEquals(userViewDto, result);
-		Mockito.verify(userService, Mockito.times(1)).addRoleToUser(userId, roleId);
-		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
-	}
-
-	@Test
-	public void deleteRoleFromUser_whenValid_shouldReturnValidDto() {
-		// Arrange
-		UUID userId = UUID.randomUUID();
-		UUID roleId = UUID.randomUUID();
-		User user = new User();
-		UserViewDto userViewDto = new UserViewDto();
-		Mockito.when(userService.deleteRoleFromUser(userId, roleId)).thenReturn(user);
-		Mockito.when(userMapper.userToUserViewDto(user)).thenReturn(userViewDto);
-
-		// Act
-		UserViewDto result = userFacade.deleteRoleFromUser(userId, roleId);
-
-		// Assert
-		assertEquals(userViewDto, result);
-		Mockito.verify(userService, Mockito.times(1)).deleteRoleFromUser(userId, roleId);
-		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
-	}
-
-	@Test
-	public void resetPassword_whenValid_shouldReturnValidDto() {
-		// Arrange
-		UUID userId = UUID.randomUUID();
-		String newPassword = "newPassword";
-		User user = new User();
-		UserViewDto userViewDto = new UserViewDto();
-		Mockito.when(userService.resetPassword(userId, newPassword)).thenReturn(user);
-		Mockito.when(userMapper.userToUserViewDto(user)).thenReturn(userViewDto);
-
-		// Act
-		UserViewDto result = userFacade.resetPassword(userId, newPassword);
-
-		// Assert
-		assertEquals(userViewDto, result);
-		Mockito.verify(userService, Mockito.times(1)).resetPassword(userId, newPassword);
 		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
 	}
 
@@ -263,6 +181,34 @@ public class UserFacadeTests {
 		assertEquals(Collections.singletonList(userViewDto), result);
 		Mockito.verify(userService, Mockito.times(1)).getAllUsers();
 		Mockito.verify(userMapper, Mockito.times(1)).userToUserViewDto(user);
+	}
+
+	@Test
+	public void setIsUserAdmin_whenValid_shouldCallService() {
+		// Arrange
+		UUID userId = UUID.randomUUID();
+		boolean isUserAdmin = true;
+		Mockito.doNothing().when(userService).setUserIsAdmin(userId, isUserAdmin);
+
+		// Act
+		userFacade.setIsUserAdmin(userId, isUserAdmin);
+
+		// Assert
+		Mockito.verify(userService, Mockito.times(1)).setUserIsAdmin(userId, isUserAdmin);
+	}
+
+	@Test
+	public void isUserAdmin_whenValid_shouldCallService() {
+		// Arrange
+		UUID userId = UUID.randomUUID();
+		Mockito.when(userService.isUserAdmin(userId)).thenReturn(true);
+
+		// Act
+		boolean isUserAdmin = userFacade.isUserAdmin(userId);
+
+		// Assert
+		Assertions.assertTrue(isUserAdmin);
+		Mockito.verify(userService, Mockito.times(1)).isUserAdmin(userId);
 	}
 
 }

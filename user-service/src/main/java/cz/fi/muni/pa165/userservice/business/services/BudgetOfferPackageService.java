@@ -1,8 +1,10 @@
 package cz.fi.muni.pa165.userservice.business.services;
 
+import cz.fi.muni.pa165.userservice.api.exception.UnauthorizedException;
 import cz.fi.muni.pa165.userservice.api.exception.ValidationUtil;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,12 @@ public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPack
 
 	private final BudgetOfferPackageRepository budgetOfferPackageRepository;
 
+	private final AuthUtil authUtil;
+
 	@Autowired
-	public BudgetOfferPackageService(BudgetOfferPackageRepository budgetOfferPackageRepository) {
+	public BudgetOfferPackageService(BudgetOfferPackageRepository budgetOfferPackageRepository, AuthUtil authUtil) {
 		this.budgetOfferPackageRepository = budgetOfferPackageRepository;
+		this.authUtil = authUtil;
 	}
 
 	@Transactional
@@ -35,6 +40,7 @@ public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPack
 	public BudgetOfferPackage createBudgetOfferPackage(@Valid BudgetOfferPackage budgetOfferPackage) {
 		ValidationUtil.requireNotNull(budgetOfferPackage, "You must provide a valid package provided package is NULL!");
 		ValidationUtil.requireNull(budgetOfferPackage.getGuid(), "ID must be null when creating a new package!");
+		validateLoggedUserIsAdmin();
 
 		return budgetOfferPackageRepository.save(budgetOfferPackage);
 	}
@@ -42,6 +48,7 @@ public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPack
 	@Transactional
 	public BudgetOfferPackage deactivateBudgetOfferPackage(UUID packageId) {
 		ValidationUtil.requireNotNull(packageId, "You must provide a package id, provided package ID is NULL!");
+		validateLoggedUserIsAdmin();
 
 		BudgetOfferPackage budgetOfferPackage = budgetOfferPackageRepository.findById(packageId)
 			.orElseThrow(
@@ -54,6 +61,7 @@ public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPack
 	@Transactional
 	public BudgetOfferPackage activateBudgetOfferPackage(UUID packageId) {
 		ValidationUtil.requireNotNull(packageId, "You must provide a package id, provided package ID is NULL!");
+		validateLoggedUserIsAdmin();
 
 		BudgetOfferPackage budgetOfferPackage = budgetOfferPackageRepository.findById(packageId)
 			.orElseThrow(
@@ -71,6 +79,11 @@ public class BudgetOfferPackageService extends EntityServiceBase<BudgetOfferPack
 	@Transactional
 	public List<BudgetOfferPackage> getAllAvailableBudgetOfferPackages() {
 		return budgetOfferPackageRepository.findAllActiveBudgetOfferPackages();
+	}
+
+	private void validateLoggedUserIsAdmin() {
+		if (!authUtil.isAuthenticatedUserAdmin())
+			throw new UnauthorizedException("To manage packages, you have to be admin!");
 	}
 
 }

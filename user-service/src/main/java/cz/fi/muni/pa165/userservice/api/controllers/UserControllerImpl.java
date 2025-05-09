@@ -1,10 +1,12 @@
 package cz.fi.muni.pa165.userservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.userService.ChangePasswordRequestDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
+import cz.fi.muni.pa165.dto.userService.UserCreateRequestDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.service.userService.api.UserController;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,8 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,9 +39,12 @@ public class UserControllerImpl implements UserController {
 
 	private final UserFacade userFacade;
 
+	private final AuthUtil authUtil;
+
 	@Autowired
-	public UserControllerImpl(UserFacade userFacade) {
+	public UserControllerImpl(UserFacade userFacade, AuthUtil authUtil) {
 		this.userFacade = userFacade;
+		this.authUtil = authUtil;
 	}
 
 	@Override
@@ -108,60 +113,11 @@ public class UserControllerImpl implements UserController {
 			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for user creation",
 					required = true,
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = UserCreateDto.class))))
+							schema = @Schema(implementation = UserCreateRequestDto.class))))
 	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserViewDto registerUser(@RequestBody @Valid UserCreateDto userCreateDto) {
-		return userFacade.registerUser(userCreateDto);
-	}
-
-	@Override
-	@Operation(description = "Updates user's password of user specified by it's ID", responses = {
-			@ApiResponse(responseCode = "200",
-					description = "User password was successfully updated, returning updated model",
-					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = UserViewDto.class))),
-			@ApiResponse(responseCode = "404", description = "Desired user does not exist",
-					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = String.class))),
-			@ApiResponse(responseCode = "400", description = "Request body does not meet validation requirements",
-					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = String.class))) },
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-					description = "New and old password values", required = true,
-					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = ChangePasswordRequestDto.class))))
-	@PutMapping(path = "/change-password", consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.OK)
-	public UserViewDto changeUserPassword(@RequestBody @Valid ChangePasswordRequestDto changePasswordRequestDto) {
-		return userFacade.changePassword(changePasswordRequestDto);
-	}
-
-	@Override
-	@Operation(summary = "Resets a user's password",
-			description = "Resets the password for a user identified by userId.",
-			responses = {
-					@ApiResponse(responseCode = "200", description = "User view with updated details.",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = UserViewDto.class))),
-					@ApiResponse(responseCode = "404", description = "User not found",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = String.class))),
-					@ApiResponse(responseCode = "400", description = "Password does not meet validation requirements",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = String.class))) },
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New password value",
-					required = true,
-					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = String.class))))
-	@PutMapping(path = "/{userId}/password/reset", produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserViewDto resetUserPassword(
-			@Parameter(description = "UUID of the user whose password is being reset",
-					required = true) @PathVariable UUID userId,
-
-			@Parameter(description = "New password for the user", required = true) @RequestBody String password) {
-		return userFacade.resetPassword(userId, password);
+	public UserViewDto registerUser(@RequestBody @Valid UserCreateRequestDto userCreateRequestDto) {
+		return userFacade.registerUser(UserCreateDto.createFromRequest(userCreateRequestDto, authUtil.getAuthMail()));
 	}
 
 	@Override
@@ -178,11 +134,11 @@ public class UserControllerImpl implements UserController {
 			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Updated user values",
 					required = true,
 					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-							schema = @Schema(implementation = UserViewDto.class))))
+							schema = @Schema(implementation = UserUpdateDto.class))))
 	@PutMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.OK)
-	public UserViewDto updateUser(@RequestBody @Valid UserViewDto userViewDto) {
-		return userFacade.updateUser(userViewDto);
+	public UserViewDto updateUser(@RequestBody @Valid UserUpdateDto userUpdateDto) {
+		return userFacade.updateUser(userUpdateDto);
 	}
 
 	@Override
@@ -230,43 +186,29 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	@Operation(description = "Add role to user",
+	@Operation(description = "Return false/true base on fact if user is admin.",
 			responses = {
-					@ApiResponse(responseCode = "200", description = "Role was successfully added.",
+					@ApiResponse(responseCode = "200", description = "Return false/true base on fact if user is admin.",
 							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = UserViewDto.class))),
-					@ApiResponse(responseCode = "404", description = "Desired user or role does not exist",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = String.class))) },
-			parameters = {
-					@Parameter(name = "userId", description = "Id of user to which the role should be added.",
-							required = true),
-					@Parameter(name = "roleId", description = "Id of role that should be added to user.",
-							required = true) })
-	@PutMapping(path = "/{userId}/role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.OK)
-	public UserViewDto addRoleToUser(@PathVariable UUID userId, @PathVariable UUID roleId) {
-		return userFacade.addRoleToUser(userId, roleId);
+									schema = @Schema(type = "boolean"))),
+					@ApiResponse(responseCode = "404", description = "User was not found!") })
+	@GetMapping(path = "/{id}/is-admin", produces = MediaType.APPLICATION_JSON_VALUE)
+	public boolean isUserAdmin(@PathVariable UUID id) {
+		return userFacade.isUserAdmin(id);
 	}
 
 	@Override
-	@Operation(description = "Delete role from user",
-			responses = {
-					@ApiResponse(responseCode = "200", description = "Role was successfully deleted.",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = UserViewDto.class))),
-					@ApiResponse(responseCode = "404", description = "Desired user or role does not exist",
-							content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-									schema = @Schema(implementation = String.class))) },
-			parameters = {
-					@Parameter(name = "userId", description = "Id of user from which the role should be deleted.",
-							required = true),
-					@Parameter(name = "roleId", description = "Id of role that should be deleted from user.",
-							required = true) })
-	@DeleteMapping(path = "/{userId}/role/{roleId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.OK)
-	public UserViewDto deleteRoleFromUser(@PathVariable UUID userId, @PathVariable UUID roleId) {
-		return userFacade.deleteRoleFromUser(userId, roleId);
+	@Operation(summary = "Update admin status of user", description = "Sets the 'isAdmin' flag for a specific user.",
+			responses = { @ApiResponse(responseCode = "204", description = "Admin status updated successfully"),
+					@ApiResponse(responseCode = "404", description = "User not found") },
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "True/false if user should be admin.", required = true,
+					content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+							schema = @Schema(implementation = Boolean.class))))
+	@PatchMapping(path = "/{id}/is-admin", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void setIsUserAdmin(@PathVariable UUID id, @RequestBody boolean isAdmin) {
+		userFacade.setIsUserAdmin(id, isAdmin);
 	}
 
 }

@@ -3,14 +3,12 @@ package cz.fi.muni.pa165.userservice.unit.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
 import cz.fi.muni.pa165.service.userService.api.BudgetOfferPackageController;
-import cz.fi.muni.pa165.userservice.api.controllers.BudgetPackageOfferControllerImpl;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
-import cz.fi.muni.pa165.userservice.security.SecurityConfig;
+import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.unit.testData.BudgetOfferPackageTestData;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = BudgetOfferPackageController.class)
-@Import(SecurityConfig.class)
+@Import(SecurityTestConfig.class)
 public class BudgetPackageOfferControllerMvcTests {
 
 	@Autowired
@@ -34,9 +32,6 @@ public class BudgetPackageOfferControllerMvcTests {
 
 	@MockitoBean
 	private BudgetOfferPackageFacade budgetOfferPackageFacade;
-
-	@InjectMocks
-	private BudgetPackageOfferControllerImpl budgetPackageOfferController;
 
 	@Autowired
 	ObjectMapper objectMapper;

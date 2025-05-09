@@ -5,7 +5,7 @@ import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
 import cz.fi.muni.pa165.service.userService.api.PaymentController;
 import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
 import cz.fi.muni.pa165.userservice.business.facades.PaymentFacade;
-import cz.fi.muni.pa165.userservice.security.SecurityConfig;
+import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.unit.testData.PaymentTestData;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentController.class)
-@Import(SecurityConfig.class)
+@Import(SecurityTestConfig.class)
 class PaymentControllerMvcTests {
 
 	@Autowired
@@ -150,7 +150,7 @@ class PaymentControllerMvcTests {
 	void updatePayment_whenValidRequest_returnsUpdatedPayment() throws Exception {
 		Mockito.when(paymentFacade.updatePayment(any(PaymentUpdateCreateDto.class))).thenReturn(paymentViewDto);
 
-		ResultActions result = mockMvc
+		mockMvc
 			.perform(put("/v1/payment/").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(paymentUpdateCreateDto)))
 			.andExpect(status().isOk());

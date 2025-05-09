@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
+import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Import({ SecurityTestConfig.class })
 public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOfferPackageRepository, BudgetOfferPackage> {
 
 	@Autowired
@@ -42,6 +47,9 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 
 	@MockitoSpyBean
 	private BudgetOfferPackageFacade budgetOfferPackageFacade;
+
+	@MockitoBean
+	private AuthUtil authUtil;
 
 	private final BudgetOfferPackageRepository budgetOfferPackageRepository;
 
@@ -81,6 +89,7 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 		var packages = getExistingEntities();
 		var validPackage = getValidBudgetOfferPackageDto();
 		validPackage.setGuid(null);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		ResultActions result = mockMvc
 			.perform(post("/v1/budget-package-offer/").contentType(MediaType.APPLICATION_JSON)
@@ -115,8 +124,21 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 	}
 
 	@Test
+	void createBudgetOfferPackage_whenAuthenticatedUserIsNotAdmin_shouldReturnUnauthorized() throws Exception {
+		var validPackage = getValidBudgetOfferPackageDto();
+		validPackage.setGuid(null);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(false);
+
+		mockMvc
+			.perform(post("/v1/budget-package-offer/").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(validPackage)))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	void deactivateBudgetOfferPackage_whenPackageExists_shouldReturnDeactivatedPackage() throws Exception {
 		var existingPackage = getFirstFilteredEntity(BudgetOfferPackage::getIsAvailable);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		mockMvc
 			.perform(put("/v1/budget-package-offer/deactivate/{id}", existingPackage.getGuid())
@@ -135,6 +157,7 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 	@Test
 	void deactivateBudgetOfferPackage_whenPackageDoesNotExist_shouldReturnNotFound() throws Exception {
 		var nonExistingId = getNonExistingId();
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		mockMvc
 			.perform(put("/v1/budget-package-offer/deactivate/{id}", nonExistingId)
@@ -146,8 +169,20 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 	}
 
 	@Test
+	void deactivateBudgetOfferPackage_whenAuthenticatedUserIsNotAdmin_shouldReturnUnauthorized() throws Exception {
+		var existingPackage = getFirstFilteredEntity(BudgetOfferPackage::getIsAvailable);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(false);
+
+		mockMvc
+			.perform(put("/v1/budget-package-offer/deactivate/{id}", existingPackage.getGuid())
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	void activateBudgetOfferPackage_whenPackageExists_shouldReturnActivatedPackage() throws Exception {
 		var existingPackage = getFirstFilteredEntity(p -> !p.getIsAvailable());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		mockMvc
 			.perform(put("/v1/budget-package-offer/activate/{id}", existingPackage.getGuid())
@@ -166,6 +201,7 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 	@Test
 	void activateBudgetOfferPackage_whenPackageDoesNotExist_shouldReturnNotFound() throws Exception {
 		var nonExistingId = getNonExistingId();
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		mockMvc
 			.perform(put("/v1/budget-package-offer/activate/{id}", nonExistingId)
@@ -174,6 +210,17 @@ public class BudgetPackageOfferControllerIT extends BaseControllerIT<BudgetOffer
 
 		Mockito.verify(budgetOfferPackageFacade, Mockito.times(1))
 			.activateBudgetOfferPackage(Mockito.eq(nonExistingId));
+	}
+
+	@Test
+	void activateBudgetOfferPackage_whenAuthenticatedUserIsNotAdmin_shouldReturnUnauthorized() throws Exception {
+		var existingPackage = getFirstFilteredEntity(p -> !p.getIsAvailable());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(false);
+
+		mockMvc
+			.perform(put("/v1/budget-package-offer/activate/{id}", existingPackage.getGuid())
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isUnauthorized());
 	}
 
 	@Test

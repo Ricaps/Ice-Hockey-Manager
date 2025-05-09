@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -21,7 +21,13 @@ spring:
   liquibase:
     change-log: classpath:database/main-changelog.xml
     enabled: true
-
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: https://id.muni.cz/oidc/introspect
+          client-id: d57b3a8f-156e-46de-9f27-39c4daee05e1
+          client-secret: fa228ebc-4d54-4cda-901e-4d6287f8b1652a9c9c44-73c9-4502-973f-bcdb4a8ec96a
 server:
   servlet:
     context-path: /api
@@ -30,6 +36,8 @@ server:
     include-stacktrace: never
 
 management:
+  security:
+    token: EzGvDzOsbm-F7UtHCu6XmL0zyv3U9oqF
   endpoints:
     web:
       exposure:
@@ -39,3 +47,6 @@ management:
     metrics:
       export:
         enabled: true
+
+user-service:
+  promote-to-admin-id:

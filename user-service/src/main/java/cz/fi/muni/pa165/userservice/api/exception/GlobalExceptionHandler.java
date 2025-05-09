@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
 		return getResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
+		return getResponseEntity(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+	}
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {

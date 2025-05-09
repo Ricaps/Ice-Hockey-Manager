@@ -1,10 +1,7 @@
 package cz.fi.muni.pa165.dto.userService;
 
-import cz.fi.muni.pa165.util.PasswordValidationUtil;
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import java.time.LocalDate;
 
@@ -31,10 +29,6 @@ public class UserCreateDto {
 	@NotBlank
 	private String mail;
 
-	@NotBlank
-	@Pattern(regexp = PasswordValidationUtil.passwordRegex, message = PasswordValidationUtil.requirementDescription)
-	private String password;
-
 	@Size(min = 2, max = 50)
 	@NotBlank
 	private String name;
@@ -44,5 +38,15 @@ public class UserCreateDto {
 	private String surname;
 
 	private LocalDate birthDate;
+
+	public static UserCreateDto createFromRequest(UserCreateRequestDto dto, String mail) {
+		return UserCreateDto.builder()
+			.username(dto.getUsername())
+			.name(dto.getName())
+			.surname(dto.getSurname())
+			.birthDate(dto.getBirthDate())
+			.mail(mail)
+			.build();
+	}
 
 }

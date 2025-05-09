@@ -1,15 +1,10 @@
 package cz.fi.muni.pa165.userservice.persistence.seeds;
 
-import cz.fi.muni.pa165.userservice.business.services.UserService;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
-import cz.fi.muni.pa165.userservice.persistence.entities.Role;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
-import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.PaymentRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.RoleRepository;
-import cz.fi.muni.pa165.userservice.persistence.repositories.UserHasRoleRepository;
 import cz.fi.muni.pa165.userservice.persistence.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -19,11 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -34,13 +27,7 @@ public class UserServiceSeeder {
 
 	private final PaymentRepository paymentRepository;
 
-	private final RoleRepository roleRepository;
-
-	private final UserHasRoleRepository userHasRoleRepository;
-
 	private final UserRepository userRepository;
-
-	private final UserService userService;
 
 	private final Faker faker = new Faker(new Random(233343L));
 
@@ -48,24 +35,17 @@ public class UserServiceSeeder {
 
 	@Autowired
 	public UserServiceSeeder(BudgetOfferPackageRepository budgetOfferPackageRepository,
-			PaymentRepository paymentRepository, RoleRepository roleRepository, UserRepository userRepository,
-			UserService userService, UserHasRoleRepository userHasRoleRepository) {
+			PaymentRepository paymentRepository, UserRepository userRepository) {
 		this.budgetOfferPackageRepository = budgetOfferPackageRepository;
 		this.paymentRepository = paymentRepository;
-		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
-		this.userService = userService;
-		this.userHasRoleRepository = userHasRoleRepository;
-
 	}
 
-	public void seedTestData(int roleCount, int userCount) {
+	public void seedTestData(int userCount) {
 		log.info("Database seeding started...");
 
-		seedRoles(roleCount);
 		seedBudgetOfferPackages();
 		seedUsers(userCount);
-		seedUserRoles();
 		seedPayments();
 
 		log.info("Database seeding ended!");
@@ -76,32 +56,10 @@ public class UserServiceSeeder {
 		log.info("Database clear started...");
 
 		paymentRepository.deleteAll();
-		userHasRoleRepository.deleteAll();
 		userRepository.deleteAll();
-		roleRepository.deleteAll();
 		budgetOfferPackageRepository.deleteAll();
 
 		log.info("Database seeding finished!");
-	}
-
-	private void seedRoles(int rolesCount) {
-		log.info("Seeding roles...");
-
-		if (roleRepository.count() != 0) {
-			log.info("Seed roles were found, skipping role seeding.");
-			return;
-		}
-
-		for (int i = 0; i < rolesCount; i++) {
-			Role role = new Role();
-			role.setName(faker.job().title());
-			role.setCode(role.getName().replaceAll("[AEIOUYaeiouy ]", ""));
-			role.setDescription(faker.lorem().sentence());
-
-			roleRepository.save(role);
-		}
-
-		log.info("Roles seeded!");
 	}
 
 	private void seedBudgetOfferPackages() {
@@ -147,7 +105,7 @@ public class UserServiceSeeder {
 			user.setIsActive(true);
 			user.setBirthDate(faker.timeAndDate().birthday());
 			String password = faker.internet().password();
-			user.setPasswordHash(userService.encodePassword(password));
+			user.setIsAdmin(i % 2 == 0);
 
 			if (i % 10 == 0) {
 				user.setIsActive(false);
@@ -159,35 +117,6 @@ public class UserServiceSeeder {
 		}
 
 		log.info("Users seeded!");
-	}
-
-	private void seedUserRoles() {
-		log.info("Seeding user roles...");
-
-		if (userHasRoleRepository.count() != 0) {
-			log.info("Seed user roles were found, skipping user roles seeding.");
-			return;
-		}
-
-		List<User> users = userRepository.findAll();
-		List<Role> roles = roleRepository.findAll();
-
-		for (User user : users) {
-			int rolesToAssign = faker.random().nextInt(1, roles.size());
-			Set<Role> assignedRoles = new HashSet<>();
-
-			while (assignedRoles.size() < rolesToAssign) {
-				Role randomRole = roles.get(faker.random().nextInt(roles.size()));
-				if (assignedRoles.add(randomRole)) {
-					UserHasRole userHasRole = new UserHasRole();
-					userHasRole.setUser(user);
-					userHasRole.setRole(randomRole);
-					userHasRoleRepository.save(userHasRole);
-				}
-			}
-		}
-
-		log.info("User roles seeded!");
 	}
 
 	private void seedPayments() {

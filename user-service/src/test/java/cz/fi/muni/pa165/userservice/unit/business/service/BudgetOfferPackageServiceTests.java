@@ -4,6 +4,7 @@ import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
 import cz.fi.muni.pa165.userservice.business.services.BudgetOfferPackageService;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.repositories.BudgetOfferPackageRepository;
+import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ public class BudgetOfferPackageServiceTests {
 
 	@InjectMocks
 	private BudgetOfferPackageService budgetOfferPackageService;
+
+	@Mock
+	private AuthUtil authUtil;
 
 	@Test
 	void getBudgetOfferPackageById_whenIdIsNull_shouldThrowBlankValueException() {
@@ -83,9 +87,10 @@ public class BudgetOfferPackageServiceTests {
 		BudgetOfferPackage packageToCreate = getBudgetOfferPackage(true);
 		Mockito.when(budgetOfferPackageRepository.save(Mockito.any(BudgetOfferPackage.class)))
 			.thenReturn(packageToCreate);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act
-		BudgetOfferPackage savedPackage = budgetOfferPackageService.createBudgetOfferPackage(packageToCreate);
+		budgetOfferPackageService.createBudgetOfferPackage(packageToCreate);
 
 		// Assert
 		verify(budgetOfferPackageRepository, times(1)).save(Mockito.any(BudgetOfferPackage.class));
@@ -103,6 +108,7 @@ public class BudgetOfferPackageServiceTests {
 		// Arrange
 		UUID packageId = UUID.randomUUID();
 		Mockito.when(budgetOfferPackageRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act & Assert
 		assertThrows(EntityNotFoundException.class,
@@ -119,6 +125,7 @@ public class BudgetOfferPackageServiceTests {
 			.thenReturn(Optional.of(budgetOfferPackage));
 		Mockito.when(budgetOfferPackageRepository.save(Mockito.any(BudgetOfferPackage.class)))
 			.thenReturn(budgetOfferPackage);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act
 		BudgetOfferPackage deactivatedPackage = budgetOfferPackageService.deactivateBudgetOfferPackage(packageId);
@@ -141,6 +148,7 @@ public class BudgetOfferPackageServiceTests {
 		// Arrange
 		UUID packageId = UUID.randomUUID();
 		Mockito.when(budgetOfferPackageRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act & Assert
 		assertThrows(EntityNotFoundException.class,
@@ -157,6 +165,7 @@ public class BudgetOfferPackageServiceTests {
 			.thenReturn(Optional.of(budgetOfferPackage));
 		Mockito.when(budgetOfferPackageRepository.save(Mockito.any(BudgetOfferPackage.class)))
 			.thenReturn(budgetOfferPackage);
+		Mockito.when(authUtil.isAuthenticatedUserAdmin()).thenReturn(true);
 
 		// Act
 		BudgetOfferPackage activatedPackage = budgetOfferPackageService.activateBudgetOfferPackage(packageId);

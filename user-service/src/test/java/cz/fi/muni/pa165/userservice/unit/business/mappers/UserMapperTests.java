@@ -1,15 +1,13 @@
 package cz.fi.muni.pa165.userservice.unit.business.mappers;
 
-import cz.fi.muni.pa165.dto.userService.RoleViewDto;
 import cz.fi.muni.pa165.dto.userService.UserCreateDto;
 import cz.fi.muni.pa165.dto.userService.UserPaymentDto;
+import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
 import cz.fi.muni.pa165.dto.userService.UserViewDto;
 import cz.fi.muni.pa165.userservice.business.mappers.UserMapper;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;
-import cz.fi.muni.pa165.userservice.persistence.entities.UserHasRole;
 import cz.fi.muni.pa165.userservice.unit.testData.PaymentTestData;
-import cz.fi.muni.pa165.userservice.unit.testData.RoleTestData;
 import cz.fi.muni.pa165.userservice.unit.testData.UserTestData;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,7 +29,6 @@ public class UserMapperTests {
 	public void mapUserToUserViewDto() {
 		// Arrange
 		User user = UserTestData.getUser();
-		user.setRoles(new HashSet<>(List.of(new UserHasRole(UUID.randomUUID(), user, RoleTestData.getRole()))));
 		user.setPayments(new HashSet<>(List.of(PaymentTestData.getPayment())));
 
 		// Act
@@ -68,7 +64,22 @@ public class UserMapperTests {
 		assertEquals(userCreateDto.getMail(), user.getMail());
 		assertEquals(userCreateDto.getSurname(), user.getSurname());
 		assertEquals(userCreateDto.getUsername(), user.getUsername());
-		assertEquals(userCreateDto.getPassword(), user.getPasswordHash());
+	}
+
+	@Test
+	public void mapUserUpdateDtoToUser() {
+		// Arrange
+		UserUpdateDto userUpdateDto = UserTestData.getUserUpdateDto();
+
+		// Act
+		User user = mapper.userUpdateDtoToUser(userUpdateDto);
+
+		// Assert
+		assertEquals(userUpdateDto.getGuid(), user.getGuid());
+		assertEquals(userUpdateDto.getUsername(), user.getUsername());
+		assertEquals(userUpdateDto.getName(), user.getName());
+		assertEquals(userUpdateDto.getSurname(), user.getSurname());
+		assertEquals(userUpdateDto.getBirthDate(), user.getBirthDate());
 	}
 
 	private void equalsUserAndUserViewDto(User user, UserViewDto userViewDto) {
@@ -81,23 +92,6 @@ public class UserMapperTests {
 		assertEquals(user.getGuid(), userViewDto.getGuid());
 		assertEquals(user.getName(), userViewDto.getName());
 		assertEquals(user.getBirthDate(), userViewDto.getBirthDate());
-
-		assertEquals(user.getRoles().size(), userViewDto.getRoles().size());
-		List<UserHasRole> userRoles = user.getRoles()
-			.stream()
-			.sorted(Comparator.comparing(UserHasRole::getGuid))
-			.toList();
-		List<RoleViewDto> dtoRoles = userViewDto.getRoles()
-			.stream()
-			.sorted(Comparator.comparing(RoleViewDto::getGuid))
-			.toList();
-
-		for (int i = 0; i < userRoles.size(); i++) {
-			assertEquals(userRoles.get(i).getRole().getGuid(), dtoRoles.get(i).getGuid());
-			assertEquals(userRoles.get(i).getRole().getName(), dtoRoles.get(i).getName());
-			assertEquals(userRoles.get(i).getRole().getDescription(), dtoRoles.get(i).getDescription());
-			assertEquals(userRoles.get(i).getRole().getCode(), dtoRoles.get(i).getCode());
-		}
 
 		assertEquals(user.getPayments().size(), userViewDto.getPayments().size());
 		List<Payment> userPayments = user.getPayments()

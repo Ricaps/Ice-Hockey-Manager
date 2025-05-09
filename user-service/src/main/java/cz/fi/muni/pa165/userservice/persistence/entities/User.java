@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "user_table")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -62,9 +62,6 @@ public class User implements Identifiable {
 	@Column(name = "birth_date")
 	private LocalDate birthDate;
 
-	@Column(name = "password_hash", nullable = false)
-	private String passwordHash;
-
 	@Column(name = "is_active", nullable = false)
 	@NotNull
 	private Boolean isActive = true;
@@ -72,8 +69,8 @@ public class User implements Identifiable {
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-	private Set<UserHasRole> roles = new HashSet<>();
+	@Column(name = "is_admin", nullable = false)
+	private Boolean isAdmin = false;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	private Set<Payment> payments = new HashSet<>();

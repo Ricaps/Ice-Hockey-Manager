@@ -57,6 +57,7 @@ You can access Swagger UI at following path:
    into the popup.
 6. Run request - `Bearer` token should be automatically applied to the `Authorization` header.
 
+
 ## Grafana
 
 You can access grafana UI at the following path (if ran by docker):
@@ -137,8 +138,23 @@ about the finished match and the result. User can also create friendly match bet
 > Responsible person: Jakub Dvořák
 
 User Service takes care about users (players). User can create and manage his account. He can also buy Budget offer
-packages, which gives user extended initial budget for buying players and composing his teams. User can have assigned
-roles (Player, Admin, etc...). The service will also serve as authentication server.
+packages, which gives user extended initial budget for buying players and composing his teams. If user is admin, he
+can also manage budget package offers.
+
+#### How to promote yourself to admin
+Because only admin can manage budget pacakage offers and admins, you need to be admin to check all endpoints. To do so: 
+1. Authorize and paste your bearer token to swagger. You can obtain the token here [oauth client](/oauth-client).
+
+2. Register your self as a user in user-service (on [swagger](http://localhost:8083/api/swagger-ui/index.html#/User%20API/registerUser)). And copy returned guid to clipboard.
+
+3. Kill the user-service
+
+4. Open `./user-service/src/main/resources/application.yaml` and at the end of the file, there is prepared setting which will make you admin after application start. Just insert your guid into this section:
+```Yaml
+user-service:
+  promote-to-admin-id: <your guid - in file this is empty in default>
+```
+
 
 ## Use case diagram
 

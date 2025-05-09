@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,20 +18,12 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserViewDto {
+public class UserUpdateDto {
 
 	private UUID guid;
 
 	@NotBlank
 	private String username;
-
-	@Email
-	@NotBlank
-	private String mail;
-
-	private Boolean isActive;
-
-	private LocalDateTime deletedAt;
 
 	@NotBlank
 	private String name;
@@ -42,23 +33,21 @@ public class UserViewDto {
 
 	private LocalDate birthDate;
 
-	private List<UserPaymentDto> payments;
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (!(o instanceof UserViewDto that))
+		if (!(o instanceof UserUpdateDto that))
 			return false;
 
 		return Objects.equals(guid, that.guid) && Objects.equals(username, that.username)
-				&& Objects.equals(mail, that.mail) && Objects.equals(isActive, that.isActive)
-				&& Objects.equals(deletedAt, that.deletedAt);
+				&& Objects.equals(name, that.name) && Objects.equals(surname, that.surname)
+				&& Objects.equals(birthDate, that.birthDate);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(guid, username, mail, isActive, deletedAt);
+		return Objects.hash(guid, username, name, surname, birthDate);
 	}
 
 }

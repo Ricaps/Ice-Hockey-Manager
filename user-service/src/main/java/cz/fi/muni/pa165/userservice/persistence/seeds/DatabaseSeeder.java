@@ -34,7 +34,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			return;
 		}
 
-		userServiceSeeder.seedTestData(5, 50);
+		userServiceSeeder.seedTestData(50);
 	}
 
 }

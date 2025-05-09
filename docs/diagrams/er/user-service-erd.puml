@@ -12,18 +12,6 @@ entity User {
     * deleted_at : timestamp
 }
 
-entity UserHasRole {
-    * user_id : uuid <<FK>>
-    * role_id : uuid <<FK>>
-}
-
-entity Role {
-    * guid : uuid <<generated>>
-    * name : text
-    * code : text
-    * description : text
-}
-
 entity Payment {
     * guid : uuid <<generated>>
     * user_id : uuid <<FK>>
@@ -39,9 +27,6 @@ entity BudgetOfferPackage {
     * description : text
     * is_available : boolean
 }
-
-UserHasRole }o--|| Role
-UserHasRole }o--|| User
 
 Payment }o--|| User
 Payment }o--|| BudgetOfferPackage
