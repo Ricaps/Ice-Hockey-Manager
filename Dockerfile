@@ -1,4 +1,4 @@
-FROM alpine/java:21 AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 COPY pom.xml mvnw ./
@@ -25,7 +25,7 @@ COPY oauth-client/src oauth-client/src
 RUN chmod +x mvnw
 RUN ./mvnw clean package -Dskip.unit.tests=true -Dskip.integration.tests=true
 
-FROM alpine/java:21
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 ARG SERVICE_NAME
