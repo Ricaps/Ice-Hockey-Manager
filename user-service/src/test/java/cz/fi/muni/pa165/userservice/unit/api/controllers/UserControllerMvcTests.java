@@ -1,10 +1,10 @@
 package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.userService.UserCreateDto;
-import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
-import cz.fi.muni.pa165.dto.userService.UserViewDto;
-import cz.fi.muni.pa165.service.userService.api.UserController;
+import cz.fi.muni.pa165.dto.userservice.UserCreateDto;
+import cz.fi.muni.pa165.dto.userservice.UserUpdateDto;
+import cz.fi.muni.pa165.dto.userservice.UserViewDto;
+import cz.fi.muni.pa165.service.userservice.api.UserController;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.unit.testData.UserTestData;

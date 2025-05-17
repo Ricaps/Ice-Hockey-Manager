@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
-import cz.fi.muni.pa165.service.userService.api.BudgetOfferPackageController;
+import cz.fi.muni.pa165.dto.userservice.BudgetOfferPackageDto;
+import cz.fi.muni.pa165.service.userservice.api.BudgetOfferPackageController;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
 import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;
 import cz.fi.muni.pa165.userservice.unit.testData.BudgetOfferPackageTestData;

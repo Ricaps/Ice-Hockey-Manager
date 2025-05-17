@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.unit.business.mappers;
 
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemUpdateDTO;
 import cz.fi.muni.pa165.teamservice.business.mappers.BudgetSystemMapper;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
 import org.junit.jupiter.api.Test;

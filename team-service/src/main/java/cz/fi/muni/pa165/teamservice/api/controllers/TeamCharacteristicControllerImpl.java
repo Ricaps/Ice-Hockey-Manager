@@ -1,10 +1,10 @@
 package cz.fi.muni.pa165.teamservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
-import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
+import cz.fi.muni.pa165.service.teamservice.api.TeamCharacteristicController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.TeamCharacteristicFacade;
 import io.swagger.v3.oas.annotations.Operation;

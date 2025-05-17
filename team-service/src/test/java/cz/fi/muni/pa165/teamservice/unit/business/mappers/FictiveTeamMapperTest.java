@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.unit.business.mappers;
 
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamDTO;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamUpdateDTO;
 import cz.fi.muni.pa165.teamservice.business.mappers.FictiveTeamMapper;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import org.junit.jupiter.api.Test;

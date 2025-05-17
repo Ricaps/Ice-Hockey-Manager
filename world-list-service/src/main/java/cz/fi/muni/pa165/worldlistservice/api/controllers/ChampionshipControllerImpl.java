@@ -4,7 +4,7 @@ import cz.fi.muni.pa165.dto.worldlistservice.championship.create.ChampionshipCre
 import cz.fi.muni.pa165.dto.worldlistservice.championship.detail.ChampionshipDetailDto;
 import cz.fi.muni.pa165.dto.worldlistservice.championship.list.ChampionshipListDto;
 import cz.fi.muni.pa165.dto.worldlistservice.championship.update.ChampionshipUpdateDto;
-import cz.fi.muni.pa165.service.wordlistService.api.ChampionshipController;
+import cz.fi.muni.pa165.service.wordlistservice.api.ChampionshipController;
 import cz.fi.muni.pa165.worldlistservice.business.facades.interfaces.ChampionshipFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

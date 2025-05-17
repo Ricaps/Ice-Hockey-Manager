@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.unit.testData;
 
-import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
-import cz.fi.muni.pa165.dto.userService.PaymentBudgetPackageOfferDto;
+import cz.fi.muni.pa165.dto.userservice.BudgetOfferPackageDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentBudgetPackageOfferDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 
 import java.util.ArrayList;

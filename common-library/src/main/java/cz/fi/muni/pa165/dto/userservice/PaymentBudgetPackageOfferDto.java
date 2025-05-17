@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.dto.userService;
+package cz.fi.muni.pa165.dto.userservice;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,18 +13,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PaymentUserViewDto {
+public class PaymentBudgetPackageOfferDto {
 
 	private UUID guid;
 
-	private String username;
+	private Integer priceDollars;
 
-	private String mail;
+	private Integer budgetIncrease;
 
-	private Boolean isActive;
+	private String description;
 
-	private String name;
-
-	private String surname;
+	private Boolean isAvailable;
 
 }

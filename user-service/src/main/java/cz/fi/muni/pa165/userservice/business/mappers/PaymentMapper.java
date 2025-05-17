@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.business.mappers;
 
-import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
-import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentUpdateCreateDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentViewDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 import cz.fi.muni.pa165.userservice.persistence.entities.User;

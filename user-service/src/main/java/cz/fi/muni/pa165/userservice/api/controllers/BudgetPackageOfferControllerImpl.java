@@ -1,7 +1,7 @@
 package cz.fi.muni.pa165.userservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
-import cz.fi.muni.pa165.service.userService.api.BudgetOfferPackageController;
+import cz.fi.muni.pa165.dto.userservice.BudgetOfferPackageDto;
+import cz.fi.muni.pa165.service.userservice.api.BudgetOfferPackageController;
 import cz.fi.muni.pa165.userservice.business.facades.BudgetOfferPackageFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

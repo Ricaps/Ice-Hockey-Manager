@@ -1,7 +1,7 @@
-package cz.fi.muni.pa165.service.userService.api;
+package cz.fi.muni.pa165.service.userservice.api;
 
-import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
-import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentUpdateCreateDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentViewDto;
 
 import java.util.List;
 import java.util.UUID;

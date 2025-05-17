@@ -1,13 +1,13 @@
 package cz.fi.muni.pa165.gameservice.business.services;
 
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.gameservice.api.exception.ValidationHelper;
 import cz.fi.muni.pa165.gameservice.business.messages.MatchMessageResolver;
 import cz.fi.muni.pa165.gameservice.config.SchedulingConfiguration;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Match;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Result;
-import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
+import cz.fi.muni.pa165.service.teamservice.api.TeamCharacteristicController;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

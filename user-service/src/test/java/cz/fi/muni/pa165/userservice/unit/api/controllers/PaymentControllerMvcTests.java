@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.userservice.unit.api.controllers;
 
-import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
-import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
-import cz.fi.muni.pa165.service.userService.api.PaymentController;
+import cz.fi.muni.pa165.dto.userservice.PaymentUpdateCreateDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentViewDto;
+import cz.fi.muni.pa165.service.userservice.api.PaymentController;
 import cz.fi.muni.pa165.userservice.api.exception.BlankValueException;
 import cz.fi.muni.pa165.userservice.business.facades.PaymentFacade;
 import cz.fi.muni.pa165.userservice.config.SecurityTestConfig;

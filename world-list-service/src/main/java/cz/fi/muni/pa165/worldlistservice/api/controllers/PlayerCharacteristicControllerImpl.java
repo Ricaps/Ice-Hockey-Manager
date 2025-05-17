@@ -2,7 +2,7 @@ package cz.fi.muni.pa165.worldlistservice.api.controllers;
 
 import cz.fi.muni.pa165.dto.worldlistservice.playercharacteristic.PlayerCharacteristicDto;
 import cz.fi.muni.pa165.dto.worldlistservice.playercharacteristic.create.PlayerCharacteristicCreateDto;
-import cz.fi.muni.pa165.service.wordlistService.api.PlayerCharacteristicController;
+import cz.fi.muni.pa165.service.wordlistservice.api.PlayerCharacteristicController;
 import cz.fi.muni.pa165.worldlistservice.business.facades.interfaces.PlayerCharacteristicFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

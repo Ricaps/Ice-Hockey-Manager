@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.integration.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;

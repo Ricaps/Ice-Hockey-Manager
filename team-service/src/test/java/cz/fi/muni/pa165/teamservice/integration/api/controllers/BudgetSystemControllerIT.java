@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.integration.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemUpdateDTO;
 import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.BudgetSystemRepository;

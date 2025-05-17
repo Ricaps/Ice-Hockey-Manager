@@ -2,8 +2,8 @@ package cz.fi.muni.pa165.userservice.integration.api.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
-import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentUpdateCreateDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentViewDto;
 import cz.fi.muni.pa165.messaging.BudgetChangeMessage;
 import cz.fi.muni.pa165.userservice.business.mappers.PaymentMapper;
 import cz.fi.muni.pa165.userservice.business.services.PaymentService;

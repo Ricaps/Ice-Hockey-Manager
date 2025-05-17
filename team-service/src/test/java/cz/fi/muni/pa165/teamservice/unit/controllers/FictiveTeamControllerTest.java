@@ -1,9 +1,9 @@
 package cz.fi.muni.pa165.teamservice.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamDTO;
-import cz.fi.muni.pa165.dto.teamService.FictiveTeamUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamDTO;
+import cz.fi.muni.pa165.dto.teamservice.FictiveTeamUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.controllers.FictiveTeamController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;

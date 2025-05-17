@@ -1,5 +1,6 @@
-package cz.fi.muni.pa165.dto.userService;
+package cz.fi.muni.pa165.dto.userservice;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserPaymentDto {
+public class PaymentUpdateCreateDto {
 
 	private UUID guid;
 
-	private PaymentBudgetPackageOfferDto budgetOfferPackage;
+	@NotNull
+	private UUID userId;
+
+	@NotNull
+	private UUID budgetOfferPackageId;
 
 	private LocalDateTime createdAt;
 

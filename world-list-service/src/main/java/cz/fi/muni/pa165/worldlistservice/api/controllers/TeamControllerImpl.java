@@ -4,7 +4,7 @@ import cz.fi.muni.pa165.dto.worldlistservice.team.create.TeamCreateDto;
 import cz.fi.muni.pa165.dto.worldlistservice.team.detail.TeamDetailDto;
 import cz.fi.muni.pa165.dto.worldlistservice.team.list.TeamListDto;
 import cz.fi.muni.pa165.dto.worldlistservice.team.update.TeamUpdateDto;
-import cz.fi.muni.pa165.service.wordlistService.api.TeamController;
+import cz.fi.muni.pa165.service.wordlistservice.api.TeamController;
 import cz.fi.muni.pa165.worldlistservice.business.facades.interfaces.TeamFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

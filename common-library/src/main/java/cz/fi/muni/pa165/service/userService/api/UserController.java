@@ -1,8 +1,8 @@
-package cz.fi.muni.pa165.service.userService.api;
+package cz.fi.muni.pa165.service.userservice.api;
 
-import cz.fi.muni.pa165.dto.userService.UserCreateRequestDto;
-import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
-import cz.fi.muni.pa165.dto.userService.UserViewDto;
+import cz.fi.muni.pa165.dto.userservice.UserCreateRequestDto;
+import cz.fi.muni.pa165.dto.userservice.UserUpdateDto;
+import cz.fi.muni.pa165.dto.userservice.UserViewDto;
 
 import java.util.List;
 import java.util.UUID;

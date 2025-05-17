@@ -1,9 +1,9 @@
 package cz.fi.muni.pa165.teamservice.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemUpdateDTO;
 import cz.fi.muni.pa165.teamservice.api.controllers.BudgetSystemController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.BudgetSystemFacade;

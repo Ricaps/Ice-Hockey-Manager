@@ -5,7 +5,7 @@ import cz.fi.muni.pa165.gameservice.business.messages.MatchMessageResolver;
 import cz.fi.muni.pa165.gameservice.config.SchedulingConfiguration;
 import cz.fi.muni.pa165.gameservice.persistence.entities.Result;
 import cz.fi.muni.pa165.gameservice.testdata.MatchTestData;
-import cz.fi.muni.pa165.service.teamService.api.TeamCharacteristicController;
+import cz.fi.muni.pa165.service.teamservice.api.TeamCharacteristicController;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

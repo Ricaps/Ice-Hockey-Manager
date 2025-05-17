@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.service.wordlistService.api;
+package cz.fi.muni.pa165.service.wordlistservice.api;
 
 import cz.fi.muni.pa165.dto.worldlistservice.championship.create.ChampionshipCreateDto;
 import cz.fi.muni.pa165.dto.worldlistservice.championship.detail.ChampionshipDetailDto;

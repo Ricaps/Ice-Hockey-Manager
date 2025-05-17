@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.service.wordlistService.api;
+package cz.fi.muni.pa165.service.wordlistservice.api;
 
 import cz.fi.muni.pa165.dto.worldlistservice.playercharacteristic.PlayerCharacteristicDto;
 import cz.fi.muni.pa165.dto.worldlistservice.playercharacteristic.create.PlayerCharacteristicCreateDto;

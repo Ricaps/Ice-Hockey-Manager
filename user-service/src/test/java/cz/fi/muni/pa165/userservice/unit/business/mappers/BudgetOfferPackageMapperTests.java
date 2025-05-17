@@ -1,6 +1,6 @@
 package cz.fi.muni.pa165.userservice.unit.business.mappers;
 
-import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
+import cz.fi.muni.pa165.dto.userservice.BudgetOfferPackageDto;
 import cz.fi.muni.pa165.userservice.business.mappers.BudgetPackageOfferMapper;
 import cz.fi.muni.pa165.userservice.business.mappers.BudgetPackageOfferMapperImpl;
 import cz.fi.muni.pa165.userservice.persistence.entities.BudgetOfferPackage;

@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.business.facades;
 
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemCreateDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemDTO;
-import cz.fi.muni.pa165.dto.teamService.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemCreateDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemDTO;
+import cz.fi.muni.pa165.dto.teamservice.BudgetSystemUpdateDTO;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.mappers.BudgetSystemMapper;

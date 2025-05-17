@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.dto.userService;
+package cz.fi.muni.pa165.dto.userservice;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

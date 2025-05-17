@@ -1,6 +1,6 @@
-package cz.fi.muni.pa165.service.userService.api;
+package cz.fi.muni.pa165.service.userservice.api;
 
-import cz.fi.muni.pa165.dto.userService.BudgetOfferPackageDto;
+import cz.fi.muni.pa165.dto.userservice.BudgetOfferPackageDto;
 
 import java.util.List;
 import java.util.UUID;

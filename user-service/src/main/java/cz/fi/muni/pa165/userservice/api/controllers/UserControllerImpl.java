@@ -1,10 +1,10 @@
 package cz.fi.muni.pa165.userservice.api.controllers;
 
-import cz.fi.muni.pa165.dto.userService.UserCreateDto;
-import cz.fi.muni.pa165.dto.userService.UserCreateRequestDto;
-import cz.fi.muni.pa165.dto.userService.UserUpdateDto;
-import cz.fi.muni.pa165.dto.userService.UserViewDto;
-import cz.fi.muni.pa165.service.userService.api.UserController;
+import cz.fi.muni.pa165.dto.userservice.UserCreateDto;
+import cz.fi.muni.pa165.dto.userservice.UserCreateRequestDto;
+import cz.fi.muni.pa165.dto.userservice.UserUpdateDto;
+import cz.fi.muni.pa165.dto.userservice.UserViewDto;
+import cz.fi.muni.pa165.service.userservice.api.UserController;
 import cz.fi.muni.pa165.userservice.business.facades.UserFacade;
 import cz.fi.muni.pa165.userservice.util.AuthUtil;
 import io.swagger.v3.oas.annotations.Operation;

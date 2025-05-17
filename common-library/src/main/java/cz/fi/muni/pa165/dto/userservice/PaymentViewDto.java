@@ -1,4 +1,4 @@
-package cz.fi.muni.pa165.dto.userService;
+package cz.fi.muni.pa165.dto.userservice;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

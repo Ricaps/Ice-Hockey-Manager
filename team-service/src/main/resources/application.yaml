@@ -45,7 +45,7 @@ spring.datasource:
   url: jdbc:h2:file:./data/team-service
 spring.jpa:
   hibernate:
-    ddl-auto: create-drop
+    ddl-auto: none
   show-sql: false
   properties:
     hibernate:

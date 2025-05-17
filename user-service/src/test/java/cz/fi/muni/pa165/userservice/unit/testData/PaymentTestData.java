@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.userservice.unit.testData;
 
-import cz.fi.muni.pa165.dto.userService.PaymentUpdateCreateDto;
-import cz.fi.muni.pa165.dto.userService.PaymentViewDto;
-import cz.fi.muni.pa165.dto.userService.UserPaymentDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentUpdateCreateDto;
+import cz.fi.muni.pa165.dto.userservice.PaymentViewDto;
+import cz.fi.muni.pa165.dto.userservice.UserPaymentDto;
 import cz.fi.muni.pa165.userservice.persistence.entities.Payment;
 
 import java.time.LocalDateTime;

@@ -1,8 +1,8 @@
 package cz.fi.muni.pa165.teamservice.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicDTO;
-import cz.fi.muni.pa165.dto.teamService.TeamCharacteristicUpdateDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicDTO;
+import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.controllers.TeamCharacteristicControllerImpl;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
