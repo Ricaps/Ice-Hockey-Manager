@@ -21,10 +21,11 @@ server:
   servlet:
     context-path: /api
   port: 8082
-  database:
-    clear: false
   error:
     include-stacktrace: never
+  database:
+    seed: true
+    clear: false
 # JPA and Hibernate configuration
 spring.datasource:
   url: jdbc:h2:file:./data/game-service
@@ -35,10 +36,6 @@ spring.jpa:
   properties:
     hibernate:
       format_sql: false
-# Seed configuration
-seed:
-  enabled: true
-  log-data: false
 # Logging
 logging:
   logback:

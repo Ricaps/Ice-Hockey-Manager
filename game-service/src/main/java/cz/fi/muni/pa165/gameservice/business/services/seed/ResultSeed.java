@@ -35,7 +35,7 @@ public class ResultSeed implements Seed<Result> {
 	}
 
 	@Override
-	public void runSeed(boolean logData) {
+	public void runSeed() {
 		if (resultRepository.count() != 0) {
 			LOGGER.info("Result entities are already seeded. Skipping...");
 			return;
@@ -59,9 +59,8 @@ public class ResultSeed implements Seed<Result> {
 		}
 
 		matchRepository.saveAll(matchesToSave);
-		if (logData) {
-			LOGGER.debug("Seeded data: {}", data);
-		}
+
+		LOGGER.debug("Seeded data: {}", data);
 	}
 
 	private List<Result> getTemplateData() {

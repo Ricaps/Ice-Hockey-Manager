@@ -28,7 +28,7 @@ public class CompetitionSeed implements Seed<Competition> {
 	}
 
 	@Override
-	public void runSeed(boolean logData) {
+	public void runSeed() {
 		if (competitionRepository.count() != 0) {
 			LOGGER.info("Competition entities are already seeded. Skipping...");
 			return;
@@ -37,9 +37,8 @@ public class CompetitionSeed implements Seed<Competition> {
 		List<Competition> competitions = new ArrayList<>(getTemplateData());
 
 		data = competitionRepository.saveAllAndFlush(competitions);
-		if (logData) {
-			LOGGER.debug("Seeded data: {}", data);
-		}
+
+		LOGGER.debug("Seeded data: {}", data);
 	}
 
 	private List<Competition> getTemplateData() {

@@ -39,7 +39,7 @@ public class MatchSeed implements Seed<Match> {
 	}
 
 	@Override
-	public void runSeed(boolean logData) {
+	public void runSeed() {
 		if (matchRepository.count() != 0) {
 			LOGGER.info("Match entities are already seeded. Skipping...");
 			return;
@@ -48,9 +48,8 @@ public class MatchSeed implements Seed<Match> {
 		List<Match> matches = new ArrayList<>(getTemplateData());
 
 		data = matchRepository.saveAllAndFlush(matches);
-		if (logData) {
-			LOGGER.debug("Seeded data: {}", data);
-		}
+
+		LOGGER.debug("Seeded data: {}", data);
 	}
 
 	private List<Match> getTemplateData() {

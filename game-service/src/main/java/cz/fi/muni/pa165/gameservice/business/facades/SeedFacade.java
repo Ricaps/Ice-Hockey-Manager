@@ -2,7 +2,6 @@ package cz.fi.muni.pa165.gameservice.business.facades;
 
 import cz.fi.muni.pa165.gameservice.business.services.seed.Seed;
 import cz.fi.muni.pa165.gameservice.business.services.seed.SeedDataNotExist;
-import cz.fi.muni.pa165.gameservice.config.SeedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +20,16 @@ public class SeedFacade implements ApplicationRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SeedFacade.class);
 
-	private final SeedConfiguration seedConfiguration;
-
 	private final List<? extends Seed<?>> seeds;
+
+	@Value("${server.database.seed:true}")
+	private boolean shouldSeed;
 
 	@Value("${server.database.clear:false}")
 	private boolean shouldClear;
 
 	@Autowired
-	public SeedFacade(SeedConfiguration seedConfiguration, List<? extends Seed<?>> seeds) {
-		this.seedConfiguration = seedConfiguration;
+	public SeedFacade(List<? extends Seed<?>> seeds) {
 		this.seeds = seeds;
 	}
 
@@ -50,13 +49,13 @@ public class SeedFacade implements ApplicationRunner {
 	}
 
 	private void runSeed() {
-		if (!seedConfiguration.isEnabled()) {
+		if (!shouldSeed) {
 			return;
 		}
 		seeds.sort(AnnotationAwareOrderComparator.INSTANCE);
 		for (var seed : seeds) {
 			LOGGER.info("Running seed for {}", seed.getClass());
-			seed.runSeed(seedConfiguration.isLogData());
+			seed.runSeed();
 		}
 	}
 

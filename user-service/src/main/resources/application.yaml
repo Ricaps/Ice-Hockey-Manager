@@ -34,6 +34,9 @@ server:
   port: 8083
   error:
     include-stacktrace: never
+  database:
+    seed: true
+    clear: false
 
 management:
   security:

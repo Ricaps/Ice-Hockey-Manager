@@ -34,7 +34,7 @@ public class TeamsSeed implements Seed<CompetitionHasTeam> {
 	}
 
 	@Override
-	public void runSeed(boolean logData) {
+	public void runSeed() {
 		if (teamRepository.count() != 0) {
 			LOGGER.info("Teams entities are already seeded. Skipping...");
 			return;
@@ -43,9 +43,8 @@ public class TeamsSeed implements Seed<CompetitionHasTeam> {
 		List<CompetitionHasTeam> teams = new ArrayList<>(getTemplateData());
 
 		data = teamRepository.saveAllAndFlush(teams);
-		if (logData) {
-			LOGGER.debug("Seeded data: {}", data);
-		}
+
+		LOGGER.debug("Seeded data: {}", data);
 	}
 
 	private List<CompetitionHasTeam> getTemplateData() {

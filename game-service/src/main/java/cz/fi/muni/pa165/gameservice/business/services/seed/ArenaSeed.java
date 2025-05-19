@@ -28,7 +28,7 @@ public class ArenaSeed implements Seed<Arena> {
 	}
 
 	@Override
-	public void runSeed(boolean logData) {
+	public void runSeed() {
 		if (arenaRepository.count() != 0) {
 			LOGGER.info("Arena entities are already seeded. Skipping...");
 			return;
@@ -40,9 +40,8 @@ public class ArenaSeed implements Seed<Arena> {
 		}
 
 		data = arenaRepository.saveAll(arenas);
-		if (logData) {
-			LOGGER.debug("Seeded data: {}", data);
-		}
+
+		LOGGER.debug("Seeded data: {}", data);
 	}
 
 	public static List<Arena> getTemplateData() {

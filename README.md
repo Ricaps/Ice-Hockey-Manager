@@ -42,6 +42,19 @@ Run following command in the terminal:
 docker compose up -d
 ```
 
+
+### Database Seeding
+
+Each microservice includes an optional database seeding feature to populate initial data (players, teams, users, matches, etc.). You can enable this by modifying the application.yaml file of each service.
+
+In the src/main/resources/application.yaml of any service (e.g. team-service, world-list-service, etc.), locate the following section:
+
+```bash
+database:
+  seed: true     # Set to true to enable data seeding
+  clear: false   # Optional: set to true to clear existing data before seeding
+```
+
 ## Swagger
 
 You can access Swagger UI at following path:
