@@ -10,7 +10,7 @@ import org.springframework.web.service.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@HttpExchange("/api/team-characteristics")
+@HttpExchange("/team-characteristics")
 public interface TeamCharacteristicController {
 
 	@PostExchange

@@ -19,8 +19,7 @@ public class APIKeyFilter extends OncePerRequestFilter {
 
 	private static final String TOKEN_HEADER = "X-Api-Key";
 
-	private static final RequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher(
-			"/api/team-characteristics/team/**");
+	public static final RequestMatcher REQUEST_MATCHER = new AntPathRequestMatcher("/v1/team-characteristics/team/**");
 
 	private final AuthenticationManager authenticationManager;
 

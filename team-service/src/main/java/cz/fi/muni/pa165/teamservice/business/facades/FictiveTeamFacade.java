@@ -42,9 +42,12 @@ public class FictiveTeamFacade {
 		var characteristicEntities = dto.getCharacteristicTypes();
 		FictiveTeam fictiveTeam = fictiveTeamMapper.toEntity(dto);
 		if (characteristicEntities != null) {
-			fictiveTeam.setTeamCharacteristics(characteristicEntities.stream()
-				.map(teamCharacteristicService::findById)
-				.collect(Collectors.toSet()));
+			fictiveTeam.setTeamCharacteristics(characteristicEntities.stream().map(charId -> {
+				var characteristic = teamCharacteristicService.findById(charId);
+				characteristic.setFictiveTeam(fictiveTeam);
+
+				return characteristic;
+			}).collect(Collectors.toSet()));
 		}
 		FictiveTeam created = fictiveTeamService.createTeam(fictiveTeam);
 		return fictiveTeamMapper.toDto(created);

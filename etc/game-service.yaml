@@ -2,9 +2,8 @@
 spring.artemis:
   broker-url: tcp://artemis:61616
 
-# Location of other REST services
 services.baseUrl:
-  team-service: http://team-service:8081/api
+  team-service: http://team-service:8081/api/v1
 
 seed:
   log-data: true

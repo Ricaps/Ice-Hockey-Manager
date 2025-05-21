@@ -5,8 +5,9 @@ from time import sleep
 from uuid import uuid4
 
 WORLD_LIST_SERVICE_URL = "http://host.docker.internal:8080/api/v1"
-TEAM_SERVICE_URL = "http://host.docker.internal:8081/api"
+TEAM_SERVICE_URL = "http://host.docker.internal:8081/api/v1"
 GAME_SERVICE_URL = "http://host.docker.internal:8082/api/v1"
+
 
 @events.init_command_line_parser.add_listener
 def _(parser):
@@ -25,11 +26,12 @@ class FriendlyMatchRunnableScenario(HttpUser):
             return
                 
         print("Friendly match showcase started")
-        team_predators = self.create_fictive_team(0)
-        team_ducks = self.create_fictive_team(1)
 
-        self.create_team_characteristic(team_predators["guid"])
-        self.create_team_characteristic(team_ducks["guid"])
+        characteristics_predators = self.create_team_characteristic()
+        characteristics_ducks = self.create_team_characteristic()
+
+        team_predators = self.create_fictive_team(0, characteristics_predators["guid"])
+        team_ducks = self.create_fictive_team(1, characteristics_ducks["guid"])
 
         budget_before_match_predators = self.create_budget_system(team_predators["guid"])
         budget_before_match_ducks = self.create_budget_system(team_ducks["guid"])
@@ -93,12 +95,12 @@ class FriendlyMatchRunnableScenario(HttpUser):
 
         return (score_home_team, score_away_team)
 
-    def create_fictive_team(self, team_number):
+    def create_fictive_team(self, team_number, characteristics_guid):
         players = self.get_players(team_number)
-        fictive_team = self.client.post(TEAM_SERVICE_URL + "/v1/fictive-team/", json={
+        fictive_team = self.client.post(TEAM_SERVICE_URL + "/fictive-team/", json={
             "name": "Team" + str(team_number),
             "playerIds": players,
-            "characteristicType": "STRENGTH",
+            "characteristicTypes": [characteristics_guid],
             "ownerId": str(uuid4())
         }, headers=self.get_authorization_header()).json()
 
@@ -108,7 +110,7 @@ class FriendlyMatchRunnableScenario(HttpUser):
     def create_budget_system(self, team_uuid):
         """TODO: Doesn't make much sense to create budget_system by player. Will be fixed in M4."""
 
-        budget_system = self.client.post(TEAM_SERVICE_URL + "/api/budget-systems", json={
+        budget_system = self.client.post(TEAM_SERVICE_URL + "/budget-systems", json={
             "amount": 1000,
             "teamId": team_uuid
         }, headers=self.get_authorization_header()).json()
@@ -117,21 +119,19 @@ class FriendlyMatchRunnableScenario(HttpUser):
         return budget_system
 
     def get_budget(self, budget_system_id):
-        budget_system = self.client.get(TEAM_SERVICE_URL + "/api/budget-systems/" + budget_system_id,
+        budget_system = self.client.get(TEAM_SERVICE_URL + "/budget-systems/" + budget_system_id,
                                         headers=self.get_authorization_header()).json()
 
         return budget_system
 
-    def create_team_characteristic(self, team_uuid):
-        """TODO: Doesn't make much sense to create this in here - it should be created by allocating players from the WorldListService. Will be fixed in M4."""
-
-        team_characteristic = self.client.post(TEAM_SERVICE_URL + "/api/team-characteristics", json={
-            "teamId": team_uuid,
+    def create_team_characteristic(self):
+        team_characteristic = self.client.post(TEAM_SERVICE_URL + "/team-characteristics", json={
             "characteristicType": "SPEED" if randint(0, 1) == 1 else "SHOOTING",
             "characteristicValue": randint(0, 99)
         }, headers=self.get_authorization_header()).json()
 
-        print(f"Created team characteristic for team {team_uuid}")
+        print(
+            f"Created team characteristic with GUID: {team_characteristic["guid"]}, type: {team_characteristic["characteristicType"]}, value: {team_characteristic["characteristicValue"]}")
         return team_characteristic
 
     def get_players(self, page=0):

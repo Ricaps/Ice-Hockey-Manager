@@ -53,7 +53,7 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(x -> x
 			.requestMatchers("/", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.yaml")
 			.permitAll()
-			.requestMatchers("/api/team-characteristics/team/**")
+			.requestMatchers(APIKeyFilter.REQUEST_MATCHER)
 			.hasAnyAuthority(SCOPE_INTERNAL_READ, SCOPE_TEST_READ)
 			.requestMatchers(HttpMethod.POST, "/**")
 			.hasAuthority(SCOPE_TEST_WRITE)
