@@ -36,6 +36,11 @@ public class FictiveTeamService {
 		if (team.getGuid() != null && teamRepository.existsById(team.getGuid())) {
 			throw new ResourceAlreadyExistsException("Team already exists");
 		}
+
+		if (team.getPlayerIDs() != null && !team.getPlayerIDs().isEmpty()) {
+			team.getPlayerIDs().forEach(fictiveTeamMessageResolver::sendUuidOfAddedPlayer);
+		}
+
 		return teamRepository.save(team);
 	}
 
@@ -52,9 +57,7 @@ public class FictiveTeamService {
 			.toList();
 
 		if (!newPlayers.isEmpty()) {
-			for (UUID player : newPlayers) {
-				fictiveTeamMessageResolver.sendUuidOfAddedPlayer(player);
-			}
+			newPlayers.forEach(fictiveTeamMessageResolver::sendUuidOfAddedPlayer);
 		}
 		return teamRepository.save(team);
 	}

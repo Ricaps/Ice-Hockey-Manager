@@ -21,7 +21,7 @@ public class FictiveTeamMessageResolver {
 
 	private final JmsTemplate jmsTemplate;
 
-	public FictiveTeamMessageResolver(@Qualifier("topicJmsTemplate") JmsTemplate jmsTemplate) {
+	public FictiveTeamMessageResolver(@Qualifier("queueJmsTemplate") JmsTemplate jmsTemplate) {
 		this.jmsTemplate = jmsTemplate;
 	}
 

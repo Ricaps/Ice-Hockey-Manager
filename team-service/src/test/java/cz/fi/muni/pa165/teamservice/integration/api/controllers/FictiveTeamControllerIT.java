@@ -49,7 +49,7 @@ class FictiveTeamControllerIT {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@MockitoBean(name = "topicJmsTemplate")
+	@MockitoBean(name = "queueJmsTemplate")
 	@SuppressWarnings("unused")
 	private JmsTemplate topicJmsTemplate;
 
