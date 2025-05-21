@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -33,7 +34,7 @@ public class FictiveTeamDTO {
 	private List<UUID> playerIds;
 
 	@Schema(description = "Primary characteristic type of the team", example = "STRENGTH")
-	private TeamCharacteristicType characteristicType;
+	private Set<UUID> characteristicTypes;
 
 	@Schema(description = "Budget system ID", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
 	private UUID budgetSystemId;

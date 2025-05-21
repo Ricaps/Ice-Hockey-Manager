@@ -7,6 +7,7 @@ import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.mappers.FictiveTeamMapper;
 import cz.fi.muni.pa165.teamservice.business.services.FictiveTeamService;
+import cz.fi.muni.pa165.teamservice.business.services.TeamCharacteristicService;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,20 +28,36 @@ public class FictiveTeamFacade {
 
 	private final FictiveTeamMapper fictiveTeamMapper;
 
+	private final TeamCharacteristicService teamCharacteristicService;
+
 	@Autowired
-	public FictiveTeamFacade(FictiveTeamService fictiveTeamService, FictiveTeamMapper fictiveTeamMapper) {
+	public FictiveTeamFacade(FictiveTeamService fictiveTeamService, FictiveTeamMapper fictiveTeamMapper,
+			TeamCharacteristicService teamCharacteristicService) {
+		this.teamCharacteristicService = teamCharacteristicService;
 		this.fictiveTeamService = fictiveTeamService;
 		this.fictiveTeamMapper = fictiveTeamMapper;
 	}
 
 	public FictiveTeamDTO createFictiveTeam(FictiveTeamCreateDTO dto) throws ResourceAlreadyExistsException {
+		var characteristicEntities = dto.getCharacteristicTypes();
 		FictiveTeam fictiveTeam = fictiveTeamMapper.toEntity(dto);
+		if (characteristicEntities != null) {
+			fictiveTeam.setTeamCharacteristics(characteristicEntities.stream()
+				.map(teamCharacteristicService::findById)
+				.collect(Collectors.toSet()));
+		}
 		FictiveTeam created = fictiveTeamService.createTeam(fictiveTeam);
 		return fictiveTeamMapper.toDto(created);
 	}
 
 	public FictiveTeamDTO updateFictiveTeam(FictiveTeamUpdateDTO dto) throws ResourceNotFoundException {
+		var characteristicEntities = dto.getCharacteristicTypes();
 		FictiveTeam fictiveTeam = fictiveTeamMapper.toEntity(dto);
+		if (characteristicEntities != null) {
+			fictiveTeam.setTeamCharacteristics(characteristicEntities.stream()
+				.map(teamCharacteristicService::findById)
+				.collect(Collectors.toSet()));
+		}
 		FictiveTeam updated = fictiveTeamService.updateTeam(fictiveTeam);
 		return fictiveTeamMapper.toDto(updated);
 	}

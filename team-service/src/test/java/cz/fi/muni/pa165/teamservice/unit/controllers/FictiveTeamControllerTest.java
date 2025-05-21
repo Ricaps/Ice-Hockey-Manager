@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.teamservice.FictiveTeamCreateDTO;
 import cz.fi.muni.pa165.dto.teamservice.FictiveTeamDTO;
 import cz.fi.muni.pa165.dto.teamservice.FictiveTeamUpdateDTO;
-import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.controllers.FictiveTeamController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.FictiveTeamFacade;
@@ -17,10 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,26 +51,30 @@ class FictiveTeamControllerTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+
 		mockMvc = MockMvcBuilders.standaloneSetup(fictiveTeamController).build();
+		UUID characteristicId1 = UUID.randomUUID();
+		UUID characteristicId2 = UUID.randomUUID();
+		Set<UUID> characteristics = new HashSet<>(Arrays.asList(characteristicId1, characteristicId2));
 
 		// Setup DTOs
 		fictiveTeamDTO = new FictiveTeamDTO();
 		fictiveTeamDTO.setGuid(teamId);
 		fictiveTeamDTO.setName("Avengers");
 		fictiveTeamDTO.setOwnerId(UUID.randomUUID());
-		fictiveTeamDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
+		fictiveTeamDTO.setCharacteristicTypes(characteristics);
 		fictiveTeamDTO.setBudgetAmount(1000000.00);
 
 		createDTO = new FictiveTeamCreateDTO();
 		createDTO.setName("Avengers");
 		createDTO.setOwnerId(UUID.randomUUID());
-		createDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
+		createDTO.setCharacteristicTypes(characteristics);
 		createDTO.setPlayerIds(List.of(UUID.randomUUID()));
 
 		updateDTO = new FictiveTeamUpdateDTO();
 		updateDTO.setGuid(teamId);
 		updateDTO.setName("Updated Avengers");
-		updateDTO.setCharacteristicType(TeamCharacteristicType.SPEED);
+		updateDTO.setCharacteristicTypes(characteristics);
 	}
 
 	@Test
@@ -85,7 +87,9 @@ class FictiveTeamControllerTest {
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.guid").value(teamId.toString()))
 			.andExpect(jsonPath("$.name").value(fictiveTeamDTO.getName()))
-			.andExpect(jsonPath("$.characteristicType").value(fictiveTeamDTO.getCharacteristicType().toString()));
+			.andExpect(jsonPath("$.characteristicTypes.length()").value(fictiveTeamDTO.getCharacteristicTypes().size()))
+			.andExpect(jsonPath("$.characteristicTypes",
+					hasItems(fictiveTeamDTO.getCharacteristicTypes().stream().map(UUID::toString).toArray())));
 
 		verify(fictiveTeamFacade, times(1)).createFictiveTeam(any(FictiveTeamCreateDTO.class));
 	}

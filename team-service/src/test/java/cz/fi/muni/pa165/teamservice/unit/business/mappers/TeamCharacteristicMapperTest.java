@@ -5,6 +5,7 @@ import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.business.mappers.TeamCharacteristicMapper;
+import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -18,18 +19,21 @@ class TeamCharacteristicMapperTest {
 
 	private final TeamCharacteristicMapper mapper = Mappers.getMapper(TeamCharacteristicMapper.class);
 
+	private final UUID teamId = UUID.randomUUID();
+
 	@Test
 	void toDto() {
+		FictiveTeam team = new FictiveTeam();
+		team.setGuid(teamId);
 		TeamCharacteristic entity = new TeamCharacteristic();
 		entity.setGuid(UUID.randomUUID());
-		entity.setTeamId(UUID.randomUUID());
+		entity.setFictiveTeam(team);
 		entity.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		entity.setCharacteristicValue(85);
 
 		TeamCharacteristicDTO dto = mapper.toDto(entity);
 
 		assertThat(dto.getGuid()).isEqualTo(entity.getGuid());
-		assertThat(dto.getTeamId()).isEqualTo(entity.getTeamId());
 		assertThat(dto.getCharacteristicType()).isEqualTo(entity.getCharacteristicType());
 		assertThat(dto.getCharacteristicValue()).isEqualTo(entity.getCharacteristicValue());
 	}
@@ -37,14 +41,12 @@ class TeamCharacteristicMapperTest {
 	@Test
 	void toEntityFromCreateDTO() {
 		TeamCharacteristicCreateDTO createDTO = new TeamCharacteristicCreateDTO();
-		createDTO.setTeamId(UUID.randomUUID());
 		createDTO.setCharacteristicType(TeamCharacteristicType.SPEED);
 		createDTO.setCharacteristicValue(90);
 
 		TeamCharacteristic entity = mapper.toEntity(createDTO);
 
 		assertThat(entity.getGuid()).isNull();
-		assertThat(entity.getTeamId()).isEqualTo(createDTO.getTeamId());
 		assertThat(entity.getCharacteristicType()).isEqualTo(createDTO.getCharacteristicType());
 		assertThat(entity.getCharacteristicValue()).isEqualTo(createDTO.getCharacteristicValue());
 	}

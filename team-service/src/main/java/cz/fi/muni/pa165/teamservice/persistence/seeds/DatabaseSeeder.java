@@ -109,7 +109,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
 		for (int i = 0; i < 100; i++) {
 			TeamCharacteristic characteristic = new TeamCharacteristic();
-			characteristic.setTeamId(UUID.randomUUID());
+			characteristic.setFictiveTeam(teams.get(i % 50));
 			characteristic.setCharacteristicType(faker.options().option(TeamCharacteristicType.class));
 			characteristic.setCharacteristicValue(faker.number().numberBetween(0, 100));
 			teamCharacteristicRepository.save(characteristic);

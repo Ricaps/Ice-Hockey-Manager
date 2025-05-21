@@ -1,11 +1,9 @@
 package cz.fi.muni.pa165.teamservice.persistence.entities;
 
-import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "fictive_team")
@@ -30,11 +28,10 @@ public class FictiveTeam {
 	@ElementCollection
 	@CollectionTable(name = "team_players", joinColumns = @JoinColumn(name = "team_id"))
 	@Column(name = "player_id")
-	private List<UUID> playerIDs;
+	private List<UUID> playerIDs = new ArrayList<>();
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "characteristic_type")
-	private TeamCharacteristicType characteristicType;
+	@OneToMany(mappedBy = "fictiveTeam", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<TeamCharacteristic> teamCharacteristics = new HashSet<>();
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "budget_system_id", referencedColumnName = "guid")

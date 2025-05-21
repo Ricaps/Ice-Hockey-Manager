@@ -4,7 +4,6 @@ import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicCreateDTO;
 import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicDTO;
 import cz.fi.muni.pa165.dto.teamservice.TeamCharacteristicUpdateDTO;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
-import cz.fi.muni.pa165.service.teamservice.api.TeamCharacteristicController;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.TeamCharacteristicFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,14 +25,15 @@ import java.util.UUID;
  * @author Jan Martinek
  */
 @RestController
-@RequestMapping("/api/team-characteristics")
+@RequestMapping("/v1/team-characteristics")
 @Tag(name = "Team Characteristic API", description = "Management of team characteristics")
-public class TeamCharacteristicControllerImpl implements TeamCharacteristicController {
+public class TeamCharacteristicController
+		implements cz.fi.muni.pa165.service.teamservice.api.TeamCharacteristicController {
 
 	private final TeamCharacteristicFacade facade;
 
 	@Autowired
-	public TeamCharacteristicControllerImpl(TeamCharacteristicFacade facade) {
+	public TeamCharacteristicController(TeamCharacteristicFacade facade) {
 		this.facade = facade;
 	}
 

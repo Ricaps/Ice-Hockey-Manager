@@ -3,6 +3,7 @@ package cz.fi.muni.pa165.teamservice.unit.business.services;
 import cz.fi.muni.pa165.enums.TeamCharacteristicType;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.services.TeamCharacteristicService;
+import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.TeamCharacteristicRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +43,11 @@ class TeamCharacteristicServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		FictiveTeam team = new FictiveTeam();
+		team.setGuid(teamId);
 		characteristic = new TeamCharacteristic();
 		characteristic.setGuid(characteristicId);
-		characteristic.setTeamId(teamId);
+		characteristic.setFictiveTeam(team);
 		characteristic.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		characteristic.setCharacteristicValue(85);
 	}
@@ -110,7 +113,7 @@ class TeamCharacteristicServiceTest {
 
 	@Test
 	void findByTeamId_success() {
-		when(repository.findByTeamId(teamId)).thenReturn(List.of(characteristic));
+		when(repository.findByFictiveTeamGuid(teamId)).thenReturn(List.of(characteristic));
 
 		List<TeamCharacteristic> result = service.findByTeamId(teamId);
 

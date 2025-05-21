@@ -2,6 +2,7 @@ package cz.fi.muni.pa165.teamservice.business.services;
 
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceAlreadyExistsException;
 import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
+import cz.fi.muni.pa165.teamservice.business.messages.FictiveTeamMessageResolver;
 import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.FictiveTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,15 @@ public class FictiveTeamService {
 
 	private final FictiveTeamRepository teamRepository;
 
+	private final FictiveTeamMessageResolver fictiveTeamMessageResolver;
+
 	@Autowired
-	public FictiveTeamService(FictiveTeamRepository teamRepository) {
+	public FictiveTeamService(FictiveTeamRepository teamRepository,
+			FictiveTeamMessageResolver fictiveTeamMessageResolver) {
+
 		this.teamRepository = teamRepository;
+		this.fictiveTeamMessageResolver = fictiveTeamMessageResolver;
+
 	}
 
 	public FictiveTeam createTeam(FictiveTeam team) throws ResourceAlreadyExistsException {
@@ -35,6 +42,19 @@ public class FictiveTeamService {
 	public FictiveTeam updateTeam(FictiveTeam team) throws ResourceNotFoundException {
 		if (!teamRepository.existsById(team.getGuid())) {
 			throw new ResourceNotFoundException("Team not found");
+		}
+		FictiveTeam existingTeam = teamRepository.findById(team.getGuid())
+			.orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+
+		List<UUID> newPlayers = team.getPlayerIDs()
+			.stream()
+			.filter(playerId -> !existingTeam.getPlayerIDs().contains(playerId))
+			.toList();
+
+		if (!newPlayers.isEmpty()) {
+			for (UUID player : newPlayers) {
+				fictiveTeamMessageResolver.sendUuidOfAddedPlayer(player);
+			}
 		}
 		return teamRepository.save(team);
 	}

@@ -23,8 +23,9 @@ public class TeamCharacteristic {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID guid;
 
-	@Column(name = "team_id", nullable = false)
-	private UUID teamId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "fictive_team_id")
+	private FictiveTeam fictiveTeam;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

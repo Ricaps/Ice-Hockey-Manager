@@ -50,7 +50,7 @@ public class TeamCharacteristicService {
 
 	@Transactional(readOnly = true)
 	public List<TeamCharacteristic> findByTeamId(UUID teamId) {
-		return repository.findByTeamId(teamId);
+		return repository.findByFictiveTeamGuid(teamId);
 	}
 
 }

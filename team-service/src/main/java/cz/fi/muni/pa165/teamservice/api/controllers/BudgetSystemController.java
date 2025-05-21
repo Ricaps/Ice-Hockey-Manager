@@ -22,7 +22,7 @@ import java.util.UUID;
  * @author Jan Martinek
  */
 @RestController
-@RequestMapping("/api/budget-systems")
+@RequestMapping("/v1/budget-systems")
 @Tag(name = "Budget System API", description = "Management of team budget systems")
 public class BudgetSystemController {
 

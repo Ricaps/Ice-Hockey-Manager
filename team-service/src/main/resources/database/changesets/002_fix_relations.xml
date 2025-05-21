@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1747761802326-1" author="honza">
+        <addColumn tableName="team_characteristic">
+            <column name="fictive_team_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1747761802326-2" author="honza">
+        <addColumn tableName="fictive_team">
+            <column name="owner_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1747761802326-3" author="honza">
+        <addNotNullConstraint columnDataType="UUID" columnName="owner_id" tableName="fictive_team"/>
+    </changeSet>
+    <changeSet id="1747761802326-4" author="honza">
+        <addColumn tableName="budget_system">
+            <column name="team_id" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1747761802326-5" author="honza">
+        <addUniqueConstraint columnNames="team_id" constraintName="uc_budget_system_team" tableName="budget_system"/>
+    </changeSet>
+    <changeSet id="1747761802326-6" author="honza">
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="budget_system"
+                                 constraintName="FK_BUDGET_SYSTEM_ON_TEAM" referencedColumnNames="guid"
+                                 referencedTableName="fictive_team"/>
+    </changeSet>
+    <changeSet id="1747761802326-7" author="honza">
+        <addForeignKeyConstraint baseColumnNames="fictive_team_id" baseTableName="team_characteristic"
+                                 constraintName="FK_TEAM_CHARACTERISTIC_ON_FICTIVE_TEAM" referencedColumnNames="guid"
+                                 referencedTableName="fictive_team"/>
+    </changeSet>
+    <changeSet id="1747761802326-8" author="honza">
+        <dropColumn columnName="CHARACTERISTIC_TYPE" tableName="FICTIVE_TEAM"/>
+    </changeSet>
+    <changeSet id="1747761802326-9" author="honza">
+        <dropColumn columnName="TEAM_ID" tableName="TEAM_CHARACTERISTIC"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -77,7 +77,7 @@ public class BudgetSystemControllerTest {
 		when(budgetSystemFacade.createBudgetSystem(any(BudgetSystemCreateDTO.class))).thenReturn(responseDTO);
 
 		mockMvc
-			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/v1/budget-systems").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDTO)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.guid").value(responseDTO.getGuid().toString()))
@@ -90,7 +90,7 @@ public class BudgetSystemControllerTest {
 	void getBudgetSystemById() throws Exception {
 		when(budgetSystemFacade.findById(budgetSystemId)).thenReturn(budgetSystemDTO);
 
-		mockMvc.perform(get("/api/budget-systems/{id}", budgetSystemId))
+		mockMvc.perform(get("/v1/budget-systems/{id}", budgetSystemId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(budgetSystemId.toString()))
 			.andExpect(jsonPath("$.amount").value(budgetSystemDTO.getAmount()));
@@ -102,7 +102,7 @@ public class BudgetSystemControllerTest {
 	void getBudgetSystemById_notFound() throws Exception {
 		when(budgetSystemFacade.findById(budgetSystemId)).thenThrow(ResourceNotFoundException.class);
 
-		mockMvc.perform(get("/api/budget-systems/{id}", budgetSystemId)).andExpect(status().isNotFound());
+		mockMvc.perform(get("/v1/budget-systems/{id}", budgetSystemId)).andExpect(status().isNotFound());
 
 		verify(budgetSystemFacade, times(1)).findById(budgetSystemId);
 	}
@@ -112,7 +112,7 @@ public class BudgetSystemControllerTest {
 		when(budgetSystemFacade.updateBudgetSystem(any(BudgetSystemUpdateDTO.class))).thenReturn(budgetSystemDTO);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(budgetSystemUpdateDTO)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(budgetSystemId.toString()));
@@ -132,7 +132,7 @@ public class BudgetSystemControllerTest {
 		updateDTO.setAmount(1000000.00);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDTO)))
 			.andExpect(status().isBadRequest());
 
@@ -143,7 +143,7 @@ public class BudgetSystemControllerTest {
 	void deleteBudgetSystem() throws Exception {
 		doNothing().when(budgetSystemFacade).deleteBudgetSystem(budgetSystemId);
 
-		mockMvc.perform(delete("/api/budget-systems/{id}", budgetSystemId)).andExpect(status().isNoContent());
+		mockMvc.perform(delete("/v1/budget-systems/{id}", budgetSystemId)).andExpect(status().isNoContent());
 
 		verify(budgetSystemFacade, times(1)).deleteBudgetSystem(budgetSystemId);
 	}
@@ -154,7 +154,7 @@ public class BudgetSystemControllerTest {
 		invalidDTO.setAmount(-100.00); // Negative amount
 
 		mockMvc
-			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/v1/budget-systems").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(invalidDTO)))
 			.andExpect(status().isBadRequest());
 
@@ -166,7 +166,7 @@ public class BudgetSystemControllerTest {
 		budgetSystemDTO.setAmount(-50.00);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(budgetSystemDTO)))
 			.andExpect(status().isBadRequest());
 
@@ -175,7 +175,7 @@ public class BudgetSystemControllerTest {
 
 	@Test
 	void getBudgetSystemById_invalidUuid() throws Exception {
-		mockMvc.perform(get("/api/budget-systems/{id}", "invalid-uuid")).andExpect(status().isBadRequest());
+		mockMvc.perform(get("/v1/budget-systems/{id}", "invalid-uuid")).andExpect(status().isBadRequest());
 
 		verify(budgetSystemFacade, never()).findById(any());
 	}
@@ -185,7 +185,7 @@ public class BudgetSystemControllerTest {
 		budgetSystemDTO.setAmount(null);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(budgetSystemDTO)))
 			.andExpect(status().isBadRequest());
 
@@ -201,7 +201,7 @@ public class BudgetSystemControllerTest {
 		when(budgetSystemFacade.createBudgetSystem(any())).thenReturn(new BudgetSystemDTO());
 
 		mockMvc
-			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/v1/budget-systems").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDTO)))
 			.andExpect(status().isCreated());
 	}
@@ -212,7 +212,7 @@ public class BudgetSystemControllerTest {
 		when(budgetSystemFacade.updateBudgetSystem(any())).thenReturn(budgetSystemDTO);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystemId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(budgetSystemDTO)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.amount").value(Double.MAX_VALUE));

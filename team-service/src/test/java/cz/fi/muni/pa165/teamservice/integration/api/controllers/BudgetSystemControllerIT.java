@@ -3,6 +3,7 @@ package cz.fi.muni.pa165.teamservice.integration.api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.fi.muni.pa165.dto.teamservice.BudgetSystemCreateDTO;
 import cz.fi.muni.pa165.dto.teamservice.BudgetSystemUpdateDTO;
+import cz.fi.muni.pa165.teamservice.TeamServiceApplication;
 import cz.fi.muni.pa165.teamservice.config.DisableSecurityTestConfig;
 import cz.fi.muni.pa165.teamservice.persistence.entities.BudgetSystem;
 import cz.fi.muni.pa165.teamservice.persistence.repositories.BudgetSystemRepository;
@@ -68,7 +69,7 @@ class BudgetSystemControllerIT {
 		updateDTO.setAmount(1500.0);
 
 		mockMvc
-			.perform(put("/api/budget-systems/{id}", budgetSystem.getGuid()).contentType(MediaType.APPLICATION_JSON)
+			.perform(put("/v1/budget-systems/{id}", budgetSystem.getGuid()).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDTO)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.amount").value(1500.0));
@@ -84,7 +85,7 @@ class BudgetSystemControllerIT {
 		budgetSystem.setTeam(testTeam);
 		budgetSystem = budgetSystemRepository.save(budgetSystem);
 
-		mockMvc.perform(get("/api/budget-systems/{id}", budgetSystem.getGuid()))
+		mockMvc.perform(get("/v1/budget-systems/{id}", budgetSystem.getGuid()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.guid").value(budgetSystem.getGuid().toString()))
 			.andExpect(jsonPath("$.amount").value(2000.0));
@@ -97,7 +98,7 @@ class BudgetSystemControllerIT {
 		budgetSystem.setTeam(testTeam);
 		budgetSystem = budgetSystemRepository.save(budgetSystem);
 
-		mockMvc.perform(delete("/api/budget-systems/{id}", budgetSystem.getGuid())).andExpect(status().isNoContent());
+		mockMvc.perform(delete("/v1/budget-systems/{id}", budgetSystem.getGuid())).andExpect(status().isNoContent());
 
 		assertThat(budgetSystemRepository.existsById(budgetSystem.getGuid())).isFalse();
 	}
@@ -109,7 +110,7 @@ class BudgetSystemControllerIT {
 		createDTO.setTeamId(UUID.randomUUID()); // Invalid team ID
 
 		mockMvc
-			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/v1/budget-systems").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDTO)))
 			.andExpect(status().isNotFound());
 	}
@@ -121,7 +122,7 @@ class BudgetSystemControllerIT {
 		createDTO.setTeamId(testTeam.getGuid());
 
 		mockMvc
-			.perform(post("/api/budget-systems").contentType(MediaType.APPLICATION_JSON)
+			.perform(post("/v1/budget-systems").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDTO)))
 			.andExpect(status().isCreated());
 	}

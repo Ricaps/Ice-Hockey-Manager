@@ -8,6 +8,7 @@ import cz.fi.muni.pa165.teamservice.api.exception.ResourceNotFoundException;
 import cz.fi.muni.pa165.teamservice.business.facades.TeamCharacteristicFacade;
 import cz.fi.muni.pa165.teamservice.business.mappers.TeamCharacteristicMapper;
 import cz.fi.muni.pa165.teamservice.business.services.TeamCharacteristicService;
+import cz.fi.muni.pa165.teamservice.persistence.entities.FictiveTeam;
 import cz.fi.muni.pa165.teamservice.persistence.entities.TeamCharacteristic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,20 +53,21 @@ public class TeamCharacteristicFacadeTest {
 
 	@BeforeEach
 	void setUp() {
+		FictiveTeam team = new FictiveTeam();
+		team.setGuid(teamId);
+
 		characteristic = new TeamCharacteristic();
 		characteristic.setGuid(characteristicId);
-		characteristic.setTeamId(teamId);
+		characteristic.setFictiveTeam(team);
 		characteristic.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		characteristic.setCharacteristicValue(85);
 
 		characteristicDTO = new TeamCharacteristicDTO();
 		characteristicDTO.setGuid(characteristicId);
-		characteristicDTO.setTeamId(teamId);
 		characteristicDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		characteristicDTO.setCharacteristicValue(85);
 
 		createDTO = new TeamCharacteristicCreateDTO();
-		createDTO.setTeamId(teamId);
 		createDTO.setCharacteristicType(TeamCharacteristicType.STRENGTH);
 		createDTO.setCharacteristicValue(85);
 

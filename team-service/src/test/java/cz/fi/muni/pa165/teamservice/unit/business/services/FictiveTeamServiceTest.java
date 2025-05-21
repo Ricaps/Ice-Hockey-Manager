@@ -67,6 +67,7 @@ class FictiveTeamServiceTest {
 	void updateFictiveTeam_success() throws ResourceNotFoundException {
 		when(teamRepository.existsById(teamId)).thenReturn(true);
 		when(teamRepository.save(team)).thenReturn(team);
+		when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
 
 		FictiveTeam result = teamService.updateTeam(team);
 

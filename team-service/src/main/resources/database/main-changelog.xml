@@ -7,4 +7,5 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <include file="database/changesets/001_create_tables.xml"/>
+    <include file="database/changesets/002_fix_relations.xml"/>
 </databaseChangeLog>
