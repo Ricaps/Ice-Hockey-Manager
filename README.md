@@ -1,5 +1,14 @@
 # Ice Hockey Manager
 
+## 📚✨ University Project ✨📚
+
+> 🚀 This repository is a **university project** developed at the **Faculty of Informatics, Masaryk University** 🏫, as
+> part of the course **PA165 – Enterprise Application in Java** ☕.
+>
+> 🌟 _Crafted with passion, learning, and lots of ☕ at FI MU!_ 💛
+
+## 📄 Description
+
 Several human players can manage their hockey teams out of a list of real ice hockey teams of several
 championships across Europe. Human players can pick their team and add / remove ice hockey players from a list of
 available free agents. There is a schedule of games and results will be generated taking into account the players
@@ -8,9 +17,9 @@ Admin can put new hockey players in the main list of free agents and change thei
 other human players. If you want, you can implement a budget system for each team, so that players can be bought and
 sold based on the financial availability of teams.
 
-## How to run
+## 🛠️ How to run
 
-### Prerequisites
+### 📦 Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -25,7 +34,7 @@ mvn --version
 docker --version
 ```
 
-### Run locally
+### ▶️ Run locally
 
 How to run each service separately:
 
@@ -34,7 +43,7 @@ How to run each service separately:
 
 **WARNING** - To properly use the user-service, you need to run the Artemis broker yourself and correctly define its URL to match the user-service configuration (`spring.artemis.broker-url: tcp://artemis:61616`). If you decide to run the service with Docker, the Artemis broker will be started automatically. Without running the Artemis broker, payment methods may not function correctly when creating or updating.
 
-### Run in Docker
+### ▶️ Run in Docker
 
 Run following command in the terminal:
 
